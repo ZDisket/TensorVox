@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/stdico.png</file>
+    </qresource>
+</RCC>
