@@ -6,6 +6,8 @@
 
 #include <QListWidgetItem>
 
+const QColor DoneColor = QColor(0,128,0);
+const QColor InProcessColor = QColor(0,0,255);
 
 // A Voxer is a thread spawned for the sole purpose of doing inference
 class Voxer : public QThread
@@ -22,6 +24,7 @@ public:
     float Energy;
     float F0;
     int32_t SpeakerID;
+    uint32_t SampleRate;
     Voxer();
 
 

@@ -3,7 +3,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QSplitter>
-#include <QAudioOutput>
+
 #include <QFileDialog>
 
 #include "voxer.h"
@@ -31,6 +31,15 @@ MainWindow::MainWindow(QWidget *parent)
     StdFmt.setChannelCount(1);
     StdFmt.setCodec("audio/pcm");
 
+    CanPlayAudio = true;
+
+    StdOutput = new QAudioOutput(StdFmt,this);
+
+    CurrentBuffIndex = 0;
+
+     connect(StdOutput,&QAudioOutput::stateChanged, this, &MainWindow::OnAudioStateChange);
+
+
 
 }
 
@@ -42,34 +51,96 @@ MainWindow::~MainWindow()
 void MainWindow::OnAudioRecv(std::vector<float> InDat)
 {
 
+    IterateQueue();
     QBuffer* Buf = new QBuffer(this);
     Buf->setData((const char*)InDat.data(),sizeof(float) * InDat.size());
 
 
     AudBuffs.push_back(Buf);
-    PlayBuffer(Buf);
+    if (CanPlayAudio)
+        PlayBuffer(Buf);
+
+}
+
+void MainWindow::OnAudioStateChange(QAudio::State newState)
+{
+    if (newState == QAudio::IdleState || newState == QAudio::StoppedState)
+    {
+        CanPlayAudio = true;
+
+        // If the user queues up multiple utterances then due to the fast inference speed we can't play them all at once
+        // It then becomes necessary that we advance on the event that audio finishes playing.
+        CurrentBuffIndex += 1;
+        if (CurrentBuffIndex < AudBuffs.size())
+            AdvanceBuffer();
+
+
+    }
 }
 
 
 void MainWindow::on_btnInfer_clicked()
 {
-    QString Input = ui->edtInput->toPlainText();
-    QListWidgetItem* widItm = new QListWidgetItem(Input,ui->lstUtts);
+    // If this is the first iteration (indicated by an empty list), or all are done (no list widget items are in process color),
+    // we explicitly iterate it. Otherwise, we let the active triggers (after audio data is received) iterate it for us.
+    // after adding it.
+    bool IterQNow = MustExplicitlyIterateQueue();
 
-    Voxer* VoxThread = new Voxer;
-    VoxThread->F0 = 1.f;
-    VoxThread->Energy = RangeToFloat(ui->sliEnergy->value());
-    VoxThread->Speed = RangeToFloat(ui->sliSpeed->value());
-    VoxThread->Prompt = Input;
-    VoxThread->pAttItem = widItm;
-    VoxThread->SpeakerID = 0;
-    //Auto-load is true, so we will always get a good pointer.
-    VoxThread->pAttVoice = VoMan[(size_t)VoMan.FindVoice(ui->cbModels->currentText(),true)];
 
-    connect(VoxThread,&Voxer::Done,this,&MainWindow::OnAudioRecv);
+    QString RawInput = ui->edtInput->toPlainText();
+    QString Input = RawInput.replace("\n","");
+    const int MaxShowInputLen = ui->lstUtts->size().width() / 4;
 
-    VoxThread->start();
-    ui->btnLoad->setEnabled(false);
+
+
+
+
+
+
+
+    QStringList InputSplits;
+
+    if (ui->rbSplitWord->isChecked())
+        InputSplits = SuperWordSplit(Input,ui->spbSeqLen->value());
+    else
+        InputSplits = RawInput.split("\n",QString::SplitBehavior::SkipEmptyParts,Qt::CaseInsensitive);
+
+
+    for (const QString& idvInput : InputSplits)
+    {
+        InferDetails Dets;
+        QString InputForShow = idvInput;
+
+        if (Input.length() > MaxShowInputLen)
+            InputForShow = idvInput.mid(0,MaxShowInputLen) + "(...)";
+
+
+        QListWidgetItem* widItm = new QListWidgetItem(InputForShow,ui->lstUtts);
+
+
+
+        Dets.F0 = 1.f;
+        Dets.Speed = RangeToFloat(ui->sliSpeed->value());
+        Dets.Energy = RangeToFloat(ui->sliEnergy->value());
+        Dets.pItem = widItm;
+        Dets.Prompt = idvInput;
+        Dets.SpeakerID = 0;
+        Dets.VoiceName = ui->cbModels->currentText();
+
+        Infers.push(Dets);
+
+    }
+
+
+
+    if (MustExplicitlyIterateQueue())
+        IterateQueue();
+
+
+
+
+
+
 
 }
 
@@ -98,13 +169,35 @@ float MainWindow::RangeToFloat(int val)
 
 void MainWindow::PlayBuffer(QBuffer *pBuff)
 {
-    cout << "Audio rev" << endl;
 
-    QAudioOutput* Output = new QAudioOutput(StdFmt,this);
     pBuff->open(QBuffer::ReadWrite);
 
-    Output->start(pBuff);
+    StdOutput->start(pBuff);
+    CanPlayAudio = false;
 
+
+}
+
+void MainWindow::AdvanceBuffer()
+{
+    PlayBuffer(AudBuffs[CurrentBuffIndex]);
+
+}
+
+bool MainWindow::MustExplicitlyIterateQueue()
+{
+    if (!ui->lstUtts->count())
+        return true;
+
+    for (int i = 0; i < ui->lstUtts->count();i++)
+    {
+        if (ui->lstUtts->item(i)->backgroundColor() == InProcessColor)
+            return false;
+
+    }
+
+
+    return true;
 
 }
 
@@ -114,6 +207,77 @@ void MainWindow::PopulateComboBox()
     ui->cbModels->clear();
     ui->cbModels->insertItems(0,ListDirs("models"));
 
+
+}
+
+QStringList MainWindow::SuperWordSplit(const QString &InStr, int MaxLen)
+{
+    QStringList RawWords = InStr.split(" ",QString::SplitBehavior::SkipEmptyParts,Qt::CaseInsensitive);
+    int AmtWords = RawWords.size();
+
+    int Idx = 0;
+    QString CurrentStr = "";
+
+    QStringList SplitStrs;
+
+    while (Idx < AmtWords)
+    {
+        if (CurrentStr.size() > 1)
+            CurrentStr.append(" ");
+
+        CurrentStr.append(RawWords[Idx]);
+
+        if (CurrentStr.length() > MaxLen){
+            SplitStrs.append(CurrentStr);
+            CurrentStr = "";
+
+        }
+
+
+        Idx += 1;
+
+        // Add the last string
+        if (Idx == AmtWords)
+            SplitStrs.append(CurrentStr);
+
+
+
+
+
+
+    }
+
+    return SplitStrs;
+
+}
+
+void MainWindow::IterateQueue()
+{
+    if (!Infers.size())
+        return;
+    DoInference(Infers.front());
+    Infers.pop();
+
+}
+
+void MainWindow::DoInference(const InferDetails &Dets)
+{
+
+    Voxer* VoxThread = new Voxer;
+    VoxThread->F0 = Dets.F0;
+    VoxThread->Energy = Dets.Energy;
+    VoxThread->Speed = Dets.Speed;
+    VoxThread->Prompt = Dets.Prompt;
+    VoxThread->pAttItem = Dets.pItem;
+    VoxThread->SpeakerID = 0;
+    size_t VoiceID = (size_t)VoMan.FindVoice(Dets.VoiceName,true);
+    //Auto-load is true, so we will always get a good pointer.
+    VoxThread->pAttVoice = VoMan[VoiceID];
+    VoxThread->SampleRate = VoMan[VoiceID]->GetInfo().SampleRate;
+
+    connect(VoxThread,&Voxer::Done,this,&MainWindow::OnAudioRecv);
+
+    VoxThread->start();
 
 }
 
@@ -159,6 +323,8 @@ void MainWindow::on_btnClear_clicked()
 {
     ui->lstUtts->clear();
     AudBuffs.clear();
+    CurrentBuffIndex = 0;
+
 }
 
 void MainWindow::on_btnExportSel_clicked()

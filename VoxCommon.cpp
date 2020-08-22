@@ -57,7 +57,8 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
                  JS["version"].get<int>(),
                  JS["description"].get<std::string>(),
                  CuArch,
-                 JS["note"].get<std::string>()};
+                 JS["note"].get<std::string>(),
+                 JS["sarate"].get<uint32_t>()};
 
     if (Inf.Note.size() > MaxNoteSize)
         Inf.Note = Inf.Note.substr(0,MaxNoteSize);

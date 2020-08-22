@@ -57,10 +57,12 @@ struct ArchitectureInfo{
 struct VoiceInfo{
   std::string Name;
   std::string Author;
-  int Version;
+  int32_t Version;
   std::string Description;
   ArchitectureInfo Architecture;
   std::string Note;
+
+  uint32_t SampleRate;
 
 
 
