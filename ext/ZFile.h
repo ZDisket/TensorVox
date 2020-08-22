@@ -124,6 +124,8 @@ public:
 	
 	}
 
+    void WriteLine(const std::string& inLi);
+
 	// Read with template argument to not pass size.
    // Only works with regular datatypes
 	template <typename Dat>

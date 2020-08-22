@@ -9,6 +9,7 @@
 #include "voxer.h"
 
 #include "ext/ByteArr.h"
+#include "ext/ZFile.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -18,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     qRegisterMetaType< std::vector<float> >( "std::vector<float>" );
 
     qRegisterMetaType< QVector<int> >( "QVector<int>" );
+    qRegisterMetaType<std::chrono::duration<double>>("std::chrono::duration<double>");
 
     ui->splitter->setSizes(QList<int>() << width() * 0.8  << width() * 0.2 );
 
@@ -39,7 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
 
      connect(StdOutput,&QAudioOutput::stateChanged, this, &MainWindow::OnAudioStateChange);
 
-
+    RecPerfLines = false;
 
 }
 
@@ -48,7 +50,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::OnAudioRecv(std::vector<float> InDat)
+void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<double> infer_span)
 {
 
     IterateQueue();
@@ -59,6 +61,23 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat)
     AudBuffs.push_back(Buf);
     if (CanPlayAudio)
         PlayBuffer(Buf);
+
+
+    if (RecPerfLines){
+
+        double InferSecs = (double)InDat.size() / 22050;
+        double InferTime = infer_span.count();
+
+        // https://enacademic.com/dic.nsf/enwiki/3796485
+        double RealTimeFactor = InferTime / InferSecs;
+
+        QString Pline = "Inferred " + QString::number(InferSecs,'f',3) + " seconds of audio in " + QString::number(InferTime,'f',3) + " seconds; " + "RTF: " + QString::number(RealTimeFactor,'f',3);
+        PerfReportLines.push_back(Pline);
+
+    }
+
+
+
 
 }
 
@@ -324,6 +343,7 @@ void MainWindow::on_btnClear_clicked()
     ui->lstUtts->clear();
     AudBuffs.clear();
     CurrentBuffIndex = 0;
+    PerfReportLines.clear();
 
 }
 
@@ -343,5 +363,60 @@ void MainWindow::on_btnExportSel_clicked()
 
 
     VoxUtil::ExportWAV(ofname.toStdString(),Audat,22050);
+
+}
+
+void MainWindow::on_actionExport_performance_report_triggered()
+{
+    QString ofname = QFileDialog::getSaveFileName(this, tr("Export performance report TXT file"), "log", tr("Text file (*.txt)"));
+    if (!ofname.size())
+        return;
+
+    ZFile zfOut;
+    zfOut.Open(ofname.toStdString(),EZFOpenMode::BinaryWrite);
+    for (const QString& PerfLi : PerfReportLines)
+        zfOut.WriteLine(PerfLi.toStdString());
+
+    zfOut.Close();
+
+
+
+
+}
+
+void MainWindow::on_chkRecPerfLog_clicked(bool checked)
+{
+    RecPerfLines = checked;
+
+}
+
+void MainWindow::on_btnExReport_clicked()
+{
+    QString ofname = QFileDialog::getSaveFileName(this, tr("Export WAV file"), "Utt", tr("WAV, float32 PCM (*.wav)"));
+    if (!ofname.size())
+        return;
+
+    std::vector<float> Audat;
+    QByteArray CurrentBuff;
+
+    for (const auto& IBuff : AudBuffs){
+        CurrentBuff.append(IBuff->buffer());
+
+    }
+
+    Audat.resize((size_t)CurrentBuff.size() / sizeof(float));
+
+
+    smemcpy(Audat.data(),Audat.size() * sizeof(float),CurrentBuff.data(),(size_t)CurrentBuff.size());
+
+
+    VoxUtil::ExportWAV(ofname.toStdString(),Audat,22050);
+
+
+}
+
+void MainWindow::on_btnRefreshList_clicked()
+{
+    PopulateComboBox();
 
 }

@@ -1,4 +1,7 @@
 #include "EnglishPhoneticProcessor.h"
+#include "VoxCommon.hpp"
+const std::vector<std::string> OverrideInputs = {"the", "us"};
+const std::vector<std::string> OverrideOutputs = {"DH AH", "AH S"};
 
 using namespace std;
 
@@ -34,6 +37,15 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & In
 			continue;
 
 		}
+
+        size_t OverrideIdx = 0;
+        if (VoxUtil::FindInVec<std::string>(Word,OverrideInputs,OverrideIdx))
+        {
+            Assemble.append(OverrideOutputs[OverrideIdx]);
+            Assemble.append(" ");
+            continue;
+
+        }
 
 		vector<PathData> PhResults = Phonemizer->Phoneticize(Word, 1, 10000, 99.f, false, false, 0.99);
 		for (const auto& padat : PhResults) {

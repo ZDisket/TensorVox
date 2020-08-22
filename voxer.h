@@ -5,6 +5,7 @@
 #include <QThread>
 
 #include <QListWidgetItem>
+#include <chrono>
 
 const QColor DoneColor = QColor(0,128,0);
 const QColor InProcessColor = QColor(0,0,255);
@@ -28,8 +29,10 @@ public:
     Voxer();
 
 
+
+
 signals:
-    void Done(std::vector<float> AudioData);
+    void Done(std::vector<float> AudioData,std::chrono::duration<double> infer_span);
 
 };
 

@@ -43,7 +43,7 @@ public:
     ~MainWindow();
 
 public slots:
-    void OnAudioRecv(std::vector<float> InDat);
+    void OnAudioRecv(std::vector<float> InDat,std::chrono::duration<double> infer_span);
     void OnAudioStateChange(QAudio::State newState);
 
 private slots:
@@ -63,11 +63,20 @@ private slots:
 
     void on_btnExportSel_clicked();
 
+    void on_actionExport_performance_report_triggered();
+
+    void on_chkRecPerfLog_clicked(bool checked);
+
+    void on_btnExReport_clicked();
+
+    void on_btnRefreshList_clicked();
+
 private:
     bool CanPlayAudio;
     QStringList ListDirs(const QString& ParentDir);
     float RangeToFloat(int val);
     void PlayBuffer(QBuffer* pBuff);
+    bool RecPerfLines;
 
     void AdvanceBuffer();
 
@@ -82,6 +91,8 @@ private:
 
 
     std::queue<InferDetails> Infers;
+
+    QStringList PerfReportLines;
     void IterateQueue();
 
     void DoInference(const InferDetails& Dets);

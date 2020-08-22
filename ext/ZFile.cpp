@@ -109,6 +109,14 @@ ByteArr ZFile::ReadEntireFile()
 
 }
 
+void ZFile::WriteLine(const string &inLi)
+{
+    std::string Line = inLi + "\n";
+
+    Write((void*)Line.data(),Line.size() * sizeof(char));
+
+}
+
 void ZFile::Write(const ByteArr & BrDat)
 {
 	Stream.write(BrDat.CoData(), BrDat.Size());
