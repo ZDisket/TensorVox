@@ -54,6 +54,7 @@ Voice::Voice(const std::string & VoxPath, const string &inName)
 	MelPredictor.Initialize(VoxPath + "/melgen");
 	Vocoder.Initialize(VoxPath + "/vocoder");
 	Processor.Initialize(VoxPath + "/g2p.fst");
+    VoxInfo = VoxUtil::ReadModelJSON(VoxPath + "/info.json");
     Name = inName;
 
 }

@@ -111,6 +111,7 @@ void MainWindow::PlayBuffer(QBuffer *pBuff)
 void MainWindow::PopulateComboBox()
 {
 
+    ui->cbModels->clear();
     ui->cbModels->insertItems(0,ListDirs("models"));
 
 
@@ -120,8 +121,11 @@ void MainWindow::PopulateComboBox()
 
 void MainWindow::on_btnLoad_clicked()
 {
-    VoMan.LoadVoice(ui->cbModels->currentText());
+    size_t VoID = VoMan.LoadVoice(ui->cbModels->currentText());
     ui->btnLoad->setEnabled(false);
+    std::string VoNote = VoMan[VoID]->GetInfo().Note;
+
+    ui->lblModelNote->setText(QString::fromStdString(VoNote));
 
 }
 

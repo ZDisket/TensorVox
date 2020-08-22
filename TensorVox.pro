@@ -53,6 +53,7 @@ HEADERS += \
     ext/ZCharScanner.h \
     ext/ZDFS.h \
     ext/ZFile.h \
+    ext/json.hpp \
     mainwindow.h \
     voicemanager.h \
     voxer.h

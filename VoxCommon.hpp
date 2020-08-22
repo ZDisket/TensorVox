@@ -19,8 +19,58 @@ struct TFTensor {
 };
 
 
+namespace ETTSRepo {
+enum Enum{
+    TensorflowTTS = 0,
+    MozillaTTS // not implemented yet
+};
+
+}
+namespace EText2MelModel {
+enum Enum{
+    FastSpeech2 = 0,
+    Tacotron2 // not implemented yet
+};
+
+}
+
+namespace EVocoderModel{
+enum Enum{
+    MultiBandMelGAN = 0
+};
+}
+
+
+
+struct ArchitectureInfo{
+    int Repo;
+    int Text2Mel;
+    int Vocoder;
+
+    // String versions of the info, for displaying.
+    // We want boilerplate int index to str conversion code to be low.
+    std::string s_Repo;
+    std::string s_Text2Mel;
+    std::string s_Vocoder;
+
+};
+struct VoiceInfo{
+  std::string Name;
+  std::string Author;
+  int Version;
+  std::string Description;
+  ArchitectureInfo Architecture;
+  std::string Note;
+
+
+
+};
 
 namespace VoxUtil {
+
+    VoiceInfo ReadModelJSON(const std::string& InfoFilename);
+
+
 	template<typename F>
 	TFTensor<F> CopyTensor(Tensor& InTens) 
 	{

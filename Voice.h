@@ -10,6 +10,7 @@ private:
 	FastSpeech2 MelPredictor;
 	MultiBandMelGAN Vocoder;
 	EnglishPhoneticProcessor Processor;
+    VoiceInfo VoxInfo;
 
 
 	std::vector<int32_t> PhonemesToID(const std::string& InTxt);
@@ -22,6 +23,7 @@ public:
 	 ---  melgen: Folder generated where a FastSpeech2 model was saved as SavedModel, with .pb, variables, etc
 	 ---  vocoder: Folder where a Multi-Band MelGAN model was saved as SavedModel.
 	 ---  g2p.fst: Phonetisaurus FST G2P model.
+     --   info.json: Model information
 
 	*/
     Voice(const std::string& VoxPath, const std::string& inName);
@@ -29,6 +31,7 @@ public:
 	std::vector<float> Vocalize(const std::string& Prompt, float Speed = 1.f, int32_t SpeakerID = 0, float Energy = 1.f, float F0 = 1.f);
 
     std::string Name;
+    inline const VoiceInfo& GetInfo(){return VoxInfo;}
 
 	~Voice();
 };
