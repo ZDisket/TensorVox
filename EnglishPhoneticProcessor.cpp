@@ -1,7 +1,7 @@
 #include "EnglishPhoneticProcessor.h"
 #include "VoxCommon.hpp"
-const std::vector<std::string> OverrideInputs = {"the", "us"};
-const std::vector<std::string> OverrideOutputs = {"DH AH", "AH S"};
+const std::vector<std::string> OverrideInputs = {"the", "us","have","my","me"};
+const std::vector<std::string> OverrideOutputs = {"DH AH", "AH S","HH AE V","M AY","M IY"};
 
 using namespace std;
 
