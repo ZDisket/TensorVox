@@ -6,15 +6,14 @@ TensorVox is an application designed to enable user-friendly and lightweight neu
 Powered by [TensorflowTTS](https://github.com/TensorSpeech/TensorFlowTTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of pip libraries, just a 100MB DLL.
 
 ### Try it out!
-![TensorVox interface](https://i.imgur.com/QVSGkeL.png)
-1. Download [the program and LJSpeech model](https://drive.google.com/file/d/13k1XQbX4dN-ByI0oAc425FpRvjcRF5Hi/view?usp=sharing)
+https://www.youtube.com/watch?v=MshURWiOd1I
+1. Download [the program, LJSpeech, and Jordan Peterson model](https://drive.google.com/file/d/1yQyHZmFA0uN7x2V1inmj5xEQjKq2mzVH/view?usp=sharing)
 2. Run.
 
 ## Supported architectures
 
 Currently, only FastSpeech2 (phoneme-based) and Multi-Band MelGAN from TensorflowTTS are supported. 
 
-In the future, this list will expand. Support is planned for Tacotron2-DDC from Mozilla/TTS.
 
 ## Build instructions
 Currently, only Windows x64 is supported.
@@ -40,6 +39,7 @@ TODO: Add instructions for compile from scratch.
  - **Tensorflow C API**: [https://www.tensorflow.org/install/lang_c](https://www.tensorflow.org/install/lang_c)
  - **CppFlow** (TF C API -> C++ wrapper): [https://github.com/serizba/cppflow](https://github.com/serizba/cppflow) 
  - **AudioFile** (for WAV export): [https://github.com/adamstark/AudioFile](https://github.com/adamstark/AudioFile)
-- **Frameless Dark Style Window**: https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle
+ - **Frameless Dark Style Window**: https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle
+ - **JSON for modern C++**: https://github.com/nlohmann/json
 
 
