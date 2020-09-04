@@ -33,6 +33,7 @@ SOURCES += \
     ext/ZFile.cpp \
     main.cpp \
     mainwindow.cpp \
+    phonetichighlighter.cpp \
     voicemanager.cpp \
     voxer.cpp
 
@@ -55,6 +56,7 @@ HEADERS += \
     ext/ZFile.h \
     ext/json.hpp \
     mainwindow.h \
+    phonetichighlighter.h \
     voicemanager.h \
     voxer.h
 

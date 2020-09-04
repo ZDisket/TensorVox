@@ -40,6 +40,14 @@ enum Enum{
 };
 }
 
+namespace ETTSLanguage{
+enum Enum{
+  English = 0,
+  Spanish // not implemented yet
+};
+
+}
+
 
 
 struct ArchitectureInfo{
@@ -63,6 +71,9 @@ struct VoiceInfo{
   std::string Note;
 
   uint32_t SampleRate;
+
+  uint32_t Language;
+  std::string s_Language;
 
 
 

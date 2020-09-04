@@ -25,18 +25,28 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & In
 	vector<string> Words = Tokenizer.Tokenize(InText);
 
 	string Assemble = "";
+
 	for (size_t w = 0; w < Words.size();w++) 
 	{
 		const string& Word = Words[w];
+        cout << Word << std::endl;
 
-		if (Word == "SIL") {
-			Assemble.append(Word);
-			Assemble.append(" ");
+        if (Word.find("@") != std::string::npos){
+            std::string AddPh = Word.substr(1); // Remove the @
+            size_t OutId = 0;
+            if (VoxUtil::FindInVec(AddPh,enPhonemes,OutId))
+            {
+                Assemble.append(enPhonemes[OutId]);
+                Assemble.append(" ");
 
 
-			continue;
+            }
 
-		}
+            continue;
+
+        }
+
+
 
         size_t OverrideIdx = 0;
         if (VoxUtil::FindInVec<std::string>(Word,OverrideInputs,OverrideIdx))
@@ -46,6 +56,7 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & In
             continue;
 
         }
+
 
 		vector<PathData> PhResults = Phonemizer->Phoneticize(Word, 1, 10000, 99.f, false, false, 0.99);
 		for (const auto& padat : PhResults) {

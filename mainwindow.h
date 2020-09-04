@@ -12,6 +12,8 @@
 #include <QAudioOutput>
 #include <queue>
 
+#include "phonetichighlighter.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -71,6 +73,8 @@ private slots:
 
     void on_btnRefreshList_clicked();
 
+    void on_sliF0_sliderMoved(int position);
+
 private:
     bool CanPlayAudio;
     QStringList ListDirs(const QString& ParentDir);
@@ -89,13 +93,17 @@ private:
 
     QStringList SuperWordSplit(const QString& InStr,int MaxLen);
 
+    void ProcessCurlies(QString& ModTxt);
+
 
     std::queue<InferDetails> Infers;
 
     QStringList PerfReportLines;
     void IterateQueue();
 
-    void DoInference(const InferDetails& Dets);
+    void DoInference(InferDetails &Dets);
+
+    PhoneticHighlighter* pHigh;
 
     Ui::MainWindow *ui;
 };

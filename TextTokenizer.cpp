@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cctype>
+#include <iostream>
 const std::vector<std::string> first14 = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen" };
 const std::vector<std::string> prefixes = { "twen", "thir", "for", "fif", "six", "seven", "eigh", "nine" };
 
@@ -14,7 +15,10 @@ const std::string capitals = "QWERTYUIOPASDFGHJKLZXCVBNM";
 const std::string lowercase = "qwertyuiopasdfghjklzxcvbnm";
 
 // Characters that are allowed but don't fit in any other category
-const std::string misc = "'";
+const std::string misc = "'@";
+
+// Characters not allowed normally, but fine in a phonetic sequence
+const std::string phonemeaux = "1234567890+-";
 
 using namespace std;
 
@@ -98,6 +102,7 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt)
 {
 	vector<string> ProcessedTokens;
 
+
 	ZStringDelimiter Delim(InTxt);
 	Delim.AddDelimiter(" ");
 
@@ -116,11 +121,23 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt)
 	/*
 	In this step we go through the string and only allow qualified character to pass through.
 	*/
-	for (const auto& tok : DelimitedTokens)
+    for (auto& tok : DelimitedTokens)
 	{
 		string AppTok = "";
+
+
+        if (tok.find("@") != string::npos)
+        {
+
+            ProcessedTokens.push_back(tok);
+            continue;
+
+        }
+
 		for (size_t s = 0;s < tok.size();s++)
 		{
+
+
 
 			if (lowercase.find(tok[s]) != string::npos) {
 				AppTok += tok[s];
@@ -140,7 +157,7 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt)
 					ProcessedTokens.push_back(AppTok);
 					AppTok = "";
 				}
-				ProcessedTokens.push_back("SIL");
+                ProcessedTokens.push_back("@SIL");
 			}
 
 			if (misc.find(tok[s]) != string::npos)

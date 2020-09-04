@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>721</width>
+    <width>753</width>
     <height>469</height>
    </rect>
   </property>
@@ -129,6 +129,43 @@
              </item>
              <item>
               <widget class="QLabel" name="lblSpeedShow">
+               <property name="text">
+                <string>100%</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QLabel" name="label_6">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>F0       </string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSlider" name="sliF0">
+               <property name="maximum">
+                <number>200</number>
+               </property>
+               <property name="value">
+                <number>100</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="lblF0Show">
                <property name="text">
                 <string>100%</string>
                </property>
@@ -328,7 +365,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>721</width>
+     <width>753</width>
      <height>20</height>
     </rect>
    </property>

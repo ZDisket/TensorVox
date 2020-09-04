@@ -43,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     RecPerfLines = false;
 
+    pHigh = new PhoneticHighlighter(ui->edtInput->document());
+
+
 }
 
 MainWindow::~MainWindow()
@@ -122,23 +125,26 @@ void MainWindow::on_btnInfer_clicked()
     if (ui->rbSplitWord->isChecked())
         InputSplits = SuperWordSplit(Input,ui->spbSeqLen->value());
     else
-        InputSplits = RawInput.split("\n",QString::SplitBehavior::SkipEmptyParts,Qt::CaseInsensitive);
+        InputSplits = ui->edtInput->toPlainText().split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
 
 
-    for (const QString& idvInput : InputSplits)
+    for (QString& idvInput : InputSplits)
     {
         InferDetails Dets;
+        ProcessCurlies(idvInput);
+
         QString InputForShow = idvInput;
 
-        if (Input.length() > MaxShowInputLen)
+        if (idvInput.length() > MaxShowInputLen)
             InputForShow = idvInput.mid(0,MaxShowInputLen) + "(...)";
+
 
 
         QListWidgetItem* widItm = new QListWidgetItem(InputForShow,ui->lstUtts);
 
 
 
-        Dets.F0 = 1.f;
+        Dets.F0 = RangeToFloat(ui->sliF0->value());
         Dets.Speed = RangeToFloat(ui->sliSpeed->value());
         Dets.Energy = RangeToFloat(ui->sliEnergy->value());
         Dets.pItem = widItm;
@@ -241,7 +247,7 @@ QStringList MainWindow::SuperWordSplit(const QString &InStr, int MaxLen)
 
     while (Idx < AmtWords)
     {
-        if (CurrentStr.size() > 1)
+        if (CurrentStr.size() > 0)
             CurrentStr.append(" ");
 
         CurrentStr.append(RawWords[Idx]);
@@ -270,6 +276,34 @@ QStringList MainWindow::SuperWordSplit(const QString &InStr, int MaxLen)
 
 }
 
+void MainWindow::ProcessCurlies(QString &ModTxt)
+{
+    QString MatchExp = "\\{(\\s*?.*?)*?\\}";
+    QRegularExpression& PhonemeExp = pHigh->PhonemeExp;
+    QRegularExpressionMatchIterator MatchIter = PhonemeExp.globalMatch(ModTxt);
+
+    while (MatchIter.hasNext()) {
+        QRegularExpressionMatch match = MatchIter.next();
+        QString ToProcess = ModTxt.mid(match.capturedStart(),match.capturedLength());
+        QStringList Toks = ToProcess.split(" ",QString::SplitBehavior::SkipEmptyParts,Qt::CaseInsensitive);
+
+        QStringList NewTokens;
+        for (QString& Tk : Toks){
+            Tk = Tk.replace("{","").replace("}","");
+            if (Tk.isEmpty())
+                continue;
+
+
+            NewTokens.push_back("@" + Tk);
+
+        }
+
+        QString Assembled = NewTokens.join(" ");
+        ModTxt.replace(ToProcess,Assembled);
+    }
+
+}
+
 void MainWindow::IterateQueue()
 {
     if (!Infers.size())
@@ -279,7 +313,7 @@ void MainWindow::IterateQueue()
 
 }
 
-void MainWindow::DoInference(const InferDetails &Dets)
+void MainWindow::DoInference(InferDetails &Dets)
 {
 
     Voxer* VoxThread = new Voxer;
@@ -418,5 +452,12 @@ void MainWindow::on_btnExReport_clicked()
 void MainWindow::on_btnRefreshList_clicked()
 {
     PopulateComboBox();
+
+}
+
+void MainWindow::on_sliF0_sliderMoved(int position)
+{
+    ui->lblF0Show->setText(QString::number(position) + "%");
+
 
 }

@@ -6,6 +6,7 @@ const std::vector<std::string> Text2MelNames = {"FastSpeech2","Tacotron2"};
 const std::vector<std::string> VocoderNames = {"Multi-Band MelGAN"};
 const std::vector<std::string> RepoNames = {"TensorflowTTS","Mozilla/TTS"};
 
+const std::vector<std::string> LanguageNames = {"English","Spanish"};
 
 
 void VoxUtil::ExportWAV(const std::string & Filename, const std::vector<float>& Data, unsigned SampleRate) {
@@ -52,13 +53,17 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
     CuArch.s_Text2Mel = Text2MelNames[CuArch.Text2Mel];
     CuArch.s_Vocoder = VocoderNames[CuArch.Vocoder];
 
+
+    uint32_t Lang = JS["language"].get<uint32_t>();
     VoiceInfo Inf{JS["name"].get<std::string>(),
                  JS["author"].get<std::string>(),
                  JS["version"].get<int>(),
                  JS["description"].get<std::string>(),
                  CuArch,
                  JS["note"].get<std::string>(),
-                 JS["sarate"].get<uint32_t>()};
+                 JS["sarate"].get<uint32_t>(),
+                 Lang,
+                LanguageNames[Lang]};
 
     if (Inf.Note.size() > MaxNoteSize)
         Inf.Note = Inf.Note.substr(0,MaxNoteSize);
