@@ -14,6 +14,7 @@ public:
 protected:
     void highlightBlock(const QString &text) override;
 private:
+    QRegularExpression SinglePhonemeExp;
     QTextCharFormat PhonemeFormat;
 
 };

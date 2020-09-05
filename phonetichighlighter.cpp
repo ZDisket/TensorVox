@@ -9,6 +9,9 @@ PhoneticHighlighter::PhoneticHighlighter(QTextDocument *parent) : QSyntaxHighlig
     PhonemeFormat.setFontWeight(QFont::Bold);
     PhonemeExp = QRegularExpression(MatchExp);
 
+    QString SingleExp = "@.\\S*";
+    SinglePhonemeExp = QRegularExpression(SingleExp);
+
 
 
 }
@@ -16,6 +19,13 @@ PhoneticHighlighter::PhoneticHighlighter(QTextDocument *parent) : QSyntaxHighlig
 void PhoneticHighlighter::highlightBlock(const QString &text)
 {
     QRegularExpressionMatchIterator MatchIter = PhonemeExp.globalMatch(text);
+    while (MatchIter.hasNext()) {
+        QRegularExpressionMatch match = MatchIter.next();
+        setFormat(match.capturedStart(), match.capturedLength(), PhonemeFormat);
+    }
+
+    // I know copying is lazy, but it's just two regexes.
+    MatchIter = SinglePhonemeExp.globalMatch(text);
     while (MatchIter.hasNext()) {
         QRegularExpressionMatch match = MatchIter.next();
         setFormat(match.capturedStart(), match.capturedLength(), PhonemeFormat);

@@ -143,6 +143,8 @@ void MainWindow::on_btnInfer_clicked()
         QListWidgetItem* widItm = new QListWidgetItem(InputForShow,ui->lstUtts);
 
 
+        if (ui->chkBiPad->isChecked())
+            idvInput = "@SIL " + idvInput;
 
         Dets.F0 = RangeToFloat(ui->sliF0->value());
         Dets.Speed = RangeToFloat(ui->sliSpeed->value());
