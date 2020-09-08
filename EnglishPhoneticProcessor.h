@@ -25,7 +25,7 @@ private:
 
 public:
 	bool Initialize(const std::string& PhoneticModelFn);
-	std::string ProcessTextPhonetic(const std::string& InText);
+    std::string ProcessTextPhonetic(const std::string& InText, const std::vector<string> &InPhonemes,ETTSLanguage::Enum InLanguage);
 	EnglishPhoneticProcessor();
 	EnglishPhoneticProcessor(const std::string& PhModelFn);
 	~EnglishPhoneticProcessor();

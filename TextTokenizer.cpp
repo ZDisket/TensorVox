@@ -14,6 +14,9 @@ const std::string punctuation = ",.-;";
 const std::string capitals = "QWERTYUIOPASDFGHJKLZXCVBNM";
 const std::string lowercase = "qwertyuiopasdfghjklzxcvbnm";
 
+const std::string spanish_acc = "íóáúéñÉÁüÚÓÍÅèÑ";
+
+
 // Characters that are allowed but don't fit in any other category
 const std::string misc = "'@";
 
@@ -98,7 +101,7 @@ TextTokenizer::~TextTokenizer()
 {
 }
 
-vector<string> TextTokenizer::Tokenize(const std::string & InTxt)
+vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::Enum Language)
 {
 	vector<string> ProcessedTokens;
 
@@ -112,7 +115,10 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt)
 	if (!Delim.szTokens())
 		DelimitedTokens.push_back(InTxt);
 
-	DelimitedTokens = ExpandNumbers(DelimitedTokens);
+    if (Language == ETTSLanguage::English)
+        DelimitedTokens = ExpandNumbers(DelimitedTokens);
+
+
 
 
 	// We know that the new vector is going to be at least this size so we reserve
@@ -138,6 +144,8 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt)
 		{
 
 
+            if (Language == ETTSLanguage::Spanish && spanish_acc.find(tok[s]) != string::npos)
+                AppTok += tok[s];
 
 			if (lowercase.find(tok[s]) != string::npos) {
 				AppTok += tok[s];

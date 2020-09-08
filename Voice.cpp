@@ -21,28 +21,41 @@ std::vector<int32_t> Voice::PhonemesToID(const std::string & InTxt)
 	{
 		size_t ArrID = 0;
 
-        if (VoxUtil::FindInVec<std::string>(Pho, enPhonemes, ArrID))
-            VecPhones.push_back(enPhonemeIDs[ArrID]);
+        if (VoxUtil::FindInVec<std::string>(Pho, Phonemes, ArrID))
+            VecPhones.push_back(PhonemeIDs[ArrID]);
 		else
 			cout << "Voice::PhonemesToID() WARNING: Unknown phoneme " << Pho << endl;
 
 
 
 	}
-	// Prevent out of range error in single word input
-	if (VecPhones.size() > 1)
-	{
-		if (VecPhones[VecPhones.size() - 1] != 148)
-			VecPhones.push_back(148);
-	}
-	else 
-	{
-		VecPhones.push_back(148);
-
-	}
 
 
 	return VecPhones;
+
+}
+
+void Voice::ReadPhonemes(const string &PhonemePath)
+{
+    std::ifstream Phone(PhonemePath);
+
+    std::string Line;
+    while (std::getline(Phone, Line))
+    {
+        if (Line.find("\t") == std::string::npos)
+            continue;
+
+
+        ZStringDelimiter Deline(Line);
+        Deline.AddDelimiter("\t");
+
+        Phonemes.push_back(Deline[0]);
+        PhonemeIDs.push_back(stoi(Deline[1]));
+
+
+
+
+    }
 
 }
 
@@ -53,13 +66,14 @@ Voice::Voice(const std::string & VoxPath, const string &inName)
 	Processor.Initialize(VoxPath + "/g2p.fst");
     VoxInfo = VoxUtil::ReadModelJSON(VoxPath + "/info.json");
     Name = inName;
+    ReadPhonemes(VoxPath + "/phonemes.txt");
 
 }
 
 std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0)
 {
 
-	std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt);
+    std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt,Phonemes,(ETTSLanguage::Enum)VoxInfo.Language);
 
 	TFTensor<float> Mel = MelPredictor.DoInference(PhonemesToID(PhoneticTxt), SpeakerID, Speed, Energy, F0);
 

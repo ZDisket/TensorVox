@@ -17,12 +17,12 @@ bool EnglishPhoneticProcessor::Initialize(const std::string & PhoneticModelFn)
 	return true;
 }
 
-std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & InText)
+std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & InText, const std::vector<std::string>& InPhonemes, ETTSLanguage::Enum InLanguage)
 {
 	if (!Phonemizer)
 		return "ERROR";
 
-	vector<string> Words = Tokenizer.Tokenize(InText);
+    vector<string> Words = Tokenizer.Tokenize(InText,InLanguage);
 
 	string Assemble = "";
 
@@ -34,9 +34,9 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & In
         if (Word.find("@") != std::string::npos){
             std::string AddPh = Word.substr(1); // Remove the @
             size_t OutId = 0;
-            if (VoxUtil::FindInVec(AddPh,enPhonemes,OutId))
+            if (VoxUtil::FindInVec(AddPh,InPhonemes,OutId))
             {
-                Assemble.append(enPhonemes[OutId]);
+                Assemble.append(InPhonemes[OutId]);
                 Assemble.append(" ");
 
 
@@ -48,6 +48,8 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & In
 
 
 
+
+        /*
         size_t OverrideIdx = 0;
         if (VoxUtil::FindInVec<std::string>(Word,OverrideInputs,OverrideIdx))
         {
@@ -57,6 +59,7 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & In
 
         }
 
+        */
 
 		vector<PathData> PhResults = Phonemizer->Phoneticize(Word, 1, 10000, 99.f, false, false, 0.99);
 		for (const auto& padat : PhResults) {

@@ -150,7 +150,7 @@ void MainWindow::on_btnInfer_clicked()
         Dets.Speed = RangeToFloat(ui->sliSpeed->value());
         Dets.Energy = RangeToFloat(ui->sliEnergy->value());
         Dets.pItem = widItm;
-        Dets.Prompt = idvInput;
+        Dets.Prompt = idvInput + " @SIL";
         Dets.SpeakerID = 0;
         Dets.VoiceName = ui->cbModels->currentText();
 

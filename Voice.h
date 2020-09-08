@@ -13,7 +13,15 @@ private:
     VoiceInfo VoxInfo;
 
 
+
+    std::vector<std::string> Phonemes;
+    std::vector<int32_t> PhonemeIDs;
+
+
+
 	std::vector<int32_t> PhonemesToID(const std::string& InTxt);
+
+    void ReadPhonemes(const std::string& PhonemePath);
 
 public:
 	/* Voice constructor, arguments obligatory.
@@ -23,7 +31,8 @@ public:
 	 ---  melgen: Folder generated where a FastSpeech2 model was saved as SavedModel, with .pb, variables, etc
 	 ---  vocoder: Folder where a Multi-Band MelGAN model was saved as SavedModel.
 	 ---  g2p.fst: Phonetisaurus FST G2P model.
-     --   info.json: Model information
+     ---  info.json: Model information
+     ---  phonemes.txt: Tab delimited file containing PHONEME \t ID
 
 	*/
     Voice(const std::string& VoxPath, const std::string& inName);
