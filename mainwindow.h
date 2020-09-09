@@ -75,6 +75,8 @@ private slots:
 
     void on_sliF0_sliderMoved(int position);
 
+    void on_cbModels_currentTextChanged(const QString &arg1);
+
 private:
     bool CanPlayAudio;
     QStringList ListDirs(const QString& ParentDir);

@@ -79,6 +79,12 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
     }
 
+    bool NoInfers = Infers.empty();
+
+    ui->btnExportSel->setEnabled(NoInfers);
+    ui->btnExReport->setEnabled(NoInfers);
+
+
 
 
 
@@ -301,7 +307,10 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
         }
 
         QString Assembled = NewTokens.join(" ");
-        ModTxt.replace(ToProcess,Assembled);
+        QString BeforeTxt = ModTxt.mid(0,match.capturedStart());
+        QString AfterTxt = ModTxt.mid(match.capturedEnd());
+
+        ModTxt = BeforeTxt + Assembled + AfterTxt;
     }
 
 }
@@ -461,5 +470,14 @@ void MainWindow::on_sliF0_sliderMoved(int position)
 {
     ui->lblF0Show->setText(QString::number(position) + "%");
 
+
+}
+
+void MainWindow::on_cbModels_currentTextChanged(const QString &arg1)
+{
+    int32_t CurrentIndex = VoMan.FindVoice(arg1,false);
+
+    if (CurrentIndex != -1)
+        ui->lblModelNote->setText(QString::fromStdString(VoMan[(size_t)CurrentIndex]->GetInfo().Note));
 
 }

@@ -363,6 +363,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnExportSel">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Export selection to WAV</string>
             </property>
@@ -370,6 +373,9 @@
           </item>
           <item>
            <widget class="QPushButton" name="btnExReport">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Export all to WAV</string>
             </property>
