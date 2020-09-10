@@ -109,6 +109,11 @@ void MainWindow::OnAudioStateChange(QAudio::State newState)
 
 void MainWindow::on_btnInfer_clicked()
 {
+    // While the Voice class can already autoload, we explicitly do so here so we can handle everything (note text, disabling)
+
+    if (VoMan.FindVoice(ui->cbModels->currentText(),false) == -1)
+        on_btnLoad_clicked();
+
     // If this is the first iteration (indicated by an empty list), or all are done (no list widget items are in process color),
     // we explicitly iterate it. Otherwise, we let the active triggers (after audio data is received) iterate it for us.
     // after adding it.
@@ -117,7 +122,7 @@ void MainWindow::on_btnInfer_clicked()
 
     QString RawInput = ui->edtInput->toPlainText();
     QString Input = RawInput.replace("\n","");
-    const int MaxShowInputLen = ui->lstUtts->size().width() / 4;
+    const int MaxShowInputLen = ui->lstUtts->size().width() / 6;
 
 
 
