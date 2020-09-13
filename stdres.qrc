@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>res/stdico.png</file>
+        <file>res/phoneticdico.png</file>
     </qresource>
 </RCC>

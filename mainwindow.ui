@@ -21,7 +21,7 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,8,0">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,8,0">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
@@ -65,6 +65,26 @@
              <string>Refresh</string>
             </property>
            </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <widget class="QLabel" name="lblSpeaker">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Speaker: </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="cbSpeaker"/>
           </item>
          </layout>
         </item>
@@ -222,7 +242,7 @@
                 <number>10</number>
                </property>
                <property name="value">
-                <number>250</number>
+                <number>200</number>
                </property>
               </widget>
              </item>
@@ -255,6 +275,16 @@
                </property>
               </spacer>
              </item>
+             <item>
+              <widget class="QCheckBox" name="chkAutoPlay">
+               <property name="text">
+                <string>Auto-Play</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
           </layout>
@@ -276,7 +306,7 @@
         <item>
          <widget class="QPushButton" name="btnInfer">
           <property name="text">
-           <string>Infer</string>
+           <string>Infer (CTRL + Enter)</string>
           </property>
          </widget>
         </item>
@@ -334,6 +364,36 @@
             </property>
             <property name="text">
              <string>Record Performance Log</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Volume boost:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSlider" name="sliVolBoost">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+            <property name="value">
+             <number>1000</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
             </property>
            </widget>
           </item>
@@ -404,7 +464,21 @@
     </property>
     <addaction name="actionExport_performance_report"/>
    </widget>
+   <widget class="QMenu" name="menuTriggers">
+    <property name="title">
+     <string>Triggers</string>
+    </property>
+    <addaction name="hkInfer"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionOverrides"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuTriggers"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionExport_performance_report">
@@ -412,7 +486,26 @@
     <string>Export performance report</string>
    </property>
   </action>
+  <action name="hkInfer">
+   <property name="text">
+    <string>Infer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Return</string>
+   </property>
+  </action>
+  <action name="actionOverrides">
+   <property name="icon">
+    <iconset resource="stdres.qrc">
+     <normaloff>:/res/phoneticdico.png</normaloff>:/res/phoneticdico.png</iconset>
+   </property>
+   <property name="text">
+    <string>Overrides</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="stdres.qrc"/>
+ </resources>
  <connections/>
 </ui>

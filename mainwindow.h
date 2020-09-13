@@ -14,6 +14,11 @@
 
 #include "phonetichighlighter.h"
 
+#include <QWinTaskbarButton>
+#include <QWinTaskbarProgress>
+
+#include "phoneticdict.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -40,10 +45,20 @@ private:
     QAudioFormat StdFmt;
     QAudioOutput* StdOutput;
 
+    QWinTaskbarButton* pTaskBtn;
+
+    QWinTaskbarProgress* pTskProg;
+
+
+    int32_t CurrentInferIndex;
+    PhoneticDict PhonDict;
+
 public:
     MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
 
+    ~MainWindow();
+protected:
+   void showEvent(QShowEvent *e) override;
 public slots:
     void OnAudioRecv(std::vector<float> InDat,std::chrono::duration<double> infer_span);
     void OnAudioStateChange(QAudio::State newState);
@@ -77,7 +92,13 @@ private slots:
 
     void on_cbModels_currentTextChanged(const QString &arg1);
 
+    void on_hkInfer_triggered();
+
+    void on_actionOverrides_triggered();
+
 private:
+
+    void HandleIsMultiSpeaker(size_t inVid);
     bool CanPlayAudio;
     QStringList ListDirs(const QString& ParentDir);
     float RangeToFloat(int val);
@@ -96,6 +117,7 @@ private:
     QStringList SuperWordSplit(const QString& InStr,int MaxLen);
 
     void ProcessCurlies(QString& ModTxt);
+    void ProcessWithDict(QString& inModTxt);
 
 
     std::queue<InferDetails> Infers;

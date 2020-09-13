@@ -10,6 +10,9 @@
 
 #include "ext/ByteArr.h"
 #include "ext/ZFile.h"
+
+#include "phddialog.h"
+#include "framelesswindow.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -45,7 +48,33 @@ MainWindow::MainWindow(QWidget *parent)
 
     pHigh = new PhoneticHighlighter(ui->edtInput->document());
 
+    ui->cbSpeaker->setVisible(false);
+    ui->lblSpeaker->setVisible(false);
 
+
+
+    CurrentInferIndex = 0;
+
+    PhonDict.Import(QCoreApplication::applicationDirPath() + "/dict.phd");
+    pTaskBtn = new QWinTaskbarButton(this);
+    pTskProg = pTaskBtn->progress();
+
+
+
+
+}
+
+void MainWindow::showEvent(QShowEvent *e)
+{
+
+#ifdef Q_OS_WIN
+    pTaskBtn->setWindow(windowHandle());
+    pTaskBtn->setOverlayIcon(QIcon(":/res/stdico.png"));
+    pTaskBtn->progress()->show();
+
+#endif
+
+    e->accept();
 }
 
 MainWindow::~MainWindow()
@@ -57,8 +86,14 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 {
 
     IterateQueue();
+
+
+    for (float& f : InDat)
+          f *= (float)ui->sliVolBoost->value() / 1000.f;
+
+
     QBuffer* Buf = new QBuffer(this);
-    Buf->setData((const char*)InDat.data(),sizeof(float) * InDat.size());
+    Buf->setData((const char*)InDat.data(),sizeof(float) * (InDat.size() - 150));
 
 
     AudBuffs.push_back(Buf);
@@ -88,19 +123,21 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
 
 
+
 }
 
 void MainWindow::OnAudioStateChange(QAudio::State newState)
 {
     if (newState == QAudio::IdleState || newState == QAudio::StoppedState)
     {
-        CanPlayAudio = true;
 
         // If the user queues up multiple utterances then due to the fast inference speed we can't play them all at once
         // It then becomes necessary that we advance on the event that audio finishes playing.
         CurrentBuffIndex += 1;
         if (CurrentBuffIndex < AudBuffs.size())
             AdvanceBuffer();
+        else
+            CanPlayAudio = true;
 
 
     }
@@ -114,14 +151,11 @@ void MainWindow::on_btnInfer_clicked()
     if (VoMan.FindVoice(ui->cbModels->currentText(),false) == -1)
         on_btnLoad_clicked();
 
-    // If this is the first iteration (indicated by an empty list), or all are done (no list widget items are in process color),
-    // we explicitly iterate it. Otherwise, we let the active triggers (after audio data is received) iterate it for us.
-    // after adding it.
-    bool IterQNow = MustExplicitlyIterateQueue();
+
 
 
     QString RawInput = ui->edtInput->toPlainText();
-    QString Input = RawInput.replace("\n","");
+    QString Input = RawInput.replace("\n"," ");
     const int MaxShowInputLen = ui->lstUtts->size().width() / 6;
 
 
@@ -141,6 +175,10 @@ void MainWindow::on_btnInfer_clicked()
 
     for (QString& idvInput : InputSplits)
     {
+        if (idvInput.isEmpty())
+            continue;
+
+        ProcessWithDict(idvInput);
         InferDetails Dets;
         ProcessCurlies(idvInput);
 
@@ -163,6 +201,9 @@ void MainWindow::on_btnInfer_clicked()
         Dets.pItem = widItm;
         Dets.Prompt = idvInput + " @SIL";
         Dets.SpeakerID = 0;
+        if (ui->cbSpeaker->isVisible())
+            Dets.SpeakerID = ui->cbSpeaker->currentIndex();
+
         Dets.VoiceName = ui->cbModels->currentText();
 
         Infers.push(Dets);
@@ -170,9 +211,16 @@ void MainWindow::on_btnInfer_clicked()
     }
 
 
+    pTskProg->show();
 
+    // If this is the first iteration (indicated by an empty list), or all are done (no list widget items are in process color),
+    // we explicitly iterate it. Otherwise, we let the active triggers (after audio data is received) iterate it for us.
+    // after adding it.
     if (MustExplicitlyIterateQueue())
         IterateQueue();
+
+
+
 
 
 
@@ -207,6 +255,8 @@ float MainWindow::RangeToFloat(int val)
 
 void MainWindow::PlayBuffer(QBuffer *pBuff)
 {
+    if (!ui->chkAutoPlay->isChecked())
+        return;
 
     pBuff->open(QBuffer::ReadWrite);
 
@@ -316,7 +366,28 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
         QString AfterTxt = ModTxt.mid(match.capturedEnd());
 
         ModTxt = BeforeTxt + Assembled + AfterTxt;
+        // After every process we take the string and rebuild it, which makes the old indices outdated and dangerous to use.
+        // We match again.
+        MatchIter = PhonemeExp.globalMatch(ModTxt);
     }
+
+}
+
+void MainWindow::ProcessWithDict(QString &inModTxt)
+{
+    QStringList Splits = inModTxt.split(" ",QString::SplitBehavior::SkipEmptyParts,Qt::CaseInsensitive);
+    for (QString& Spl : Splits)
+    {
+        for (const DictEntry& Entr : PhonDict.Entries){
+            if (Spl.toLower() == QString::fromStdString(Entr.Word).toLower())
+                Spl = QString("{" + QString::fromStdString(Entr.PhSpelling) + "}");
+
+
+        }
+
+    }
+    inModTxt = Splits.join(" ");
+
 
 }
 
@@ -324,6 +395,12 @@ void MainWindow::IterateQueue()
 {
     if (!Infers.size())
         return;
+
+   ++CurrentInferIndex;
+
+    pTskProg->setRange(0,ui->lstUtts->count());
+   pTskProg->setValue(CurrentInferIndex);
+
     DoInference(Infers.front());
     Infers.pop();
 
@@ -338,7 +415,7 @@ void MainWindow::DoInference(InferDetails &Dets)
     VoxThread->Speed = Dets.Speed;
     VoxThread->Prompt = Dets.Prompt;
     VoxThread->pAttItem = Dets.pItem;
-    VoxThread->SpeakerID = 0;
+    VoxThread->SpeakerID = Dets.SpeakerID;
     size_t VoiceID = (size_t)VoMan.FindVoice(Dets.VoiceName,true);
     //Auto-load is true, so we will always get a good pointer.
     VoxThread->pAttVoice = VoMan[VoiceID];
@@ -359,6 +436,7 @@ void MainWindow::on_btnLoad_clicked()
     std::string VoNote = VoMan[VoID]->GetInfo().Note;
 
     ui->lblModelNote->setText(QString::fromStdString(VoNote));
+    HandleIsMultiSpeaker(VoID);
 
 }
 
@@ -394,6 +472,9 @@ void MainWindow::on_btnClear_clicked()
     AudBuffs.clear();
     CurrentBuffIndex = 0;
     PerfReportLines.clear();
+    CurrentInferIndex = 0;
+
+    pTskProg->hide();
 
 }
 
@@ -482,7 +563,72 @@ void MainWindow::on_cbModels_currentTextChanged(const QString &arg1)
 {
     int32_t CurrentIndex = VoMan.FindVoice(arg1,false);
 
-    if (CurrentIndex != -1)
+    if (CurrentIndex != -1){
         ui->lblModelNote->setText(QString::fromStdString(VoMan[(size_t)CurrentIndex]->GetInfo().Note));
+        HandleIsMultiSpeaker((size_t)CurrentIndex);
+
+    }
+
+}
+
+void MainWindow::on_hkInfer_triggered()
+{
+    on_btnInfer_clicked();
+}
+
+void MainWindow::HandleIsMultiSpeaker(size_t inVid)
+{
+    Voice& CurrentVoice = *VoMan[inVid];
+
+    if (!CurrentVoice.GetSpeakers().size()){
+        ui->lblSpeaker->setVisible(false);
+        ui->cbSpeaker->setVisible(false);
+
+        return;
+    }
+
+
+    ui->cbSpeaker->clear();
+
+    for (const auto& SpkName : CurrentVoice.GetSpeakers())
+    {
+        ui->cbSpeaker->addItem(QString::fromStdString(SpkName));
+
+
+    }
+
+    ui->lblSpeaker->setVisible(true);
+    ui->cbSpeaker->setVisible(true);
+
+
+
+
+}
+
+void MainWindow::on_actionOverrides_triggered()
+{
+    FramelessWindow FDlg(this);
+    FDlg.setWindowIcon(QIcon(":/res/phoneticdico.png"));
+    FDlg.setWindowTitle("Phonetic Overrides");
+    FDlg.SetTitleBarBtns(false,false,true);
+    FDlg.resize(640,480);
+
+    PhdDialog Dlg(this);
+    Dlg.Entrs = PhonDict.Entries;
+
+    FDlg.setContent(&Dlg);
+    FDlg.ContentDlg(&Dlg);
+
+    FDlg.show();
+
+    Dlg.setModal(true);
+
+    int code = Dlg.exec();
+    if (code == QDialog::Accepted)
+    {
+        PhonDict.Entries = Dlg.Entrs;
+        PhonDict.Export(QCoreApplication::applicationDirPath() + "/dict.phd");
+
+    }
 
 }

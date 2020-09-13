@@ -15,6 +15,7 @@ bool MultiBandMelGAN::Initialize(const std::string & VocoderPath)
 	}
 	return true;
 
+
 }
 
 TFTensor<float> MultiBandMelGAN::DoInference(const TFTensor<float>& InMel)

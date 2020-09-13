@@ -21,7 +21,11 @@ private:
 
 	std::vector<int32_t> PhonemesToID(const std::string& InTxt);
 
+    std::vector<std::string> Speakers;
+
     void ReadPhonemes(const std::string& PhonemePath);
+
+    void ReadSpeakers(const std::string& SpeakerPath);
 
 public:
 	/* Voice constructor, arguments obligatory.
@@ -34,6 +38,8 @@ public:
      ---  info.json: Model information
      ---  phonemes.txt: Tab delimited file containing PHONEME \t ID
 
+     --- If multispeaker, a lined .txt file called speakers.txt
+
 	*/
     Voice(const std::string& VoxPath, const std::string& inName);
 
@@ -41,6 +47,8 @@ public:
 
     std::string Name;
     inline const VoiceInfo& GetInfo(){return VoxInfo;}
+
+    inline const std::vector<std::string>& GetSpeakers(){return Speakers;}
 
 	~Voice();
 };

@@ -1,9 +1,10 @@
 #include "voicemanager.h"
 #define SAFE_DELETE(pdel)if (pdel){delete pdel;}
+#include <QCoreApplication>
 
 size_t VoiceManager::LoadVoice(const QString &Voname)
 {
-    Voices.push_back(new Voice(QString("models/" + Voname).toStdString(),Voname.toStdString()));
+    Voices.push_back(new Voice(QString(QCoreApplication::applicationDirPath() + "/models/" + Voname).toStdString(),Voname.toStdString()));
     return Voices.size() - 1;
 }
 

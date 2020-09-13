@@ -1,5 +1,6 @@
 QT += core gui
 QT += multimedia
+QT += winextras
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -33,6 +34,8 @@ SOURCES += \
     ext/ZFile.cpp \
     main.cpp \
     mainwindow.cpp \
+    phddialog.cpp \
+    phoneticdict.cpp \
     phonetichighlighter.cpp \
     voicemanager.cpp \
     voxer.cpp
@@ -56,13 +59,16 @@ HEADERS += \
     ext/ZFile.h \
     ext/json.hpp \
     mainwindow.h \
+    phddialog.h \
+    phoneticdict.h \
     phonetichighlighter.h \
     voicemanager.h \
     voxer.h
 
 FORMS += \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    phddialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -83,3 +89,5 @@ RESOURCES += \
     stdres.qrc
 
 win32:RC_ICONS += winicon.ico
+
+VERSION = 0.6.0.1

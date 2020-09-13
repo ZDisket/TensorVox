@@ -59,6 +59,24 @@ void Voice::ReadPhonemes(const string &PhonemePath)
 
 }
 
+void Voice::ReadSpeakers(const string &SpeakerPath)
+{
+    std::ifstream Speaker(SpeakerPath);
+
+    if (!Speaker.good()) // File not exists, this is single speaker
+        return;
+
+    std::string Line;
+    while (std::getline(Speaker, Line))
+    {
+        if (Line.size() > 1)
+            Speakers.push_back(Line);
+
+
+    }
+
+}
+
 Voice::Voice(const std::string & VoxPath, const string &inName)
 {
 	MelPredictor.Initialize(VoxPath + "/melgen");
@@ -67,6 +85,10 @@ Voice::Voice(const std::string & VoxPath, const string &inName)
     VoxInfo = VoxUtil::ReadModelJSON(VoxPath + "/info.json");
     Name = inName;
     ReadPhonemes(VoxPath + "/phonemes.txt");
+    ReadSpeakers(VoxPath + "/speakers.txt");
+
+
+
 
 }
 
