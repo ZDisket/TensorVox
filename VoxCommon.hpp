@@ -9,6 +9,7 @@
 
 #define IF_RETURN(cond,ret) if (cond){return ret;}
 
+const uint32_t CommonSampleRate = 48000;
 
 template<typename T>
 struct TFTensor {

@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     // This is already set in the constructor, but just to be extra, extra sure...
     StdFmt.setByteOrder(QAudioFormat::Endian(QSysInfo::ByteOrder));
 
-    StdFmt.setSampleRate(22050);
+    StdFmt.setSampleRate(CommonSampleRate);
     StdFmt.setChannelCount(1);
     StdFmt.setCodec("audio/pcm");
 
@@ -93,7 +93,7 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
 
     QBuffer* Buf = new QBuffer(this);
-    Buf->setData((const char*)InDat.data(),sizeof(float) * (InDat.size() - 150));
+    Buf->setData((const char*)InDat.data(),sizeof(float) * InDat.size());
 
 
     AudBuffs.push_back(Buf);
@@ -103,7 +103,7 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
     if (RecPerfLines){
 
-        double InferSecs = (double)InDat.size() / 22050;
+        double InferSecs = (double)InDat.size() / CommonSampleRate;
         double InferTime = infer_span.count();
 
         // https://enacademic.com/dic.nsf/enwiki/3796485
@@ -199,7 +199,7 @@ void MainWindow::on_btnInfer_clicked()
         Dets.Speed = RangeToFloat(ui->sliSpeed->value());
         Dets.Energy = RangeToFloat(ui->sliEnergy->value());
         Dets.pItem = widItm;
-        Dets.Prompt = idvInput + " @SIL";
+        Dets.Prompt = idvInput + " @SIL @END";
         Dets.SpeakerID = 0;
         if (ui->cbSpeaker->isVisible())
             Dets.SpeakerID = ui->cbSpeaker->currentIndex();
@@ -493,7 +493,7 @@ void MainWindow::on_btnExportSel_clicked()
     smemcpy(Audat.data(),Audat.size() * sizeof(float),CurrentBuff.data(),(size_t)CurrentBuff.size());
 
 
-    VoxUtil::ExportWAV(ofname.toStdString(),Audat,22050);
+    VoxUtil::ExportWAV(ofname.toStdString(),Audat,CommonSampleRate);
 
 }
 
@@ -541,7 +541,7 @@ void MainWindow::on_btnExReport_clicked()
     smemcpy(Audat.data(),Audat.size() * sizeof(float),CurrentBuff.data(),(size_t)CurrentBuff.size());
 
 
-    VoxUtil::ExportWAV(ofname.toStdString(),Audat,22050);
+    VoxUtil::ExportWAV(ofname.toStdString(),Audat,CommonSampleRate);
 
 
 }

@@ -80,7 +80,7 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 
 INCLUDEPATH += $$PWD/deps/include
 INCLUDEPATH += $$PWD/ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow
-win32: LIBS += -L$$PWD/deps/lib/ Phonetisaurus64.lib libfst64.lib tensorflow.lib
+win32: LIBS += -L$$PWD/deps/lib/ Phonetisaurus64.lib libfst64.lib tensorflow.lib r8bsrc64.lib
 win32: QMAKE_LFLAGS += /FORCE
 
 RESOURCES += \
@@ -90,4 +90,4 @@ RESOURCES += \
 
 win32:RC_ICONS += winicon.ico
 
-VERSION = 0.6.0.1
+VERSION = 0.6.5.1

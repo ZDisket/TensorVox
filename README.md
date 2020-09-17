@@ -42,5 +42,7 @@ TODO: Add instructions for compile from scratch.
  - **AudioFile** (for WAV export): [https://github.com/adamstark/AudioFile](https://github.com/adamstark/AudioFile)
  - **Frameless Dark Style Window**: https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle
  - **JSON for modern C++**: https://github.com/nlohmann/json
+ - **r8brain-free-src** (Resampling): https://github.com/avaneev/r8brain-free-src
+
 
 
