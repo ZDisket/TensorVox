@@ -6,7 +6,7 @@ TensorVox is an application designed to enable user-friendly and lightweight neu
 Powered by [TensorflowTTS](https://github.com/TensorSpeech/TensorFlowTTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of pip libraries, just a 100MB DLL.
 
 ### Try it out!
-[![](https://i.imgur.com/pJRngb2.png)]
+![Interface](https://i.imgur.com/pJRngb2.png))
 
 1. Download [the program, LJSpeech, and Jordan Peterson model](https://drive.google.com/file/d/1yQyHZmFA0uN7x2V1inmj5xEQjKq2mzVH/view?usp=sharing)
 2. Run.
