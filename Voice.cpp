@@ -61,19 +61,34 @@ void Voice::ReadPhonemes(const string &PhonemePath)
 
 void Voice::ReadSpeakers(const string &SpeakerPath)
 {
-    std::ifstream Speaker(SpeakerPath);
+    Speakers = GetLinedFile(SpeakerPath);
 
-    if (!Speaker.good()) // File not exists, this is single speaker
-        return;
+}
+
+void Voice::ReadEmotions(const string &EmotionPath)
+{
+    Emotions = GetLinedFile(EmotionPath);
+
+}
+
+std::vector<string> Voice::GetLinedFile(const string &Path)
+{
+    std::vector<std::string> RetLines;
+    std::ifstream Fi(Path);
+
+    if (!Fi.good()) // File not exists, ret empty vec
+        return RetLines;
 
     std::string Line;
-    while (std::getline(Speaker, Line))
+    while (std::getline(Fi, Line))
     {
         if (Line.size() > 1)
-            Speakers.push_back(Line);
+            RetLines.push_back(Line);
 
 
     }
+
+    return RetLines;
 
 }
 
@@ -86,18 +101,19 @@ Voice::Voice(const std::string & VoxPath, const string &inName)
     Name = inName;
     ReadPhonemes(VoxPath + "/phonemes.txt");
     ReadSpeakers(VoxPath + "/speakers.txt");
+    ReadEmotions(VoxPath + "/emotions.txt");
 
 
 
 
 }
 
-std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0)
+std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID)
 {
 
     std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt,Phonemes,(ETTSLanguage::Enum)VoxInfo.Language);
 
-	TFTensor<float> Mel = MelPredictor.DoInference(PhonemesToID(PhoneticTxt), SpeakerID, Speed, Energy, F0);
+    TFTensor<float> Mel = MelPredictor.DoInference(PhonemesToID(PhoneticTxt), SpeakerID, Speed, Energy, F0,EmotionID);
 
 	TFTensor<float> AuData = Vocoder.DoInference(Mel);
 

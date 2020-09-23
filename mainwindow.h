@@ -30,6 +30,7 @@ struct InferDetails{
   float F0;
   QListWidgetItem* pItem;
   int32_t SpeakerID;
+  int32_t EmotionID;
   QString VoiceName;
 
 
@@ -99,6 +100,7 @@ private slots:
 private:
 
     void HandleIsMultiSpeaker(size_t inVid);
+    void HandleIsMultiEmotion(size_t inVid);
     bool CanPlayAudio;
     QStringList ListDirs(const QString& ParentDir);
     float RangeToFloat(int val);

@@ -26,6 +26,7 @@ public:
     float F0;
     int32_t SpeakerID;
     uint32_t SampleRate;
+    int32_t EmotionID;
     Voxer();
 
 

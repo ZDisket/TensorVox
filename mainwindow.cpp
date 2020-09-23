@@ -13,6 +13,7 @@
 
 #include "phddialog.h"
 #include "framelesswindow.h"
+#include <QMessageBox>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -50,6 +51,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->cbSpeaker->setVisible(false);
     ui->lblSpeaker->setVisible(false);
+
+    ui->cbEmotions->setVisible(false);
+    ui->lblEmotions->setVisible(false);
 
 
 
@@ -203,6 +207,11 @@ void MainWindow::on_btnInfer_clicked()
         Dets.SpeakerID = 0;
         if (ui->cbSpeaker->isVisible())
             Dets.SpeakerID = ui->cbSpeaker->currentIndex();
+
+        if (ui->cbEmotions->isVisible())
+            Dets.EmotionID = ui->cbEmotions->currentIndex();
+        else
+            Dets.EmotionID = -1;
 
         Dets.VoiceName = ui->cbModels->currentText();
 
@@ -379,7 +388,7 @@ void MainWindow::ProcessWithDict(QString &inModTxt)
     for (QString& Spl : Splits)
     {
         for (const DictEntry& Entr : PhonDict.Entries){
-            if (Spl.toLower() == QString::fromStdString(Entr.Word).toLower())
+            if (Spl.toLower().replace(",","").replace(".","") == QString::fromStdString(Entr.Word).toLower())
                 Spl = QString("{" + QString::fromStdString(Entr.PhSpelling) + "}");
 
 
@@ -420,6 +429,7 @@ void MainWindow::DoInference(InferDetails &Dets)
     //Auto-load is true, so we will always get a good pointer.
     VoxThread->pAttVoice = VoMan[VoiceID];
     VoxThread->SampleRate = VoMan[VoiceID]->GetInfo().SampleRate;
+    VoxThread->EmotionID = Dets.EmotionID;
 
     connect(VoxThread,&Voxer::Done,this,&MainWindow::OnAudioRecv);
 
@@ -462,6 +472,7 @@ void MainWindow::on_sliSpeed_sliderMoved(int position)
 void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 {
 
+
     PlayBuffer(AudBuffs[ui->lstUtts->row(item)]);
 
 }
@@ -480,6 +491,13 @@ void MainWindow::on_btnClear_clicked()
 
 void MainWindow::on_btnExportSel_clicked()
 {
+    if (ui->lstUtts->selectedItems().size() == 0){
+        QMessageBox::critical(this,"Error","You have to select an item to export selection.");
+        return;
+
+    }
+
+
     QString ofname = QFileDialog::getSaveFileName(this, tr("Export WAV file"), "Utt", tr("WAV, float32 PCM (*.wav)"));
     if (!ofname.size())
         return;
@@ -578,6 +596,8 @@ void MainWindow::on_hkInfer_triggered()
 
 void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 {
+    HandleIsMultiEmotion(inVid);
+
     Voice& CurrentVoice = *VoMan[inVid];
 
     if (!CurrentVoice.GetSpeakers().size()){
@@ -599,6 +619,41 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 
     ui->lblSpeaker->setVisible(true);
     ui->cbSpeaker->setVisible(true);
+
+
+    if (!CurrentVoice.GetEmotions().size()){
+        ui->lblEmotions->setVisible(false);
+        ui->cbEmotions->setVisible(false);
+        return;
+    }
+
+
+
+
+}
+
+void MainWindow::HandleIsMultiEmotion(size_t inVid)
+{
+    Voice& CurrentVoice = *VoMan[inVid];
+
+    if (!CurrentVoice.GetEmotions().size()){
+        ui->lblEmotions->setVisible(false);
+        ui->cbEmotions->setVisible(false);
+        return;
+    }
+
+
+    ui->cbEmotions->clear();
+
+    for (const auto& EmName : CurrentVoice.GetEmotions())
+    {
+        ui->cbEmotions->addItem(QString::fromStdString(EmName));
+
+
+    }
+
+    ui->lblEmotions->setVisible(true);
+    ui->cbEmotions->setVisible(true);
 
 
 

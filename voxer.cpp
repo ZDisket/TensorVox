@@ -55,7 +55,7 @@ void Voxer::run()
     pAttItem->setBackgroundColor(InProcessColor);
 
     high_resolution_clock::time_point Start = high_resolution_clock::now();
-    std::vector<float> Audat = pAttVoice->Vocalize(Prompt.toStdString(),Speed,SpeakerID,Energy,F0);
+    std::vector<float> Audat = pAttVoice->Vocalize(Prompt.toStdString(),Speed,SpeakerID,Energy,F0,EmotionID);
     high_resolution_clock::time_point End = high_resolution_clock::now();
 
 
