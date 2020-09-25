@@ -53,3 +53,11 @@ bool PhoneticDict::Import(const QString &infn)
 
 
 }
+
+
+bool operator==(const DictEntry &left, const std::string &right)
+{
+    return left.Word == right;
+
+
+}

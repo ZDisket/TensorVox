@@ -5,6 +5,7 @@
 size_t VoiceManager::LoadVoice(const QString &Voname)
 {
     Voices.push_back(new Voice(QString(QCoreApplication::applicationDirPath() + "/models/" + Voname).toStdString(),Voname.toStdString()));
+    Voices[Voices.size() - 1]->SetDictEntries(ManDict);
     return Voices.size() - 1;
 }
 
@@ -32,6 +33,12 @@ Voice *VoiceManager::operator[](size_t in)
 {
 
     return Voices[in];
+
+}
+
+void VoiceManager::SetDict(const std::vector<DictEntry> &InDict)
+{
+    ManDict = InDict;
 
 }
 

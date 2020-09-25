@@ -1,7 +1,5 @@
 #include "EnglishPhoneticProcessor.h"
 #include "VoxCommon.hpp"
-const std::vector<std::string> OverrideInputs = {"the", "us","have","my","me"};
-const std::vector<std::string> OverrideOutputs = {"DH AH", "AH S","HH AE V","M AY","M IY"};
 
 using namespace std;
 
@@ -17,7 +15,7 @@ bool EnglishPhoneticProcessor::Initialize(const std::string & PhoneticModelFn)
 	return true;
 }
 
-std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & InText, const std::vector<std::string>& InPhonemes, ETTSLanguage::Enum InLanguage)
+std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InText, const std::vector<string> &InPhonemes,const std::vector<DictEntry>& InDict,ETTSLanguage::Enum InLanguage)
 {
 	if (!Phonemizer)
 		return "ERROR";
@@ -29,7 +27,6 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & In
 	for (size_t w = 0; w < Words.size();w++) 
 	{
 		const string& Word = Words[w];
-        cout << Word << std::endl;
 
         if (Word.find("@") != std::string::npos){
             std::string AddPh = Word.substr(1); // Remove the @
@@ -49,17 +46,14 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string & In
 
 
 
-        /*
         size_t OverrideIdx = 0;
-        if (VoxUtil::FindInVec<std::string>(Word,OverrideInputs,OverrideIdx))
+        if (VoxUtil::FindInVec2<std::string,DictEntry>(Word,InDict,OverrideIdx))
         {
-            Assemble.append(OverrideOutputs[OverrideIdx]);
-            Assemble.append(" ");
-            continue;
-
+             Assemble.append(InDict[OverrideIdx].PhSpelling);
+             Assemble.append(" ");
+             continue;
         }
 
-        */
 
 		vector<PathData> PhResults = Phonemizer->Phoneticize(Word, 1, 10000, 99.f, false, false, 0.99);
 		for (const auto& padat : PhResults) {

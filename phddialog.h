@@ -27,6 +27,8 @@ private slots:
 
     void on_btnImport_clicked();
 
+    void on_tbDict_cellChanged(int row, int column);
+
 private:
     void PopulateWithEntries();
     Ui::PhdDialog *ui;

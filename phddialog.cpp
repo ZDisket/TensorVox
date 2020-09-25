@@ -125,3 +125,10 @@ void PhdDialog::on_btnImport_clicked()
 
 
 }
+
+void PhdDialog::on_tbDict_cellChanged(int row, int column)
+{
+    if (row != 0)
+        return;
+
+}

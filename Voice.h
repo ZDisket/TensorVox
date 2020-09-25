@@ -4,6 +4,8 @@
 #include "MultiBandMelGAN.h"
 #include "EnglishPhoneticProcessor.h"
 
+
+#include "phoneticdict.h"
 class Voice
 {
 private:
@@ -32,6 +34,8 @@ private:
 
     std::vector<std::string> GetLinedFile(const std::string& Path);
 
+    std::vector<DictEntry> CurrentDict;
+
 public:
 	/* Voice constructor, arguments obligatory.
 	 -> VoxPath: Path of folder where models are contained. 
@@ -56,6 +60,8 @@ public:
 
     inline const std::vector<std::string>& GetSpeakers(){return Speakers;}
     inline const std::vector<std::string>& GetEmotions(){return Emotions;}
+
+    void SetDictEntries(const std::vector<DictEntry>& InEntries);
 
 	~Voice();
 };

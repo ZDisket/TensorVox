@@ -2,10 +2,12 @@
 #define VOICEMANAGER_H
 #include "Voice.h"
 #include <QString>
+#include "phoneticdict.h"
 class VoiceManager
 {
 private:
     std::vector<Voice*> Voices;
+    std::vector<DictEntry> ManDict;
 
 
 public:
@@ -17,6 +19,10 @@ public:
     int FindVoice(const QString& inName, bool autoload = true);
 
     Voice* operator[](size_t in);
+
+    inline std::vector<Voice*>& GetVoices(){return Voices;}
+
+    void SetDict(const std::vector<DictEntry>& InDict);
 
 
     VoiceManager();

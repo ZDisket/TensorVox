@@ -63,6 +63,8 @@ MainWindow::MainWindow(QWidget *parent)
     pTaskBtn = new QWinTaskbarButton(this);
     pTskProg = pTaskBtn->progress();
 
+    SetDict();
+
 
 
 
@@ -182,7 +184,6 @@ void MainWindow::on_btnInfer_clicked()
         if (idvInput.isEmpty())
             continue;
 
-        ProcessWithDict(idvInput);
         InferDetails Dets;
         ProcessCurlies(idvInput);
 
@@ -262,9 +263,10 @@ float MainWindow::RangeToFloat(int val)
 
 }
 
-void MainWindow::PlayBuffer(QBuffer *pBuff)
+void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
 {
-    if (!ui->chkAutoPlay->isChecked())
+
+    if (!ui->chkAutoPlay->isChecked() && !ByUser)
         return;
 
     pBuff->open(QBuffer::ReadWrite);
@@ -382,23 +384,6 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
 
 }
 
-void MainWindow::ProcessWithDict(QString &inModTxt)
-{
-    QStringList Splits = inModTxt.split(" ",QString::SplitBehavior::SkipEmptyParts,Qt::CaseInsensitive);
-    for (QString& Spl : Splits)
-    {
-        for (const DictEntry& Entr : PhonDict.Entries){
-            if (Spl.toLower().replace(",","").replace(".","") == QString::fromStdString(Entr.Word).toLower())
-                Spl = QString("{" + QString::fromStdString(Entr.PhSpelling) + "}");
-
-
-        }
-
-    }
-    inModTxt = Splits.join(" ");
-
-
-}
 
 void MainWindow::IterateQueue()
 {
@@ -473,7 +458,7 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 {
 
 
-    PlayBuffer(AudBuffs[ui->lstUtts->row(item)]);
+    PlayBuffer(AudBuffs[ui->lstUtts->row(item)],true);
 
 }
 
@@ -683,6 +668,20 @@ void MainWindow::on_actionOverrides_triggered()
     {
         PhonDict.Entries = Dlg.Entrs;
         PhonDict.Export(QCoreApplication::applicationDirPath() + "/dict.phd");
+        SetDict();
+
+
+
+    }
+
+}
+
+void MainWindow::SetDict()
+{
+    VoMan.SetDict(PhonDict.Entries);
+    for (Voice*& Vo : VoMan.GetVoices())
+    {
+        Vo->SetDictEntries(PhonDict.Entries);
 
     }
 

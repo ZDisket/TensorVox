@@ -99,12 +99,13 @@ private slots:
 
 private:
 
+    void SetDict();
     void HandleIsMultiSpeaker(size_t inVid);
     void HandleIsMultiEmotion(size_t inVid);
     bool CanPlayAudio;
     QStringList ListDirs(const QString& ParentDir);
     float RangeToFloat(int val);
-    void PlayBuffer(QBuffer* pBuff);
+    void PlayBuffer(QBuffer* pBuff,bool ByUser = false);
     bool RecPerfLines;
 
     void AdvanceBuffer();
@@ -119,7 +120,6 @@ private:
     QStringList SuperWordSplit(const QString& InStr,int MaxLen);
 
     void ProcessCurlies(QString& ModTxt);
-    void ProcessWithDict(QString& inModTxt);
 
 
     std::queue<InferDetails> Infers;

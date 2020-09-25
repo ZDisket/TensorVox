@@ -111,7 +111,7 @@ Voice::Voice(const std::string & VoxPath, const string &inName)
 std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID)
 {
 
-    std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt,Phonemes,(ETTSLanguage::Enum)VoxInfo.Language);
+    std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt,Phonemes,CurrentDict,(ETTSLanguage::Enum)VoxInfo.Language);
 
     TFTensor<float> Mel = MelPredictor.DoInference(PhonemesToID(PhoneticTxt), SpeakerID, Speed, Energy, F0,EmotionID);
 
@@ -141,7 +141,13 @@ std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int3
 	}
 
 
-	return AudioData;
+    return AudioData;
+}
+
+void Voice::SetDictEntries(const std::vector<DictEntry> &InEntries)
+{
+    CurrentDict = InEntries;
+
 }
 
 Voice::~Voice()

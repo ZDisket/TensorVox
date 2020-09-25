@@ -115,6 +115,22 @@ namespace VoxUtil {
 		return false;
 
 	}
+    template<typename V, typename X>
+    bool FindInVec2(V In, const std::vector<X>& Vec, size_t& OutIdx, size_t start = 0) {
+        for (size_t xx = start;xx < Vec.size();xx++)
+        {
+            if (Vec[xx] == In) {
+                OutIdx = xx;
+                return true;
+
+            }
+
+        }
+
+
+        return false;
+
+    }
 
 	void ExportWAV(const std::string& Filename, const std::vector<float>& Data, unsigned SampleRate);
 }

@@ -7,6 +7,11 @@ struct DictEntry{
     std::string Word;
     std::string PhSpelling;
 };
+
+
+// Check if the base word is equal to this string
+bool operator==(const DictEntry& left,const std::string& right);
+
 ZFILE_OOVR(DictEntry,entr);
 
 ZFILE_IOVR(DictEntry,inentr);
