@@ -32,9 +32,14 @@ private:
 
     void ReadEmotions(const std::string& EmotionPath);
 
+
+    void ReadModelInfo(const std::string& ModelInfoPath);
+
     std::vector<std::string> GetLinedFile(const std::string& Path);
 
     std::vector<DictEntry> CurrentDict;
+
+    std::string ModelInfo;
 
 public:
 	/* Voice constructor, arguments obligatory.
@@ -62,6 +67,7 @@ public:
     inline const std::vector<std::string>& GetEmotions(){return Emotions;}
 
     void SetDictEntries(const std::vector<DictEntry>& InEntries);
+    inline const std::string& GetModelInfo(){return ModelInfo;}
 
 	~Voice();
 };

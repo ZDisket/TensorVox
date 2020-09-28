@@ -71,6 +71,18 @@ void Voice::ReadEmotions(const string &EmotionPath)
 
 }
 
+void Voice::ReadModelInfo(const string &ModelInfoPath)
+{
+
+    ModelInfo = "";
+    std::vector<std::string> MiLines = GetLinedFile(ModelInfoPath);
+
+    for (const std::string& ss : MiLines)
+        ModelInfo += ss + "\n";
+
+
+}
+
 std::vector<string> Voice::GetLinedFile(const string &Path)
 {
     std::vector<std::string> RetLines;
@@ -102,6 +114,12 @@ Voice::Voice(const std::string & VoxPath, const string &inName)
     ReadPhonemes(VoxPath + "/phonemes.txt");
     ReadSpeakers(VoxPath + "/speakers.txt");
     ReadEmotions(VoxPath + "/emotions.txt");
+
+
+    ReadModelInfo(VoxPath + "/info.txt");
+
+
+
 
 
 

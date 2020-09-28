@@ -97,6 +97,10 @@ private slots:
 
     void on_actionOverrides_triggered();
 
+    void on_actionRefresh_model_listing_triggered();
+
+    void on_btnLoadInfo_clicked();
+
 private:
 
     void SetDict();

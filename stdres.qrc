@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>res/stdico.png</file>
         <file>res/phoneticdico.png</file>
+        <file>res/infico.png</file>
+        <file>res/refresh.png</file>
     </qresource>
 </RCC>

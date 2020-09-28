@@ -14,6 +14,7 @@
 #include "phddialog.h"
 #include "framelesswindow.h"
 #include <QMessageBox>
+#include "modelinfodlg.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -54,6 +55,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->cbEmotions->setVisible(false);
     ui->lblEmotions->setVisible(false);
+
+
 
 
 
@@ -206,13 +209,13 @@ void MainWindow::on_btnInfer_clicked()
         Dets.pItem = widItm;
         Dets.Prompt = idvInput + " @SIL @END";
         Dets.SpeakerID = 0;
+        Dets.EmotionID = -1;
+
         if (ui->cbSpeaker->isVisible())
             Dets.SpeakerID = ui->cbSpeaker->currentIndex();
 
         if (ui->cbEmotions->isVisible())
             Dets.EmotionID = ui->cbEmotions->currentIndex();
-        else
-            Dets.EmotionID = -1;
 
         Dets.VoiceName = ui->cbModels->currentText();
 
@@ -684,5 +687,51 @@ void MainWindow::SetDict()
         Vo->SetDictEntries(PhonDict.Entries);
 
     }
+
+}
+
+void MainWindow::on_actionRefresh_model_listing_triggered()
+{
+    PopulateComboBox();
+}
+
+void MainWindow::on_btnLoadInfo_clicked()
+{
+    int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
+
+    if (CurrentIndex == -1){
+        QMessageBox::critical(this,"Error","You have to load the model before accessing its info");
+        return;
+
+    }
+    VoiceInfo Voi = VoMan[(size_t)CurrentIndex]->GetInfo();
+
+    FramelessWindow FDlg(this);
+    FDlg.setWindowIcon(QIcon(":/res/infico.png"));
+    FDlg.setWindowTitle("Model Info");
+    FDlg.SetTitleBarBtns(false,false,true);
+    FDlg.resize(500,450);
+
+    ModelInfoDlg Dlg(this);
+
+    FDlg.setContent(&Dlg);
+    FDlg.ContentDlg(&Dlg);
+
+    QString MdlDesc = QString::fromStdString(Voi.Description);
+    std::string MiExpanded = VoMan[(size_t)CurrentIndex]->GetModelInfo();
+
+    if (MiExpanded.size() > 1)
+        MdlDesc = QString::fromStdString(MiExpanded);
+
+
+    FDlg.show();
+    Dlg.SetInfo(QString::fromStdString(Voi.Name),MdlDesc,Voi.Version,QString::fromStdString(Voi.Author),
+                QString::fromStdString(Voi.Architecture.s_Repo),QString::fromStdString(Voi.Architecture.s_Text2Mel),
+                QString::fromStdString(Voi.Architecture.s_Vocoder));
+
+
+    Dlg.setModal(true);
+
+    Dlg.exec();
 
 }

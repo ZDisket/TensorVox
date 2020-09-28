@@ -34,6 +34,7 @@ SOURCES += \
     ext/ZFile.cpp \
     main.cpp \
     mainwindow.cpp \
+    modelinfodlg.cpp \
     phddialog.cpp \
     phoneticdict.cpp \
     phonetichighlighter.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     ext/ZFile.h \
     ext/json.hpp \
     mainwindow.h \
+    modelinfodlg.h \
     phddialog.h \
     phoneticdict.h \
     phonetichighlighter.h \
@@ -68,6 +70,7 @@ HEADERS += \
 FORMS += \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.ui \
     mainwindow.ui \
+    modelinfodlg.ui \
     phddialog.ui
 
 # Default rules for deployment.

@@ -54,7 +54,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnRefreshList">
+           <widget class="QPushButton" name="btnLoadInfo">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -62,7 +62,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Refresh</string>
+             <string>Info</string>
             </property>
            </widget>
           </item>
@@ -495,6 +495,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionOverrides"/>
+    <addaction name="actionRefresh_model_listing"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -521,6 +522,15 @@
    </property>
    <property name="text">
     <string>Overrides</string>
+   </property>
+  </action>
+  <action name="actionRefresh_model_listing">
+   <property name="icon">
+    <iconset resource="stdres.qrc">
+     <normaloff>:/res/refresh.png</normaloff>:/res/refresh.png</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh model listing</string>
    </property>
   </action>
  </widget>
