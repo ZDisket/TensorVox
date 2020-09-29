@@ -7,8 +7,9 @@ Powered by [TensorflowTTS](https://github.com/TensorSpeech/TensorFlowTTS), it is
 
 ### Try it out!
 ![Interface](https://i.imgur.com/pJRngb2.png)
+Note: The download version is a very old iteration
 
-1. Download [the program, LJSpeech, and Jordan Peterson model](https://drive.google.com/file/d/1yQyHZmFA0uN7x2V1inmj5xEQjKq2mzVH/view?usp=sharing)
+1. Download [the program, and LJSpeech model](https://drive.google.com/file/d/1yQyHZmFA0uN7x2V1inmj5xEQjKq2mzVH/view?usp=sharing)
 2. Run.
 
 ## Supported architectures
