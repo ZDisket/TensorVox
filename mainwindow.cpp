@@ -68,6 +68,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     SetDict();
 
+    ui->spbThreads->setValue(QThread::idealThreadCount());
+
 
 
 
@@ -286,11 +288,62 @@ void MainWindow::AdvanceBuffer()
 
 }
 
+void MainWindow::AdvanceQueue()
+{
+    if (!Infers.size() || CountBlues() >= GetNumThreads())
+        return;
+
+    if (GetNumThreads() == 1)
+    {
+        ++CurrentInferIndex;
+
+         pTskProg->setRange(0,ui->lstUtts->count());
+        pTskProg->setValue(CurrentInferIndex);
+
+    }
+
+     DoInference(Infers.front());
+     Infers.pop();
+}
+
+int32_t MainWindow::CountBlues()
+{
+    if (!ui->lstUtts->count())
+        return 0;
+
+    int32_t NumBlues = 0;
+
+    for (int i = 0; i < ui->lstUtts->count();i++)
+    {
+        if (ui->lstUtts->item(i)->backgroundColor() == InProcessColor)
+            NumBlues += 1;
+
+    }
+
+
+    return NumBlues;
+
+}
+
+int32_t MainWindow::GetNumThreads()
+{
+    int32_t NThreads = 1;
+
+    if (ui->chkMultiThreaded->isChecked())
+        NThreads = ui->spbThreads->value();
+
+    return NThreads;
+}
+
 bool MainWindow::MustExplicitlyIterateQueue()
 {
     if (!ui->lstUtts->count())
         return true;
 
+    if (GetNumThreads() < CountBlues())
+        return false;
+
+    /*
     for (int i = 0; i < ui->lstUtts->count();i++)
     {
         if (ui->lstUtts->item(i)->backgroundColor() == InProcessColor)
@@ -298,7 +351,7 @@ bool MainWindow::MustExplicitlyIterateQueue()
 
     }
 
-
+*/
     return true;
 
 }
@@ -393,13 +446,23 @@ void MainWindow::IterateQueue()
     if (!Infers.size())
         return;
 
-   ++CurrentInferIndex;
+    int32_t NumInfer = GetNumThreads();
 
-    pTskProg->setRange(0,ui->lstUtts->count());
-   pTskProg->setValue(CurrentInferIndex);
+    // Count how many we must infer
+    // This is the amount of threads minus the amount that are already being done now
+    // We ensure this is not negative by forcing it to 0
+    NumInfer = std::max(NumInfer - CountBlues(),0);
 
-    DoInference(Infers.front());
-    Infers.pop();
+
+
+    if (!NumInfer)
+        return;
+
+    for (int32_t t = 0; t < NumInfer;t++)
+        AdvanceQueue();
+
+
+
 
 }
 
@@ -461,7 +524,9 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 {
 
 
-    PlayBuffer(AudBuffs[ui->lstUtts->row(item)],true);
+    if (item->backgroundColor() == DoneColor)
+        PlayBuffer(AudBuffs[ui->lstUtts->row(item)],true);
+
 
 }
 
@@ -727,11 +792,24 @@ void MainWindow::on_btnLoadInfo_clicked()
     FDlg.show();
     Dlg.SetInfo(QString::fromStdString(Voi.Name),MdlDesc,Voi.Version,QString::fromStdString(Voi.Author),
                 QString::fromStdString(Voi.Architecture.s_Repo),QString::fromStdString(Voi.Architecture.s_Text2Mel),
-                QString::fromStdString(Voi.Architecture.s_Vocoder));
+                QString::fromStdString(Voi.Architecture.s_Vocoder),Voi.SampleRate);
 
 
     Dlg.setModal(true);
 
     Dlg.exec();
+
+}
+
+void MainWindow::on_chkMultiThreaded_stateChanged(int arg1)
+{
+    if (arg1 == Qt::Checked)
+    {
+        ui->chkAutoPlay->setChecked(false);
+        ui->chkAutoPlay->setEnabled(false);
+
+    }else{
+        ui->chkAutoPlay->setEnabled(true);
+    }
 
 }

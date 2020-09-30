@@ -13,7 +13,7 @@ ModelInfoDlg::~ModelInfoDlg()
     delete ui;
 }
 
-void ModelInfoDlg::SetInfo(const QString &ModelName, const QString &Info, int32_t InVersion, const QString &Author, const QString &Repo, const QString &MelGen, const QString &Vocoder)
+void ModelInfoDlg::SetInfo(const QString &ModelName, const QString &Info, int32_t InVersion, const QString &Author, const QString &Repo, const QString &MelGen, const QString &Vocoder, uint32_t SampleRate)
 {
     ui->lblAuthor->setText("Author: " + Author);
     ui->lblVersion->setText("Version: " + QString::number(InVersion) + "  ");
@@ -22,4 +22,5 @@ void ModelInfoDlg::SetInfo(const QString &ModelName, const QString &Info, int32_
     ui->lblModelTitle->setText(ModelName);
 
     ui->lblModelArchitecture->setText("Architecture: " + Repo + " " + MelGen + " & " + Vocoder);
+    ui->lblSampleRate->setText("Sampling rate: " + QString::number(SampleRate / 1000) + "KHz");
 }

@@ -101,6 +101,8 @@ private slots:
 
     void on_btnLoadInfo_clicked();
 
+    void on_chkMultiThreaded_stateChanged(int arg1);
+
 private:
 
     void SetDict();
@@ -113,6 +115,11 @@ private:
     bool RecPerfLines;
 
     void AdvanceBuffer();
+    void AdvanceQueue();
+
+    int32_t CountBlues();
+
+    int32_t GetNumThreads();
 
     bool MustExplicitlyIterateQueue();
     void PopulateComboBox();

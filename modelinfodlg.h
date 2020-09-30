@@ -15,7 +15,7 @@ public:
     explicit ModelInfoDlg(QWidget *parent = nullptr);
     ~ModelInfoDlg();
 
-    void SetInfo(const QString& ModelName,const QString& Info,int32_t InVersion,const QString& Author,const QString& Repo,const QString& MelGen,const QString& Vocoder);
+    void SetInfo(const QString& ModelName,const QString& Info,int32_t InVersion,const QString& Author,const QString& Repo,const QString& MelGen,const QString& Vocoder,uint32_t SampleRate);
 
 private:
     Ui::ModelInfoDlg *ui;

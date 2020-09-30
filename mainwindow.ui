@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>777</width>
-    <height>469</height>
+    <width>856</width>
+    <height>526</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -262,7 +262,7 @@
                 <number>10</number>
                </property>
                <property name="value">
-                <number>200</number>
+                <number>150</number>
                </property>
               </widget>
              </item>
@@ -283,13 +283,13 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer">
+              <spacer name="horizontalSpacer_2">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>20</width>
+                 <width>40</width>
                  <height>20</height>
                 </size>
                </property>
@@ -297,6 +297,9 @@
              </item>
              <item>
               <widget class="QCheckBox" name="chkAutoPlay">
+               <property name="toolTip">
+                <string>Whether to auto-play utterances as their inference is completed. Not possible with multi-threaded generation</string>
+               </property>
                <property name="text">
                 <string>Auto-Play</string>
                </property>
@@ -407,13 +410,51 @@
              </sizepolicy>
             </property>
             <property name="maximum">
-             <number>10000</number>
+             <number>4000</number>
             </property>
             <property name="value">
              <number>1000</number>
             </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkMultiThreaded">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Whether to process multiple utterances at the same time in threads. Auto-play is not supported with multi-threaded generation</string>
+            </property>
+            <property name="text">
+             <string>Multi-Threaded</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spbThreads">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Number of threads. Recommended to set it to the number of threads that your CPU has, which is the default value.</string>
+            </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>1024</number>
+            </property>
+            <property name="value">
+             <number>2</number>
             </property>
            </widget>
           </item>
@@ -474,7 +515,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>777</width>
+     <width>856</width>
      <height>20</height>
     </rect>
    </property>
