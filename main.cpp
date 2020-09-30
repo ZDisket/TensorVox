@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
     framelessWindow.setWindowIcon(QIcon("://res/stdico.png"));
 
     MainWindow *mainWindow = new MainWindow;
+    mainWindow->pDarkFw = &framelessWindow;
 
     framelessWindow.setContent(mainWindow);
     framelessWindow.show();

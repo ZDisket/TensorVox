@@ -63,7 +63,7 @@ void Voxer::run()
     std::vector<float> AudRes = Resample(Audat,SampleRate,CommonSampleRate);
 
     pAttItem->setBackgroundColor(DoneColor);
-    emit Done(AudRes,duration_cast<duration<double>>(End - Start));
+    emit Done(AudRes,duration_cast<duration<double>>(End - Start),CurrentID);
 
 }
 

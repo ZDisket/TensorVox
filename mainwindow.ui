@@ -61,6 +61,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>See the information of this model, including description and characteristics</string>
+            </property>
             <property name="text">
              <string>Info</string>
             </property>
@@ -236,6 +239,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="toolTip">
+                <string>Word-aware splitting auto-splits by character limit taking into account words</string>
+               </property>
                <property name="text">
                 <string>Word-aware</string>
                </property>
@@ -262,7 +268,7 @@
                 <number>10</number>
                </property>
                <property name="value">
-                <number>150</number>
+                <number>80</number>
                </property>
               </widget>
              </item>
@@ -273,6 +279,9 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="toolTip">
+                <string>Splits by lines</string>
                </property>
                <property name="text">
                 <string>By lines</string>
@@ -323,6 +332,9 @@
           </property>
           <property name="acceptRichText">
            <bool>false</bool>
+          </property>
+          <property name="placeholderText">
+           <string>Type something here...</string>
           </property>
          </widget>
         </item>
@@ -409,6 +421,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>Amplify volume of inference output</string>
+            </property>
             <property name="maximum">
              <number>4000</number>
             </property>
@@ -477,6 +492,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QPushButton" name="btnClear">
+            <property name="toolTip">
+             <string>Clear the inference queue. Note that this will result in you losing all your current results, so export them if needed.</string>
+            </property>
             <property name="text">
              <string>Clear</string>
             </property>
@@ -487,6 +505,9 @@
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="toolTip">
+             <string>Export the selected inference result to WAV</string>
+            </property>
             <property name="text">
              <string>Export selection to WAV</string>
             </property>
@@ -496,6 +517,9 @@
            <widget class="QPushButton" name="btnExReport">
             <property name="enabled">
              <bool>false</bool>
+            </property>
+            <property name="toolTip">
+             <string>Auto-join all lines together into one single WAV file and export</string>
             </property>
             <property name="text">
              <string>Export all to WAV</string>

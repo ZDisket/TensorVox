@@ -29,11 +29,12 @@ public:
     int32_t EmotionID;
     Voxer();
 
+    uint32_t CurrentID;
 
 
 
 signals:
-    void Done(std::vector<float> AudioData,std::chrono::duration<double> infer_span);
+    void Done(std::vector<float> AudioData,std::chrono::duration<double> infer_span,uint32_t ID);
 
 };
 

@@ -15,6 +15,7 @@
 #include "framelesswindow.h"
 #include <QMessageBox>
 #include "modelinfodlg.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -25,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     qRegisterMetaType< QVector<int> >( "QVector<int>" );
     qRegisterMetaType<std::chrono::duration<double>>("std::chrono::duration<double>");
+    qRegisterMetaType<uint32_t>("uint32_t");
+
 
     ui->splitter->setSizes(QList<int>() << width() * 0.8  << width() * 0.2 );
 
@@ -70,6 +73,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->spbThreads->setValue(QThread::idealThreadCount());
 
+    NumDone = 0;
+
 
 
 
@@ -79,8 +84,7 @@ void MainWindow::showEvent(QShowEvent *e)
 {
 
 #ifdef Q_OS_WIN
-    pTaskBtn->setWindow(windowHandle());
-    pTaskBtn->setOverlayIcon(QIcon(":/res/stdico.png"));
+    pTaskBtn->setWindow(((FramelessWindow*)pDarkFw)->windowHandle());
     pTaskBtn->progress()->show();
 
 #endif
@@ -93,7 +97,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<double> infer_span)
+void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<double> infer_span,uint32_t inID)
 {
 
     IterateQueue();
@@ -108,6 +112,7 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
 
     AudBuffs.push_back(Buf);
+    IdVec.push_back(InferIDTrueID{inID,AudBuffs.size() - 1});
     if (CanPlayAudio)
         PlayBuffer(Buf);
 
@@ -132,7 +137,11 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
 
 
+    NumDone += 1;
 
+
+    pTskProg->setRange(0,ui->lstUtts->count());
+    pTskProg->setValue(NumDone);
 
 
 }
@@ -179,9 +188,19 @@ void MainWindow::on_btnInfer_clicked()
     QStringList InputSplits;
 
     if (ui->rbSplitWord->isChecked())
+    {
         InputSplits = SuperWordSplit(Input,ui->spbSeqLen->value());
-    else
-        InputSplits = ui->edtInput->toPlainText().split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+
+    }
+    else{
+        QStringList BeforeSplits = ui->edtInput->toPlainText().split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+
+        for (const QString& LiSplit : BeforeSplits)
+        {
+            InputSplits.append(SuperWordSplit(LiSplit,ui->spbSeqLen->value()));
+        }
+
+    }
 
 
     for (QString& idvInput : InputSplits)
@@ -290,20 +309,16 @@ void MainWindow::AdvanceBuffer()
 
 void MainWindow::AdvanceQueue()
 {
-    if (!Infers.size() || CountBlues() >= GetNumThreads())
+    if (!Infers.size())
         return;
 
-    if (GetNumThreads() == 1)
-    {
-        ++CurrentInferIndex;
-
-         pTskProg->setRange(0,ui->lstUtts->count());
-        pTskProg->setValue(CurrentInferIndex);
-
-    }
 
      DoInference(Infers.front());
      Infers.pop();
+
+     ++CurrentInferIndex;
+
+
 }
 
 int32_t MainWindow::CountBlues()
@@ -340,18 +355,10 @@ bool MainWindow::MustExplicitlyIterateQueue()
     if (!ui->lstUtts->count())
         return true;
 
-    if (GetNumThreads() < CountBlues())
+
+    if (std::max(GetNumThreads() / 2,1) < CountBlues())
         return false;
 
-    /*
-    for (int i = 0; i < ui->lstUtts->count();i++)
-    {
-        if (ui->lstUtts->item(i)->backgroundColor() == InProcessColor)
-            return false;
-
-    }
-
-*/
     return true;
 
 }
@@ -482,6 +489,8 @@ void MainWindow::DoInference(InferDetails &Dets)
     VoxThread->SampleRate = VoMan[VoiceID]->GetInfo().SampleRate;
     VoxThread->EmotionID = Dets.EmotionID;
 
+    VoxThread->CurrentID = (uint32_t)CurrentInferIndex;
+
     connect(VoxThread,&Voxer::Done,this,&MainWindow::OnAudioRecv);
 
     VoxThread->start();
@@ -525,7 +534,7 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 
 
     if (item->backgroundColor() == DoneColor)
-        PlayBuffer(AudBuffs[ui->lstUtts->row(item)],true);
+        PlayBuffer(AudBuffs[(uint64_t)GetID(ui->lstUtts->row(item))],true);
 
 
 }
@@ -539,6 +548,10 @@ void MainWindow::on_btnClear_clicked()
     CurrentInferIndex = 0;
 
     pTskProg->hide();
+
+    IdVec.clear();
+    NumDone = 0;
+
 
 }
 
@@ -601,10 +614,13 @@ void MainWindow::on_btnExReport_clicked()
     std::vector<float> Audat;
     QByteArray CurrentBuff;
 
-    for (const auto& IBuff : AudBuffs){
-        CurrentBuff.append(IBuff->buffer());
+    for (int32_t i = 0; i < ui->lstUtts->count();i++)
+    {
+        CurrentBuff.append(AudBuffs[(uint64_t)GetID(i)]->buffer());
 
     }
+
+
 
     Audat.resize((size_t)CurrentBuff.size() / sizeof(float));
 
@@ -812,4 +828,17 @@ void MainWindow::on_chkMultiThreaded_stateChanged(int arg1)
         ui->chkAutoPlay->setEnabled(true);
     }
 
+}
+
+int32_t MainWindow::GetID(int32_t InID)
+{
+    for (const InferIDTrueID& CuId : IdVec)
+    {
+        if (CuId.first == (uint32_t)InID)
+            return (int32_t)CuId.second;
+
+
+    }
+
+    return -1;
 }

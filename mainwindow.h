@@ -37,11 +37,19 @@ struct InferDetails{
 
 };
 
+typedef std::pair<uint32_t,size_t> InferIDTrueID;
+
+
+
+
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 private:
+
+    std::vector<InferIDTrueID> IdVec;
     VoiceManager VoMan;
     QAudioFormat StdFmt;
     QAudioOutput* StdOutput;
@@ -55,13 +63,14 @@ private:
     PhoneticDict PhonDict;
 
 public:
+    void* pDarkFw;
     MainWindow(QWidget *parent = nullptr);
 
     ~MainWindow();
 protected:
    void showEvent(QShowEvent *e) override;
 public slots:
-    void OnAudioRecv(std::vector<float> InDat,std::chrono::duration<double> infer_span);
+    void OnAudioRecv(std::vector<float> InDat,std::chrono::duration<double> infer_span,uint32_t inID);
     void OnAudioStateChange(QAudio::State newState);
 
 private slots:
@@ -105,6 +114,8 @@ private slots:
 
 private:
 
+    int32_t NumDone;
+    int32_t GetID(int32_t InID);
     void SetDict();
     void HandleIsMultiSpeaker(size_t inVid);
     void HandleIsMultiEmotion(size_t inVid);
