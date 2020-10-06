@@ -16,6 +16,8 @@
 #include <QMessageBox>
 #include "modelinfodlg.h"
 
+#define FwParent ((FramelessWindow*)pDarkFw)
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -100,7 +102,6 @@ MainWindow::~MainWindow()
 void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<double> infer_span,uint32_t inID)
 {
 
-    IterateQueue();
 
 
     for (float& f : InDat)
@@ -142,6 +143,8 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
     pTskProg->setRange(0,ui->lstUtts->count());
     pTskProg->setValue(NumDone);
+    IterateQueue();
+
 
 
 }
@@ -186,22 +189,36 @@ void MainWindow::on_btnInfer_clicked()
 
 
     QStringList InputSplits;
+    QStringList BeforeSplits;
 
     if (ui->rbSplitWord->isChecked())
     {
-        InputSplits = SuperWordSplit(Input,ui->spbSeqLen->value());
+        BeforeSplits.push_back(Input);
 
     }
     else{
-        QStringList BeforeSplits = ui->edtInput->toPlainText().split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
+        BeforeSplits = ui->edtInput->toPlainText().split(QRegExp("[\r\n]"),QString::SkipEmptyParts);
 
-        for (const QString& LiSplit : BeforeSplits)
+
+
+    }
+    if (ui->chkPonctAware->isChecked())
+    {
+        QStringList TempBeforeSplits;
+        for (const QString& CuSplit: BeforeSplits)
         {
-            InputSplits.append(SuperWordSplit(LiSplit,ui->spbSeqLen->value()));
+            TempBeforeSplits.append(CuSplit.split(".",QString::SkipEmptyParts));
+
+
         }
+        BeforeSplits = TempBeforeSplits;
 
     }
 
+    for (const QString& LiSplit : BeforeSplits)
+    {
+        InputSplits.append(SuperWordSplit(LiSplit,ui->spbSeqLen->value()));
+    }
 
     for (QString& idvInput : InputSplits)
     {
@@ -558,13 +575,13 @@ void MainWindow::on_btnClear_clicked()
 void MainWindow::on_btnExportSel_clicked()
 {
     if (ui->lstUtts->selectedItems().size() == 0){
-        QMessageBox::critical(this,"Error","You have to select an item to export selection.");
+        QMessageBox::critical(FwParent,"Error","You have to select an item to export selection.");
         return;
 
     }
 
 
-    QString ofname = QFileDialog::getSaveFileName(this, tr("Export WAV file"), "Utt", tr("WAV, float32 PCM (*.wav)"));
+    QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export WAV file"), "Utt", tr("WAV, float32 PCM (*.wav)"));
     if (!ofname.size())
         return;
 
@@ -583,7 +600,7 @@ void MainWindow::on_btnExportSel_clicked()
 
 void MainWindow::on_actionExport_performance_report_triggered()
 {
-    QString ofname = QFileDialog::getSaveFileName(this, tr("Export performance report TXT file"), "log", tr("Text file (*.txt)"));
+    QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export performance report TXT file"), "log", tr("Text file (*.txt)"));
     if (!ofname.size())
         return;
 
@@ -607,7 +624,7 @@ void MainWindow::on_chkRecPerfLog_clicked(bool checked)
 
 void MainWindow::on_btnExReport_clicked()
 {
-    QString ofname = QFileDialog::getSaveFileName(this, tr("Export WAV file"), "Utt", tr("WAV, float32 PCM (*.wav)"));
+    QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export WAV file"), "Utt", tr("WAV, float32 PCM (*.wav)"));
     if (!ofname.size())
         return;
 
@@ -731,13 +748,13 @@ void MainWindow::HandleIsMultiEmotion(size_t inVid)
 
 void MainWindow::on_actionOverrides_triggered()
 {
-    FramelessWindow FDlg(this);
+    FramelessWindow FDlg(FwParent);
     FDlg.setWindowIcon(QIcon(":/res/phoneticdico.png"));
     FDlg.setWindowTitle("Phonetic Overrides");
     FDlg.SetTitleBarBtns(false,false,true);
     FDlg.resize(640,480);
 
-    PhdDialog Dlg(this);
+    PhdDialog Dlg(FwParent);
     Dlg.Entrs = PhonDict.Entries;
 
     FDlg.setContent(&Dlg);
@@ -781,19 +798,19 @@ void MainWindow::on_btnLoadInfo_clicked()
     int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
 
     if (CurrentIndex == -1){
-        QMessageBox::critical(this,"Error","You have to load the model before accessing its info");
+        QMessageBox::critical(FwParent,"Error","You have to load the model before accessing its info");
         return;
 
     }
     VoiceInfo Voi = VoMan[(size_t)CurrentIndex]->GetInfo();
 
-    FramelessWindow FDlg(this);
+    FramelessWindow FDlg(FwParent);
     FDlg.setWindowIcon(QIcon(":/res/infico.png"));
     FDlg.setWindowTitle("Model Info");
     FDlg.SetTitleBarBtns(false,false,true);
     FDlg.resize(500,450);
 
-    ModelInfoDlg Dlg(this);
+    ModelInfoDlg Dlg(FwParent);
 
     FDlg.setContent(&Dlg);
     FDlg.ContentDlg(&Dlg);

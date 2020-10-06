@@ -258,6 +258,9 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="toolTip">
+                <string>Max length (in characters) of every split</string>
+               </property>
                <property name="minimum">
                 <number>20</number>
                </property>
@@ -292,20 +295,23 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+              <widget class="QCheckBox" name="chkPonctAware">
+               <property name="toolTip">
+                <string>Takes into account punctuation when splitting, ending the split early when encountering a period</string>
                </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
+               <property name="text">
+                <string>Punctuation-aware</string>
                </property>
-              </spacer>
+              </widget>
              </item>
              <item>
               <widget class="QCheckBox" name="chkAutoPlay">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="toolTip">
                 <string>Whether to auto-play utterances as their inference is completed. Not possible with multi-threaded generation</string>
                </property>
@@ -339,25 +345,33 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnInfer">
-          <property name="text">
-           <string>Infer (CTRL + Enter)</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <item>
+           <widget class="QPushButton" name="btnInfer">
+            <property name="text">
+             <string>Infer (CTRL + Enter)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="verticalLayoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Double click on an entry to replay</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_12">
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Double click on an entry to replay</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QLabel" name="lblModelNote">
@@ -384,6 +398,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>Adds starting silence token as well as ending</string>
+            </property>
             <property name="text">
              <string>Bidirectional padding</string>
             </property>
@@ -396,6 +413,9 @@
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Records performance log with every inference which you can access in the File menu</string>
             </property>
             <property name="text">
              <string>Record Performance Log</string>

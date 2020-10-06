@@ -46,4 +46,6 @@ TODO: Add instructions for compile from scratch.
  - **r8brain-free-src** (Resampling): https://github.com/avaneev/r8brain-free-src
 
 
+## Note about licensing
 
+This project is MIT licensed except for Vietnam, where, due to using TensorflowTTS models as backend, it cannot be used without permission from the TensorflowTTS authors. See [here](https://github.com/TensorSpeech/TensorflowTTS#license) for details

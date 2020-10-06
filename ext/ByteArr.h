@@ -14,7 +14,7 @@
 ###################################################
 # Description: An extensible byte array class that can also act as a
 buffer to store various types
-# Author:
+# Author: ZDisket
 # Copyright (C) 2019 YOUR MOM GAY LOLOLOL
 ####################################################
 */

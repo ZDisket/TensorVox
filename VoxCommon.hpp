@@ -44,7 +44,7 @@ enum Enum{
 namespace ETTSLanguage{
 enum Enum{
   English = 0,
-  Spanish // not implemented yet
+  Spanish
 };
 
 }
