@@ -76,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->spbThreads->setValue(QThread::idealThreadCount());
 
     NumDone = 0;
+    CurrentAmtThreads = 0;
 
 
 
@@ -131,11 +132,6 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
     }
 
-    bool NoInfers = Infers.empty();
-
-    ui->btnExportSel->setEnabled(NoInfers);
-    ui->btnExReport->setEnabled(NoInfers);
-
 
 
     NumDone += 1;
@@ -143,6 +139,16 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
     pTskProg->setRange(0,ui->lstUtts->count());
     pTskProg->setValue(NumDone);
+
+
+    bool NoInfers = NumDone == ui->lstUtts->count();
+
+    ui->btnExportSel->setEnabled(NoInfers);
+    ui->btnExReport->setEnabled(NoInfers);
+
+
+    --CurrentAmtThreads;
+
     IterateQueue();
 
 
@@ -432,7 +438,6 @@ QStringList MainWindow::SuperWordSplit(const QString &InStr, int MaxLen)
 
 void MainWindow::ProcessCurlies(QString &ModTxt)
 {
-    QString MatchExp = "\\{(\\s*?.*?)*?\\}";
     QRegularExpression& PhonemeExp = pHigh->PhonemeExp;
     QRegularExpressionMatchIterator MatchIter = PhonemeExp.globalMatch(ModTxt);
 
@@ -483,7 +488,13 @@ void MainWindow::IterateQueue()
         return;
 
     for (int32_t t = 0; t < NumInfer;t++)
+    {
+        if (CurrentAmtThreads >= (uint32_t)GetNumThreads())
+            break;
+
         AdvanceQueue();
+
+    }
 
 
 
@@ -511,6 +522,7 @@ void MainWindow::DoInference(InferDetails &Dets)
     connect(VoxThread,&Voxer::Done,this,&MainWindow::OnAudioRecv);
 
     VoxThread->start();
+    ++CurrentAmtThreads;
 
 }
 
@@ -568,6 +580,7 @@ void MainWindow::on_btnClear_clicked()
 
     IdVec.clear();
     NumDone = 0;
+    CurrentAmtThreads = 0;
 
 
 }

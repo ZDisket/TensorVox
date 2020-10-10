@@ -60,6 +60,7 @@ private:
 
 
     int32_t CurrentInferIndex;
+    uint32_t CurrentAmtThreads;
     PhoneticDict PhonDict;
 
 public:
