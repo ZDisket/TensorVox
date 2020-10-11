@@ -104,11 +104,6 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 {
 
 
-
-    for (float& f : InDat)
-          f *= (float)ui->sliVolBoost->value() / 1000.f;
-
-
     QBuffer* Buf = new QBuffer(this);
     Buf->setData((const char*)InDat.data(),sizeof(float) * InDat.size());
 
@@ -254,12 +249,16 @@ void MainWindow::on_btnInfer_clicked()
         Dets.Prompt = idvInput + " @SIL @END";
         Dets.SpeakerID = 0;
         Dets.EmotionID = -1;
+        Dets.Denoise = ui->chkDenoise->isChecked();
+        Dets.Amplification = (float)ui->sliVolBoost->value() / 1000.f;
 
         if (ui->cbSpeaker->isVisible())
             Dets.SpeakerID = ui->cbSpeaker->currentIndex();
 
         if (ui->cbEmotions->isVisible())
             Dets.EmotionID = ui->cbEmotions->currentIndex();
+
+
 
         Dets.VoiceName = ui->cbModels->currentText();
 
@@ -518,6 +517,8 @@ void MainWindow::DoInference(InferDetails &Dets)
     VoxThread->EmotionID = Dets.EmotionID;
 
     VoxThread->CurrentID = (uint32_t)CurrentInferIndex;
+    VoxThread->Denoise = Dets.Denoise;
+    VoxThread->Amplify = Dets.Amplification;
 
     connect(VoxThread,&Voxer::Done,this,&MainWindow::OnAudioRecv);
 

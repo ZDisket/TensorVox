@@ -2,6 +2,14 @@
 using namespace std::chrono;
 #include "r8b/r8bsrc.h"
 
+float remap(float OldValue, float OldMin, float OldMax, float NewMin, float NewMax ){
+
+    float NewValue = (((OldValue - OldMin) * (NewMax - NewMin)) / (OldMax - OldMin)) + NewMin;
+
+    return NewValue;
+
+}
+
 std::vector<float> Resample(const std::vector<float>& InAudata,uint32_t SrcSampleRate,uint32_t OutSampleRate)
 {
     if (SrcSampleRate == OutSampleRate)
@@ -49,6 +57,47 @@ std::vector<float> Resample(const std::vector<float>& InAudata,uint32_t SrcSampl
 
 }
 
+std::vector<float> DoDenoise(const std::vector<float>& InAudata,DenoiseState* DenState)
+{
+ //   if (!DenState)
+   //     return InAudata;
+
+    std::vector<float> NewAudata(InAudata.size());
+    float buf[RNNoiseFrameSize];
+
+    // Find the min and max vals in the vector
+    float MinVal = *std::min_element(InAudata.begin(), InAudata.end());
+    float MaxVal = *std::max_element(InAudata.begin(), InAudata.end());
+
+    for (size_t f = 0; f < InAudata.size();f += RNNoiseFrameSize)
+    {
+        //RNNoise expects a float in range [-32768.f,32768.f]
+        for (size_t y = 0; y < RNNoiseFrameSize;y++)
+            buf[y] = remap(InAudata[f + y],MinVal,MaxVal,-32768.f,32768.f);
+
+
+        rnnoise_process_frame(DenState,buf,buf);
+
+        for (size_t x = 0; x < RNNoiseFrameSize;x++)
+        {
+            size_t TotalIndex = f + x;
+            if (TotalIndex > NewAudata.size())
+                break;
+
+            NewAudata[TotalIndex] = remap(buf[x],-32768.f,32768.f,MinVal,MaxVal);
+
+        }
+
+
+
+    }
+
+    // Subtract some samples because sometimes there can be a pop sound at the end.
+    NewAudata.assign(NewAudata.begin(),NewAudata.end() - 300);
+
+    return NewAudata;
+}
+
 void Voxer::run()
 {
 
@@ -62,8 +111,43 @@ void Voxer::run()
     // Resample the audio to 48KHz
     std::vector<float> AudRes = Resample(Audat,SampleRate,CommonSampleRate);
 
+
+    DenoiseState* Denoiser = nullptr;
+    if (Denoise)
+    {
+        // Every thread creates its own denoiser.
+        // This is because a generic passed denoiser created from the main window
+        // worked well for the first generation but later shat itself (heavy artifacts then just silence)
+
+        Denoiser = rnnoise_create(nullptr);
+        // Denoise. Function will return same vec if there is no denoiser
+        AudRes = DoDenoise(AudRes,Denoiser);
+
+
+
+
+    }
+
+
+    // Apply Amplification
+    for (float& f : AudRes)
+        f *= Amplify;
+
+
     pAttItem->setBackgroundColor(DoneColor);
     emit Done(AudRes,duration_cast<duration<double>>(End - Start),CurrentID);
+
+    // rnnoise_destroy throws some exception we can't do anything about
+    if (Denoise)
+    {
+        try {
+            rnnoise_destroy(Denoiser);
+
+        } catch (...) {
+
+        }
+
+    }
 
 }
 

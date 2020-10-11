@@ -6,6 +6,7 @@
 
 #include <QListWidgetItem>
 #include <chrono>
+#include "rnnoise.h"
 
 const QColor DoneColor = QColor(0,128,0);
 const QColor InProcessColor = QColor(0,0,255);
@@ -27,6 +28,9 @@ public:
     int32_t SpeakerID;
     uint32_t SampleRate;
     int32_t EmotionID;
+    bool Denoise;
+
+    float Amplify;
     Voxer();
 
     uint32_t CurrentID;

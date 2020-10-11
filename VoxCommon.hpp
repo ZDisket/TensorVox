@@ -11,6 +11,9 @@
 
 const uint32_t CommonSampleRate = 48000;
 
+// https://github.com/almogh52/rnnoise-cmake/blob/d981adb2e797216f456cfcf158f73761a29981f8/examples/rnnoise_demo.c#L31
+const uint32_t RNNoiseFrameSize = 480;
+
 template<typename T>
 struct TFTensor {
 	std::vector<T> Data;

@@ -3,6 +3,7 @@
 deps/*
 rdeployed/*
 brelease/*
+bdebug/*
 *.wav
 *~
 *.autosave

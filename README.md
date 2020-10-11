@@ -44,8 +44,9 @@ TODO: Add instructions for compile from scratch.
  - **Frameless Dark Style Window**: https://github.com/Jorgen-VikingGod/Qt-Frameless-Window-DarkStyle
  - **JSON for modern C++**: https://github.com/nlohmann/json
  - **r8brain-free-src** (Resampling): https://github.com/avaneev/r8brain-free-src
+ - **rnnoise** (CMake version, denoising output): https://github.com/almogh52/rnnoise-cmake
 
 
 ## Note about licensing
 
-This project is MIT licensed except for Vietnam, where, due to using TensorflowTTS models as backend, it cannot be used without permission from the TensorflowTTS authors. See [here](https://github.com/TensorSpeech/TensorflowTTS#license) for details
+This project is MIT licensed almost everywhere except for Vietnam, where, due to using TensorflowTTS models as backend, it cannot be used without permission from the TensorflowTTS authors. See [here](https://github.com/TensorSpeech/TensorflowTTS#license) for details

@@ -5495,7 +5495,7 @@ class json_sax_dom_parser
     /// whether a syntax error occurred
     bool errored = false;
     /// whether to throw exceptions in case of errors
-    const bool allow_exceptions = true;
+    const bool allow_exceptions = false;
 };
 
 template<typename BasicJsonType>

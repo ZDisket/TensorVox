@@ -30,7 +30,6 @@ SOURCES += \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/windowdragger.cpp \
     ext/ZCharScanner.cpp \
-    ext/ZDFS.cpp \
     ext/ZFile.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -56,7 +55,6 @@ HEADERS += \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.h \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/windowdragger.h \
     ext/ZCharScanner.h \
-    ext/ZDFS.h \
     ext/ZFile.h \
     ext/json.hpp \
     mainwindow.h \
@@ -83,7 +81,7 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 
 INCLUDEPATH += $$PWD/deps/include
 INCLUDEPATH += $$PWD/ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow
-win32: LIBS += -L$$PWD/deps/lib/ Phonetisaurus64.lib libfst64.lib tensorflow.lib r8bsrc64.lib
+win32: LIBS += -L$$PWD/deps/lib/ Phonetisaurus64.lib libfst64.lib tensorflow.lib r8bsrc64.lib rnnoise64.lib
 win32: QMAKE_LFLAGS += /FORCE
 
 RESOURCES += \
@@ -93,4 +91,5 @@ RESOURCES += \
 
 win32:RC_ICONS += winicon.ico
 
-VERSION = 0.7.8.2
+VERSION = 0.7.9.2
+#CONFIG += force_debug_info

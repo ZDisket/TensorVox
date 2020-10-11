@@ -19,6 +19,8 @@
 
 #include "phoneticdict.h"
 
+#include "rnnoise.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -28,10 +30,14 @@ struct InferDetails{
   float Energy;
   float Speed;
   float F0;
+  float Amplification;
   QListWidgetItem* pItem;
   int32_t SpeakerID;
   int32_t EmotionID;
   QString VoiceName;
+  bool Denoise;
+
+
 
 
 
@@ -62,6 +68,7 @@ private:
     int32_t CurrentInferIndex;
     uint32_t CurrentAmtThreads;
     PhoneticDict PhonDict;
+
 
 public:
     void* pDarkFw;
