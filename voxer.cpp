@@ -73,7 +73,15 @@ std::vector<float> DoDenoise(const std::vector<float>& InAudata,DenoiseState* De
     {
         //RNNoise expects a float in range [-32768.f,32768.f]
         for (size_t y = 0; y < RNNoiseFrameSize;y++)
-            buf[y] = remap(InAudata[f + y],MinVal,MaxVal,-32768.f,32768.f);
+        {
+            size_t TotalIndex = f + y;
+
+            if (TotalIndex > InAudata.size())
+                break;
+
+            buf[y] = remap(InAudata[TotalIndex],MinVal,MaxVal,-32768.f,32768.f);
+
+        }
 
 
         rnnoise_process_frame(DenState,buf,buf);
@@ -84,7 +92,7 @@ std::vector<float> DoDenoise(const std::vector<float>& InAudata,DenoiseState* De
             if (TotalIndex > NewAudata.size())
                 break;
 
-            NewAudata[TotalIndex] = remap(buf[x],-32768.f,32768.f,MinVal,MaxVal);
+            NewAudata[TotalIndex] = remap(buf[x],-32768.f,32768.f,-1.f,1.f);
 
         }
 
@@ -92,8 +100,12 @@ std::vector<float> DoDenoise(const std::vector<float>& InAudata,DenoiseState* De
 
     }
 
-    // Subtract some samples because sometimes there can be a pop sound at the end.
-    NewAudata.assign(NewAudata.begin(),NewAudata.end() - 300);
+
+
+
+    // Due to post-normalization, the audio is about 2.1x louder. Apply makeup deamplification
+    for (float& f : NewAudata)
+        f *= 0.4f;
 
     return NewAudata;
 }
@@ -112,6 +124,7 @@ void Voxer::run()
     std::vector<float> AudRes = Resample(Audat,SampleRate,CommonSampleRate);
 
 
+
     DenoiseState* Denoiser = nullptr;
     if (Denoise)
     {
@@ -127,7 +140,6 @@ void Voxer::run()
 
 
     }
-
 
     // Apply Amplification
     for (float& f : AudRes)

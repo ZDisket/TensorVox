@@ -39,10 +39,7 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
     std::ifstream JFile(InfoFilename);
     json JS;
 
-    // Surround this in a try catch block to stop it from being annoying in debug mode
-    // The parsing goes perfectly fine in release but the JSON class whines when debugging.
-
-        JFile >> JS;
+    JFile >> JS;
 
 
     JFile.close();
