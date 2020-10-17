@@ -2,6 +2,7 @@
 #include <fstream>
 #include "ext/ZCharScanner.h"
 
+#include <QString>
 int32_t GetID(const std::vector<IdStr>& In, const std::string &InStr)
 {
     for (const IdStr& It : In)
@@ -55,6 +56,57 @@ std::vector<IdStr> Phonemizer::GetDelimitedFile(const std::string &InFname)
 
 }
 
+void Phonemizer::LoadDictionary(const std::string &InDictFn)
+{
+
+
+
+    std::ifstream InFile (InDictFn);
+
+    std::string Word;
+    std::string Phn;
+
+
+    if (Dictionary.size())
+        Dictionary.clear();
+
+
+
+
+    std::string Line;
+    while (std::getline(InFile, Line)) {
+
+        if (Line.find("\t") == std::string::npos)
+            continue;
+
+
+        ZStringDelimiter Deline(Line);
+        Deline.AddDelimiter("\t");
+
+        Word = QString::fromStdString(Deline[0]).toLower().toStdString();
+        Phn = Deline[1];
+
+
+        Dictionary.push_back(StrStr{Word,Phn});
+
+    }
+
+
+}
+
+std::string Phonemizer::DictLookup(const std::string &InWord)
+{
+    for (const StrStr& Entr : Dictionary)
+    {
+        if (Entr.Word == InWord)
+            return Entr.Phn;
+
+    }
+
+    return "";
+
+}
+
 
 Phonemizer::Phonemizer()
 {
@@ -70,6 +122,8 @@ bool Phonemizer::Initialize(const std::string InPath)
     // Load model
     G2pModel.Initialize(InPath + "/model");
 
+    LoadDictionary(InPath + "/dict.txt");
+
 
 
     return true;
@@ -79,6 +133,13 @@ bool Phonemizer::Initialize(const std::string InPath)
 
 std::string Phonemizer::ProcessWord(const std::string &InWord,float Temperature)
 {
+    // First we try dictionary lookup
+    // This is because the g2p model can be unreliable, we only want to use it for novel sentences
+
+    std::string PhnDict = DictLookup(InWord);
+    if (!PhnDict.empty())
+        return PhnDict;
+
     std::vector<int32_t> InIndexes;
     InIndexes.reserve(InWord.size());
 
