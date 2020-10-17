@@ -2,9 +2,35 @@
 #define SAFE_DELETE(pdel)if (pdel){delete pdel;}
 #include <QCoreApplication>
 
+Phonemizer* VoiceManager::LoadPhonemizer(const QString& InPhnLang)
+{
+    for (Phonemizer*& Phn : Phonemizers)
+    {
+       if (Phn->GetPhnLanguage() == InPhnLang.toStdString())
+           return Phn;
+
+
+    }
+
+    Phonemizer* CreatePhn = new Phonemizer;
+    CreatePhn->Initialize(QString(QCoreApplication::applicationDirPath() + "/g2p/" + InPhnLang).toStdString());
+    CreatePhn->SetPhnLanguage(InPhnLang.toStdString());
+
+    Phonemizers.push_back(CreatePhn);
+
+    return Phonemizers[Phonemizers.size() - 1];
+
+
+}
+
 size_t VoiceManager::LoadVoice(const QString &Voname)
 {
-    Voices.push_back(new Voice(QString(QCoreApplication::applicationDirPath() + "/models/" + Voname).toStdString(),Voname.toStdString()));
+    Voice* NuVoice = new Voice(QString(QCoreApplication::applicationDirPath() + "/models/" + Voname).toStdString(),Voname.toStdString(),nullptr);
+
+    QString PLang = QString::fromStdString(NuVoice->GetInfo().s_Language);
+    NuVoice->AddPhonemizer(LoadPhonemizer(PLang));
+
+    Voices.push_back(NuVoice);
     Voices[Voices.size() - 1]->SetDictEntries(ManDict);
     return Voices.size() - 1;
 }
@@ -57,5 +83,14 @@ VoiceManager::~VoiceManager()
     }
 
     Voices.clear();
+
+    for (Phonemizer* Phn : Phonemizers)
+    {
+
+        SAFE_DELETE(Phn)
+
+    }
+
+    Phonemizers.clear();
 
 }

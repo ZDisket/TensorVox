@@ -35,8 +35,10 @@ SOURCES += \
     mainwindow.cpp \
     modelinfodlg.cpp \
     phddialog.cpp \
+    phonemizer.cpp \
     phoneticdict.cpp \
     phonetichighlighter.cpp \
+    tfg2p.cpp \
     voicemanager.cpp \
     voxer.cpp
 
@@ -60,8 +62,10 @@ HEADERS += \
     mainwindow.h \
     modelinfodlg.h \
     phddialog.h \
+    phonemizer.h \
     phoneticdict.h \
     phonetichighlighter.h \
+    tfg2p.h \
     voicemanager.h \
     voxer.h
 
@@ -92,4 +96,4 @@ RESOURCES += \
 win32:RC_ICONS += winicon.ico
 
 VERSION = 0.7.9.2
-#CONFIG += force_debug_info
+CONFIG += force_debug_info

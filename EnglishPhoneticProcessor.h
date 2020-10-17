@@ -7,12 +7,14 @@
 #pragma warning(pop)
 
 #include "phoneticdict.h"
+#include "phonemizer.h"
 
 class EnglishPhoneticProcessor
 {
 private:
 	TextTokenizer Tokenizer;
-	PhonetisaurusScript* Phonemizer;
+    //PhonetisaurusScript* Phonemizer;
+    Phonemizer* Phoner;
 
 	inline bool FileExists(const std::string& name) {
 		ifstream f(name.c_str());
@@ -20,10 +22,10 @@ private:
 	}
 
 public:
-	bool Initialize(const std::string& PhoneticModelFn);
+    bool Initialize(Phonemizer *InPhn);
     std::string ProcessTextPhonetic(const std::string& InText, const std::vector<string> &InPhonemes,const std::vector<DictEntry>& InDict,ETTSLanguage::Enum InLanguage);
 	EnglishPhoneticProcessor();
-	EnglishPhoneticProcessor(const std::string& PhModelFn);
+    EnglishPhoneticProcessor(Phonemizer *InPhn);
 	~EnglishPhoneticProcessor();
 };
 

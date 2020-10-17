@@ -3,11 +3,18 @@
 #include "Voice.h"
 #include <QString>
 #include "phoneticdict.h"
+#include "phonemizer.h"
 class VoiceManager
 {
 private:
     std::vector<Voice*> Voices;
     std::vector<DictEntry> ManDict;
+
+    std::vector<Phonemizer*> Phonemizers;
+
+    Phonemizer* LoadPhonemizer(const QString &InPhnLang);
+
+
 
 
 public:

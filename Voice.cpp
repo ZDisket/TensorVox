@@ -104,11 +104,15 @@ std::vector<string> Voice::GetLinedFile(const string &Path)
 
 }
 
-Voice::Voice(const std::string & VoxPath, const string &inName)
+Voice::Voice(const std::string & VoxPath, const string &inName, Phonemizer *InPhn)
 {
 	MelPredictor.Initialize(VoxPath + "/melgen");
 	Vocoder.Initialize(VoxPath + "/vocoder");
-	Processor.Initialize(VoxPath + "/g2p.fst");
+
+    if (InPhn)
+        Processor.Initialize(InPhn);
+
+
     VoxInfo = VoxUtil::ReadModelJSON(VoxPath + "/info.json");
     Name = inName;
     ReadPhonemes(VoxPath + "/phonemes.txt");
@@ -125,6 +129,13 @@ Voice::Voice(const std::string & VoxPath, const string &inName)
 
 
 }
+
+void Voice::AddPhonemizer(Phonemizer *InPhn)
+{
+    Processor.Initialize(InPhn);
+
+}
+
 
 std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID)
 {

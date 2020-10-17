@@ -3,12 +3,11 @@
 
 using namespace std;
 
-bool EnglishPhoneticProcessor::Initialize(const std::string & PhoneticModelFn)
+bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn)
 {
-	if (!FileExists(PhoneticModelFn))
-		return false;
 
-	Phonemizer = new PhonetisaurusScript(PhoneticModelFn);
+
+    Phoner = InPhn;
 
 
 
@@ -17,7 +16,7 @@ bool EnglishPhoneticProcessor::Initialize(const std::string & PhoneticModelFn)
 
 std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InText, const std::vector<string> &InPhonemes,const std::vector<DictEntry>& InDict,ETTSLanguage::Enum InLanguage)
 {
-	if (!Phonemizer)
+    if (!Phoner)
 		return "ERROR";
 
     vector<string> Words = Tokenizer.Tokenize(InText,InLanguage);
@@ -55,15 +54,10 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
         }
 
 
-		vector<PathData> PhResults = Phonemizer->Phoneticize(Word, 1, 10000, 99.f, false, false, 0.99);
-		for (const auto& padat : PhResults) {
-			for (const auto& uni : padat.Uniques) {
-				Assemble.append(Phonemizer->osyms_->Find(uni));
-				Assemble.append(" ");
-			}
+        std::string Res = Phoner->ProcessWord(Word,0.1f);
+        Assemble.append(Res);
+        Assemble.append(" ");
 
-
-		}
 
 
 
@@ -83,18 +77,19 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 
 EnglishPhoneticProcessor::EnglishPhoneticProcessor()
 {
-	Phonemizer = nullptr;
+    Phoner = nullptr;
 }
 
-EnglishPhoneticProcessor::EnglishPhoneticProcessor(const std::string & PhModelFn)
+EnglishPhoneticProcessor::EnglishPhoneticProcessor(Phonemizer *InPhn)
 {
-	Phonemizer = nullptr;
-	Initialize(PhModelFn);
+    Initialize(InPhn);
+
 }
+
 
 
 EnglishPhoneticProcessor::~EnglishPhoneticProcessor()
 {
-	if (Phonemizer)
-		delete Phonemizer;
+    if (Phoner)
+        delete Phoner;
 }
