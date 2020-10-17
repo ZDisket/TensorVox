@@ -90,6 +90,8 @@ void Phonemizer::LoadDictionary(const std::string &InDictFn)
         Dictionary.push_back(StrStr{Word,Phn});
 
     }
+    // Sort so lookup can be a bit optimized
+    std::sort(Dictionary.begin(),Dictionary.end());
 
 
 }
@@ -98,6 +100,9 @@ std::string Phonemizer::DictLookup(const std::string &InWord)
 {
     for (const StrStr& Entr : Dictionary)
     {
+        if (Entr.Word.length() != InWord.length())
+            continue;
+
         if (Entr.Word == InWord)
             return Entr.Phn;
 
@@ -193,3 +198,8 @@ void Phonemizer::SetPhnLanguage(const std::string &value)
     PhnLanguage = value;
 }
 
+
+bool operator<(const StrStr &right, const StrStr &left)
+{
+  return right.Word.length() < left.Word.length();
+}

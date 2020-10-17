@@ -57,4 +57,5 @@ public:
 };
 
 
+bool operator<(const StrStr& right,const StrStr& left);
 #endif // PHONEMIZER_H
