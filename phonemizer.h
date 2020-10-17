@@ -40,6 +40,16 @@ private:
     std::string PhnLanguage;
 public:
     Phonemizer();
+    /*
+     * Initialize a phonemizer
+     * Expects:
+     * - Two files consisting in TOKEN \t ID:
+     * -- char2id.txt: Translation from input character to ID the model can accept
+     * -- phn2id.txt: Translation from output ID from the model to phoneme
+     * - A model/ folder where a G2P-Tensorflow model was saved as SavedModel
+     * - dict.txt: Phonetic dictionary. First it searches the word there and if it can't be found then it uses the model.
+
+    */
     bool Initialize(const std::string InPath);
     std::string ProcessWord(const std::string& InWord, float Temperature = 0.1f);
     std::string GetPhnLanguage() const;
