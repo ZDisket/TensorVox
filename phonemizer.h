@@ -63,6 +63,7 @@ public:
     std::string ProcessWord(const std::string& InWord, float Temperature = 0.1f);
     std::string GetPhnLanguage() const;
     void SetPhnLanguage(const std::string &value);
+
 };
 
 

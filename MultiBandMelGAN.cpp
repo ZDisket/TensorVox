@@ -47,4 +47,7 @@ MultiBandMelGAN::MultiBandMelGAN()
 
 MultiBandMelGAN::~MultiBandMelGAN()
 {
+    if (MelGAN)
+        delete MelGAN;
+
 }

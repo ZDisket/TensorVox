@@ -84,13 +84,6 @@ VoiceManager::~VoiceManager()
 
     Voices.clear();
 
-    for (Phonemizer* Phn : Phonemizers)
-    {
 
-        SAFE_DELETE(Phn)
-
-    }
-
-    Phonemizers.clear();
 
 }
