@@ -94,12 +94,34 @@ void Phonemizer::LoadDictionary(const std::string &InDictFn)
     std::sort(Dictionary.begin(),Dictionary.end());
 
 
+    if (DictBuckets.size())
+        DictBuckets.clear();
+
+    size_t LastSize = 0;
+    for (size_t i = 0; i < Dictionary.size();i++)
+    {
+        const StrStr& Entr = Dictionary[i];
+
+        if (Entr.Word.length() > LastSize)
+        {
+            LastSize = Entr.Word.length();
+            DictBuckets.push_back(VBucket{LastSize,i});
+
+        }
+
+
+    }
+
+
 }
 
 std::string Phonemizer::DictLookup(const std::string &InWord)
 {
-    for (const StrStr& Entr : Dictionary)
+
+    for (size_t w = GetBucketIndex(InWord.length()) - 1; w < Dictionary.size();w++)
     {
+        const StrStr& Entr = Dictionary[w];
+
         if (Entr.Word.length() != InWord.length())
             continue;
 
@@ -109,6 +131,20 @@ std::string Phonemizer::DictLookup(const std::string &InWord)
     }
 
     return "";
+
+}
+
+size_t Phonemizer::GetBucketIndex(size_t InSize)
+{
+    for (const VBucket& Bk : DictBuckets)
+    {
+        if (Bk.first == InSize)
+            return Bk.second;
+
+    }
+
+
+    return 0;
 
 }
 

@@ -54,7 +54,7 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
         }
 
 
-        std::string Res = Phoner->ProcessWord(Word,0.1f);
+        std::string Res = Phoner->ProcessWord(Word,0.001f);
         Assemble.append(Res);
         Assemble.append(" ");
 
