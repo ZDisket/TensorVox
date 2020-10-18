@@ -20,7 +20,7 @@ def preprocess(in_fname):
     for li in tqdm(f.readlines()):
       spl = li.strip().split("\t")
       if len(spl) > 1:
-        words.append(spl[0])
+        words.append(spl[0].lower()) #convert to lowercase for re-exporting later
         phn.append(spl[1])
 
   phntok = tf.keras.preprocessing.text.Tokenizer(lower=False)
@@ -47,7 +47,7 @@ def preprocess(in_fname):
   txtsize = len(txttok.word_index)
   phnsize = len(phntok.word_index)
 
-  return txtpadded, phnpadded, txtsize, phnsize, global_max, phntok.word_index, txttok.word_index
+  return txtpadded, phnpadded, txtsize, phnsize, phntok.word_index, txttok.word_index, words, phn
 
 
 def getmodel(input_shape, in_vocab_size, out_vocab_size,gru_size,in_lr):
@@ -133,7 +133,7 @@ def main():
 
     args = parser.parse_args()
     
-    txtpadded, phnpadded, txtsize, phnsize, global_max, phn_wi, txt_wi = preprocess(args.dict_path)
+    txtpadded, phnpadded, txtsize, phnsize, phn_wi, txt_wi, words, phns = preprocess(args.dict_path)
     
     yf = open(args.config_path,"r")
     config = yaml.load(yf)
@@ -151,8 +151,17 @@ def main():
     
     print("Starting export...")
     export_model(args.out_path,cumodel,phn_wi,txt_wi)
-    print("Copying dict...")
-    shutil.copy(args.dict_path,os.path.join(args.out_path,"dict.txt"))
+
+    print("Re-exporting dict...")
+    outdict = open(os.path.join(args.out_path,"dict.txt"),"w")
+
+    for idx, w in enumerate(words):
+      outdict.write(w + "\t" + phns[idx] + "\n")
+    
+    outdict.close()
+
+
+
 
 
     

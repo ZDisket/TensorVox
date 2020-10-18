@@ -83,7 +83,7 @@ void Phonemizer::LoadDictionary(const std::string &InDictFn)
         ZStringDelimiter Deline(Line);
         Deline.AddDelimiter("\t");
 
-        Word = QString::fromStdString(Deline[0]).toLower().toStdString();
+        Word = Deline[0];
         Phn = Deline[1];
 
 
@@ -121,9 +121,6 @@ std::string Phonemizer::DictLookup(const std::string &InWord)
     for (size_t w = GetBucketIndex(InWord.length()) - 1; w < Dictionary.size();w++)
     {
         const StrStr& Entr = Dictionary[w];
-
-        if (Entr.Word.length() != InWord.length())
-            continue;
 
         if (Entr.Word == InWord)
             return Entr.Phn;
