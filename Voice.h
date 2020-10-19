@@ -48,15 +48,17 @@ public:
 	 --  The folder must contain the following elements:
 	 ---  melgen: Folder generated where a FastSpeech2 model was saved as SavedModel, with .pb, variables, etc
 	 ---  vocoder: Folder where a Multi-Band MelGAN model was saved as SavedModel.
-	 ---  g2p.fst: Phonetisaurus FST G2P model.
      ---  info.json: Model information
-     ---  phonemes.txt: Tab delimited file containing PHONEME \t ID
+     ---  phonemes.txt: Tab delimited file containing PHONEME \t ID, for inputting to the FS2 model.
 
      --- If multispeaker, a lined .txt file called speakers.txt
      --- If multi-emotion, a lined .txt file called emotions.txt
 
 	*/
-    Voice(const std::string& VoxPath, const std::string& inName);
+    Voice(const std::string& VoxPath, const std::string& inName,Phonemizer* InPhn);
+
+    void AddPhonemizer(Phonemizer* InPhn);
+
 
     std::vector<float> Vocalize(const std::string& Prompt, float Speed = 1.f, int32_t SpeakerID = 0, float Energy = 1.f, float F0 = 1.f,int32_t EmotionID = -1);
 

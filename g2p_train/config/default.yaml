@@ -1,0 +1,7 @@
+# Config file for G2P-English model. This one does 15 epochs and trains very quickly on GPU.
+
+gru_dims: 128 # Size of GRU (and embedding layer)
+batch_size: 4096 # Batch size
+val_per: 0.1 # % of dataset to be used for validation. Floating point, 1.0 = 100%; 0.5 = 50%, etc...
+epochs: 15 # Amount of epochs
+learning_rate: 0.006 # Learning rate

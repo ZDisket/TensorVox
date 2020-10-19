@@ -90,6 +90,8 @@ void MainWindow::showEvent(QShowEvent *e)
     pTaskBtn->setWindow(((FramelessWindow*)pDarkFw)->windowHandle());
     pTaskBtn->progress()->show();
 
+
+
 #endif
 
     e->accept();

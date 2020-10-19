@@ -36,8 +36,6 @@ TODO: Add instructions for compile from scratch.
 
 ## Externals (and thanks)
 
- - **Phonetisaurus** (text to phoneme): [https://github.com/AdolfVonKleist/Phonetisaurus](https://github.com/AdolfVonKleist/Phonetisaurus) *(ported to Windows)*
- - **OpenFST 1.6.2** (for Windows): [https://github.com/kkm000/openfst](https://github.com/kkm000/openfst)
  - **Tensorflow C API**: [https://www.tensorflow.org/install/lang_c](https://www.tensorflow.org/install/lang_c)
  - **CppFlow** (TF C API -> C++ wrapper): [https://github.com/serizba/cppflow](https://github.com/serizba/cppflow) 
  - **AudioFile** (for WAV export): [https://github.com/adamstark/AudioFile](https://github.com/adamstark/AudioFile)
