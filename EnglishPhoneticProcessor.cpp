@@ -22,6 +22,8 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
     vector<string> Words = Tokenizer.Tokenize(InText,InLanguage);
 
 	string Assemble = "";
+    // Make a copy of the dict passed.
+    std::vector<DictEntry> CurrentDict = InDict;
 
 	for (size_t w = 0; w < Words.size();w++) 
 	{
@@ -55,6 +57,10 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 
 
         std::string Res = Phoner->ProcessWord(Word,0.001f);
+
+        // Cache the word in the override dict so next time we don't have to research it
+        CurrentDict.push_back({Word,Res});
+
         Assemble.append(Res);
         Assemble.append(" ");
 

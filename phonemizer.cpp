@@ -118,9 +118,12 @@ void Phonemizer::LoadDictionary(const std::string &InDictFn)
 std::string Phonemizer::DictLookup(const std::string &InWord)
 {
 
-    for (size_t w = GetBucketIndex(InWord.length()) - 1; w < Dictionary.size();w++)
+    for (size_t w = 0 ; w < Dictionary.size();w++)
     {
         const StrStr& Entr = Dictionary[w];
+
+        if (Entr.Word.size() != InWord.size())
+            continue;
 
         if (Entr.Word == InWord)
             return Entr.Phn;
