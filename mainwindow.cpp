@@ -180,7 +180,9 @@ void MainWindow::on_btnInfer_clicked()
 
 
 
-    QString RawInput = ui->edtInput->toPlainText();
+    // Convert to lowercase here before we add phonemes
+    QString BeforeInput = ui->edtInput->toPlainText().toLower();
+    QString RawInput = BeforeInput;
     QString Input = RawInput.replace("\n"," ");
     const int MaxShowInputLen = ui->lstUtts->size().width() / 6;
 

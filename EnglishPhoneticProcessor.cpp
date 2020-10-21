@@ -8,6 +8,7 @@ bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn)
 
 
     Phoner = InPhn;
+    Tokenizer.SetAllowedChars(Phoner->GetGraphemeChars());
 
 
 
@@ -18,6 +19,8 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 {
     if (!Phoner)
 		return "ERROR";
+
+
 
     vector<string> Words = Tokenizer.Tokenize(InText,InLanguage);
 

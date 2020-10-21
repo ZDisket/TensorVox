@@ -64,6 +64,8 @@ public:
     std::string GetPhnLanguage() const;
     void SetPhnLanguage(const std::string &value);
 
+    std::string GetGraphemeChars();
+
 };
 
 

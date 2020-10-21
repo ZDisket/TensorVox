@@ -234,6 +234,17 @@ void Phonemizer::SetPhnLanguage(const std::string &value)
     PhnLanguage = value;
 }
 
+std::string Phonemizer::GetGraphemeChars()
+{
+
+    std::string RetAllowed = "";
+    for (const IdStr& Idx : CharId)
+        RetAllowed.append(Idx.STR);
+
+    return RetAllowed;
+
+}
+
 
 
 

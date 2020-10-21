@@ -16,7 +16,7 @@ def preprocess(in_fname):
   words = list()
   phn = list()
   print("Opening file...")
-  with open(in_fname,"r") as f:
+  with open(in_fname,"r",encoding="utf-8") as f:
     for li in tqdm(f.readlines()):
       spl = li.strip().split("\t")
       if len(spl) > 1:
@@ -153,7 +153,7 @@ def main():
     export_model(args.out_path,cumodel,phn_wi,txt_wi)
 
     print("Re-exporting dict...")
-    outdict = open(os.path.join(args.out_path,"dict.txt"),"w")
+    outdict = open(os.path.join(args.out_path,"dict.txt"),"w",encoding="utf-8")
 
     for idx, w in enumerate(words):
       outdict.write(w + "\t" + phns[idx] + "\n")

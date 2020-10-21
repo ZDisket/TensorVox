@@ -10,26 +10,19 @@ const std::vector<std::string> prefixes = { "twen", "thir", "for", "fif", "six",
 // Punctuation, this gets auto-converted to SIL
 const std::string punctuation = ",.-;";
 
-// Capitals and lowercases, both having equal indexes
-const std::string capitals = "QWERTYUIOPASDFGHJKLZXCVBNM";
-const std::string lowercase = "qwertyuiopasdfghjklzxcvbnm";
-
-const std::string spanish_acc = "íóáúéñÉÁüÚÓÍÅèÑ";
-
-
-// Characters that are allowed but don't fit in any other category
-const std::string misc = "'@";
-
-// Characters not allowed normally, but fine in a phonetic sequence
-const std::string phonemeaux = "1234567890+-";
 
 using namespace std;
 
+void TextTokenizer::SetAllowedChars(const std::string &value)
+{
+    AllowedChars = value;
+}
+
 string TextTokenizer::IntToStr(int number)
 {
-	if (number < 0)
-	{
-		return "minus " + IntToStr(-number);
+    if (number < 0)
+    {
+        return "minus " + IntToStr(-number);
 	}
 	if (number <= 14)
 		return first14.at(number);
@@ -127,8 +120,9 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
 	/*
 	In this step we go through the string and only allow qualified character to pass through.
 	*/
-    for (auto& tok : DelimitedTokens)
+    for (size_t TokCtr = 0; TokCtr < DelimitedTokens.size();TokCtr++)
 	{
+        const auto& tok = DelimitedTokens[TokCtr];
 		string AppTok = "";
 
 
@@ -144,21 +138,15 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
 		{
 
 
-            if (Language == ETTSLanguage::Spanish && spanish_acc.find(tok[s]) != string::npos)
+            if (AllowedChars.find(tok[s]) != std::string::npos)
                 AppTok += tok[s];
 
-			if (lowercase.find(tok[s]) != string::npos) {
-				AppTok += tok[s];
-			}
-			size_t IdxInUpper = capitals.find(tok[s]);
-			if (IdxInUpper != string::npos) {
-				// Add its lowercase version
-				AppTok += lowercase[IdxInUpper];
-			}
 
+            // Prevent an ending period from adding another SIL
+            bool LastElem = TokCtr == DelimitedTokens.size() - 1 && s == tok.size() - 1;
 			// Punctuation handler
-			// This time we explicitly add a token to the vector
-			if (punctuation.find(tok[s]) != string::npos) {
+            // This time we explicitly add a token to the vector
+            if (punctuation.find(tok[s]) != string::npos && !LastElem) {
 				// First, if the assembled string isn't empty, we add it in its current state
 				// Otherwise, the SIL could end up appearing before the word.
 				if (!AppTok.empty()) {
@@ -168,8 +156,7 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
                 ProcessedTokens.push_back("@SIL");
 			}
 
-			if (misc.find(tok[s]) != string::npos)
-				AppTok += tok[s];
+
 
 
 
