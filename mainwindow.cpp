@@ -380,7 +380,7 @@ bool MainWindow::MustExplicitlyIterateQueue()
         return true;
 
 
-    if (std::max(GetNumThreads() / 2,1) < CountBlues())
+    if (std::max(GetNumThreads(),1) < CountBlues())
         return false;
 
     return true;
