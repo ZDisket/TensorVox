@@ -44,6 +44,8 @@ TODO: Add instructions for compile from scratch.
  - **r8brain-free-src** (Resampling): https://github.com/avaneev/r8brain-free-src
  - **rnnoise** (CMake version, denoising output): https://github.com/almogh52/rnnoise-cmake
 
+## Contact
+You can open an issue on GitHub or join the [Discord server](https://discord.gg/yqFDAWHand) and discuss/ask anything there
 
 ## Note about licensing
 
