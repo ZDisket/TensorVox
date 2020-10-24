@@ -95,5 +95,5 @@ RESOURCES += \
 
 win32:RC_ICONS += winicon.ico
 
-VERSION = 0.7.9.2
+VERSION = 0.8.2.0
 CONFIG += force_debug_info

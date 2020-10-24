@@ -93,6 +93,7 @@ void MainWindow::showEvent(QShowEvent *e)
 
 
 #endif
+    FwParent->setWindowTitle("TensorVox");
 
     e->accept();
 }
@@ -181,7 +182,7 @@ void MainWindow::on_btnInfer_clicked()
 
 
     // Convert to lowercase here before we add phonemes
-    QString BeforeInput = ui->edtInput->toPlainText().toLower();
+    QString BeforeInput = ui->edtInput->toPlainText();
     QString RawInput = BeforeInput;
     QString Input = RawInput.replace("\n"," ");
     const int MaxShowInputLen = ui->lstUtts->size().width() / 6;
@@ -413,7 +414,12 @@ QStringList MainWindow::SuperWordSplit(const QString &InStr, int MaxLen)
         if (CurrentStr.size() > 0)
             CurrentStr.append(" ");
 
-        CurrentStr.append(RawWords[Idx]);
+        QString CuWord = RawWords[Idx];
+
+        if (!CuWord.contains("@")) // phonetic input has to be uppercase
+            CuWord = CuWord.toLower();
+
+        CurrentStr.append(CuWord);
 
         if (CurrentStr.length() > MaxLen){
             SplitStrs.append(CurrentStr);
@@ -456,7 +462,9 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
                 continue;
 
 
-            NewTokens.push_back("@" + Tk);
+
+
+            NewTokens.push_back("@" + Tk.toUpper());
 
         }
 

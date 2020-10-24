@@ -89,6 +89,7 @@ void FramelessWindow::setContent(QWidget *w)
   ui->windowContent->setLayout(&contentLayout);
 }
 
+
 void FramelessWindow::ContentDlg(QDialog *indlg)
 {
     ContDlg = true;
@@ -104,6 +105,7 @@ void FramelessWindow::SetTitleBarBtns(bool Maximize, bool Minimize, bool Close)
 
 void FramelessWindow::setWindowTitle(const QString &text)
 {
+
   ui->titleText->setText(text);
 }
 
