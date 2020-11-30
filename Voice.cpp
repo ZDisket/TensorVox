@@ -135,7 +135,7 @@ void Voice::AddPhonemizer(Phonemizer *InPhn)
 std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID)
 {
 
-    std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt,Phonemes,CurrentDict,(ETTSLanguage::Enum)VoxInfo.Language);
+    std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt + VoxInfo.EndPadding,Phonemes,CurrentDict,(ETTSLanguage::Enum)VoxInfo.Language);
 
     TFTensor<float> Mel = MelPredictor.DoInference(PhonemesToID(PhoneticTxt), SpeakerID, Speed, Energy, F0,EmotionID);
 

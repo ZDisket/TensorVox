@@ -179,18 +179,11 @@ void MainWindow::on_btnInfer_clicked()
         on_btnLoad_clicked();
 
 
-
-
     // Convert to lowercase here before we add phonemes
     QString BeforeInput = ui->edtInput->toPlainText();
     QString RawInput = BeforeInput;
     QString Input = RawInput.replace("\n"," ");
     const int MaxShowInputLen = ui->lstUtts->size().width() / 6;
-
-
-
-
-
 
 
 
@@ -251,7 +244,7 @@ void MainWindow::on_btnInfer_clicked()
         Dets.Speed = RangeToFloat(ui->sliSpeed->value());
         Dets.Energy = RangeToFloat(ui->sliEnergy->value());
         Dets.pItem = widItm;
-        Dets.Prompt = idvInput + " @SIL @END";
+        Dets.Prompt = idvInput;
         Dets.SpeakerID = 0;
         Dets.EmotionID = -1;
         Dets.Denoise = ui->chkDenoise->isChecked();
@@ -321,6 +314,7 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
         return;
 
     pBuff->open(QBuffer::ReadWrite);
+
 
     StdOutput->start(pBuff);
     CanPlayAudio = false;

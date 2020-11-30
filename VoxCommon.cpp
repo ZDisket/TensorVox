@@ -66,7 +66,8 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
                  JS["note"].get<std::string>(),
                  JS["sarate"].get<uint32_t>(),
                  Lang,
-                LanguageNames[Lang]};
+                LanguageNames[Lang],
+                 " " + JS["pad"].get<std::string>()}; // Add a space for separation since we directly append the value to the prompt
 
     if (Inf.Note.size() > MaxNoteSize)
         Inf.Note = Inf.Note.substr(0,MaxNoteSize);

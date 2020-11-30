@@ -37,8 +37,8 @@ bool PhoneticDict::Import(const QString &infn)
 
 
     if (fi.GetFileLength() == 0){
-    fi.Close();
-    return true;
+        fi.Close();
+        return true;
 
     }
 
