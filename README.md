@@ -45,7 +45,7 @@ TODO: Add instructions for compile from scratch.
  - **rnnoise** (CMake version, denoising output): https://github.com/almogh52/rnnoise-cmake
 
 ## Contact
-You can open an issue here or join the [Discord server](https://discord.gg/yqFDAWHand) and discuss/ask anything there
+You can open an issue here or join the [Discord server](https://discord.gg/yqFDAWH) and discuss/ask anything there
 
 ## Note about licensing
 
