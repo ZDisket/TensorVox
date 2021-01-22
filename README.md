@@ -1,16 +1,12 @@
 ﻿# TensorVox
-NOTE: In very early alpha stage. 
 
 TensorVox is an application designed to enable user-friendly and lightweight neural speech synthesis in the desktop, aimed at increasing accessibility to such technology. 
 
 Powered by [TensorflowTTS](https://github.com/TensorSpeech/TensorFlowTTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of pip libraries, just a 100MB DLL.
 
-### Try it out!
-![Interface](https://i.imgur.com/pJRngb2.png)
-Note: The download version is a very old iteration
-
-1. Download [the program, and LJSpeech model](https://drive.google.com/file/d/1yQyHZmFA0uN7x2V1inmj5xEQjKq2mzVH/view?usp=sharing)
-2. Run.
+### Try it out
+Grab it from the releases and check [the Google Drive folder](https://drive.google.com/drive/folders/1atUyxBbstKZpMqQEZMdNmRF2AKrlahKy?usp=sharing) for models and installation instructions
+TODO: Add instructions for training and exporting models
 
 ## Supported architectures
 
