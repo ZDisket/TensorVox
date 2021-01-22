@@ -388,7 +388,16 @@ void MainWindow::PopulateComboBox()
 {
 
     ui->cbModels->clear();
-    ui->cbModels->insertItems(0,ListDirs("models"));
+    QStringList CuModels = ListDirs("models");
+
+    if (!CuModels.empty())
+        ui->cbModels->insertItems(0,CuModels);
+
+    // This will either disable or enable depending on whether it found models or not.
+    ui->cbModels->setEnabled(!CuModels.empty());
+    ui->btnLoad->setEnabled(!CuModels.empty());
+
+
 
 
 }
