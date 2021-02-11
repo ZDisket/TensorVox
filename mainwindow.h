@@ -119,10 +119,17 @@ private slots:
 
     void on_chkMultiThreaded_stateChanged(int arg1);
 
+    void OnFireLogiLed();
+
 private:
+
+    bool LogiLedAvailable;
+
+    void ResetLogiLedIn(unsigned secs);
 
     int32_t NumDone;
     int32_t GetID(int32_t InID);
+    void UpdateLogiLed();
     void SetDict();
     void HandleIsMultiSpeaker(size_t inVid);
     void HandleIsMultiEmotion(size_t inVid);

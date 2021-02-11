@@ -19,6 +19,7 @@ void ModelInfoDlg::SetInfo(const QString &ModelName, const QString &Info, int32_
     ui->lblVersion->setText("Version: " + QString::number(InVersion) + "  ");
     ui->redtModelInfo->setText(QString(Info).replace("(/NL)","\n"));
 
+
     ui->lblModelTitle->setText(ModelName);
 
     ui->lblModelArchitecture->setText("Architecture: " + Repo + " " + MelGen + " & " + Vocoder);

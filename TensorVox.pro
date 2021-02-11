@@ -85,7 +85,8 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 
 INCLUDEPATH += $$PWD/deps/include
 INCLUDEPATH += $$PWD/ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow
-win32: LIBS += -L$$PWD/deps/lib/ tensorflow.lib r8bsrc64.lib rnnoise64.lib
+win32: LIBS += -L$$PWD/deps/lib/ tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib
+win32: LIBS += Advapi32.lib
 
 
 RESOURCES += \

@@ -15,7 +15,7 @@
 #include "framelesswindow.h"
 #include <QMessageBox>
 #include "modelinfodlg.h"
-
+#include <LogitechLEDLib.h>
 #define FwParent ((FramelessWindow*)pDarkFw)
 
 MainWindow::MainWindow(QWidget *parent)
@@ -77,6 +77,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     NumDone = 0;
     CurrentAmtThreads = 0;
+
+    LogiLedAvailable = LogiLedInitWithName("TensorVox");
+    if (LogiLedAvailable)
+        LogiLedSetTargetDevice(LOGI_DEVICETYPE_RGB);
+
+    UpdateLogiLed();
 
 
 
@@ -143,6 +149,29 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
     ui->btnExportSel->setEnabled(NoInfers);
     ui->btnExReport->setEnabled(NoInfers);
+
+    if (NoInfers)
+    {
+        LogiLedSetLighting(0,100,50);
+
+        LogiLedFlashLighting(0,100,50,8000,500);
+
+
+    }
+    else
+    {
+        float NDonef = (float)NumDone;
+        float Cnt = (float)ui->lstUtts->count();
+
+        float BlueLevel = NDonef / Cnt;
+        BlueLevel *= 100.f;
+
+        LogiLedSetLighting(20,0,(int)BlueLevel);
+
+
+    }
+
+
 
 
     --CurrentAmtThreads;
@@ -546,12 +575,19 @@ void MainWindow::DoInference(InferDetails &Dets)
 
 void MainWindow::on_btnLoad_clicked()
 {
+    LogiLedFlashLighting(55,0,100,LOGI_LED_DURATION_INFINITE,500);
     size_t VoID = VoMan.LoadVoice(ui->cbModels->currentText());
     ui->btnLoad->setEnabled(false);
     std::string VoNote = VoMan[VoID]->GetInfo().Note;
 
     ui->lblModelNote->setText(QString::fromStdString(VoNote));
     HandleIsMultiSpeaker(VoID);
+
+    LogiLedStopEffects();
+
+    LogiLedFlashLighting(0,100,100,5000,500);
+
+
 
 }
 
@@ -578,8 +614,14 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 {
 
 
-    if (item->backgroundColor() == DoneColor)
-        PlayBuffer(AudBuffs[(uint64_t)GetID(ui->lstUtts->row(item))],true);
+    if (item->backgroundColor() == DoneColor){
+        QBuffer* pBuff = AudBuffs[(uint64_t)GetID(ui->lstUtts->row(item))];
+        PlayBuffer(pBuff,true);
+
+
+
+
+    }
 
 
 }
@@ -597,6 +639,8 @@ void MainWindow::on_btnClear_clicked()
     IdVec.clear();
     NumDone = 0;
     CurrentAmtThreads = 0;
+
+    UpdateLogiLed();
 
 
 }
@@ -657,6 +701,8 @@ void MainWindow::on_btnExReport_clicked()
     if (!ofname.size())
         return;
 
+
+    LogiLedFlashLighting(0,50,100,LOGI_LED_DURATION_INFINITE,500);
     std::vector<float> Audat;
     QByteArray CurrentBuff;
 
@@ -675,6 +721,7 @@ void MainWindow::on_btnExReport_clicked()
 
 
     VoxUtil::ExportWAV(ofname.toStdString(),Audat,CommonSampleRate);
+    UpdateLogiLed();
 
 
 }
@@ -876,6 +923,17 @@ void MainWindow::on_chkMultiThreaded_stateChanged(int arg1)
 
 }
 
+void MainWindow::OnFireLogiLed()
+{
+    UpdateLogiLed();
+}
+
+void MainWindow::ResetLogiLedIn(unsigned secs)
+{
+   QTimer::singleShot(secs * 1000,this,&MainWindow::OnFireLogiLed);
+
+}
+
 int32_t MainWindow::GetID(int32_t InID)
 {
     for (const InferIDTrueID& CuId : IdVec)
@@ -887,4 +945,18 @@ int32_t MainWindow::GetID(int32_t InID)
     }
 
     return -1;
+}
+
+void MainWindow::UpdateLogiLed()
+{
+    if (!LogiLedAvailable)
+        return;
+
+
+    if (ui->lstUtts->count() == 0)
+        LogiLedSetLighting(100, 0, 95);
+    else
+        LogiLedSetLighting(0,100,50);
+
+
 }

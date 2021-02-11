@@ -39,6 +39,7 @@ TODO: Add instructions for compile from scratch.
  - **JSON for modern C++**: https://github.com/nlohmann/json
  - **r8brain-free-src** (Resampling): https://github.com/avaneev/r8brain-free-src
  - **rnnoise** (CMake version, denoising output): https://github.com/almogh52/rnnoise-cmake
+ - **Logitech LED Illumination SDK** (Mouse RGB integration): https://www.logitechg.com/en-us/innovation/developer-lab.html
 
 ## Contact
 You can open an issue here or join the [Discord server](https://discord.gg/yqFDAWH) and discuss/ask anything there
