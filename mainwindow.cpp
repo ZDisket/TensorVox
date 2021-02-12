@@ -615,8 +615,12 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 
 
     if (item->backgroundColor() == DoneColor){
+        LogiLedSetLighting(100,100,100);
+
         QBuffer* pBuff = AudBuffs[(uint64_t)GetID(ui->lstUtts->row(item))];
         PlayBuffer(pBuff,true);
+        int32_t SecsShow = pBuff->size() / (int32_t)CommonSampleRate;
+        ResetLogiLedIn(SecsShow);
 
 
 
@@ -702,7 +706,7 @@ void MainWindow::on_btnExReport_clicked()
         return;
 
 
-    LogiLedFlashLighting(0,50,100,LOGI_LED_DURATION_INFINITE,500);
+    LogiLedSetLighting(100,100,100);
     std::vector<float> Audat;
     QByteArray CurrentBuff;
 
@@ -721,7 +725,11 @@ void MainWindow::on_btnExReport_clicked()
 
 
     VoxUtil::ExportWAV(ofname.toStdString(),Audat,CommonSampleRate);
-    UpdateLogiLed();
+
+    LogiLedFlashLighting(0,50,100,5000,500);
+
+
+    ResetLogiLedIn(8);
 
 
 }
