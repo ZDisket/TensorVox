@@ -15,15 +15,15 @@ FastSpeech2::FastSpeech2(const std::string & SavedModelFolder)
 
 bool FastSpeech2::Initialize(const std::string & SavedModelFolder)
 {
-	try {
-		FastSpeech = new Model(SavedModelFolder);
-	}
-	catch (...) {
-		FastSpeech = nullptr;
-		return false;
+    try {
+        FastSpeech = new Model(SavedModelFolder);
+    }
+    catch (...) {
+        FastSpeech = nullptr;
+        return false;
 
-	}
-	return true;
+    }
+    return true;
 }
 
 TFTensor<float> FastSpeech2::DoInference(const std::vector<int32_t>& InputIDs, int32_t SpeakerID, float Speed, float Energy, float F0, int32_t EmotionID)

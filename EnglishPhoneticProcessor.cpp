@@ -32,6 +32,9 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 	{
 		const string& Word = Words[w];
 
+        if (Word.size() > 22)
+            continue;
+
         if (Word.find("@") != std::string::npos){
             std::string AddPh = Word.substr(1); // Remove the @
             size_t OutId = 0;

@@ -12,23 +12,38 @@ PhoneticHighlighter::PhoneticHighlighter(QTextDocument *parent) : QSyntaxHighlig
     QString SingleExp = "@.\\S*";
     SinglePhonemeExp = QRegularExpression(SingleExp);
 
+    QString LongExp = "\\b\\w{23,}";
+    TooLongExp = QRegularExpression(LongExp);
+
+    ErrorFormat = PhonemeFormat;
+    ErrorFormat.setForeground(Qt::red);
+    ErrorFormat.setBackground(Qt::black);
+
+
+
+
 
 
 }
 
 void PhoneticHighlighter::highlightBlock(const QString &text)
 {
-    QRegularExpressionMatchIterator MatchIter = PhonemeExp.globalMatch(text);
-    while (MatchIter.hasNext()) {
-        QRegularExpressionMatch match = MatchIter.next();
-        setFormat(match.capturedStart(), match.capturedLength(), PhonemeFormat);
-    }
 
-    // I know copying is lazy, but it's just two regexes.
-    MatchIter = SinglePhonemeExp.globalMatch(text);
+    // Phoneme
+    HighlightRegex(text,PhonemeExp,PhonemeFormat);
+    HighlightRegex(text,SinglePhonemeExp,PhonemeFormat);
+
+    // Error
+    HighlightRegex(text,TooLongExp,ErrorFormat);
+
+}
+
+void PhoneticHighlighter::HighlightRegex(const QString& Text,const QRegularExpression &Reg, const QTextCharFormat &Fmt)
+{
+    QRegularExpressionMatchIterator MatchIter = Reg.globalMatch(Text);
     while (MatchIter.hasNext()) {
         QRegularExpressionMatch match = MatchIter.next();
-        setFormat(match.capturedStart(), match.capturedLength(), PhonemeFormat);
+        setFormat(match.capturedStart(), match.capturedLength(), Fmt);
     }
 
 }

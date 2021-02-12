@@ -154,7 +154,7 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
     {
         LogiLedSetLighting(0,100,50);
 
-        LogiLedFlashLighting(0,100,50,8000,500);
+        LogiLedFlashLighting(0,100,50,6000,500);
 
 
     }
@@ -615,12 +615,13 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 
 
     if (item->backgroundColor() == DoneColor){
-        LogiLedSetLighting(100,100,100);
+
 
         QBuffer* pBuff = AudBuffs[(uint64_t)GetID(ui->lstUtts->row(item))];
         PlayBuffer(pBuff,true);
-        int32_t SecsShow = pBuff->size() / (int32_t)CommonSampleRate;
-        ResetLogiLedIn(SecsShow);
+        int32_t MSecsShow = pBuff->size() / (int32_t)(CommonSampleRate / 1000);
+        LogiLedFlashLighting(100,100,100,MSecsShow / 4,200);
+
 
 
 

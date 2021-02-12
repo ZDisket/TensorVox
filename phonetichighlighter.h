@@ -14,8 +14,12 @@ public:
 protected:
     void highlightBlock(const QString &text) override;
 private:
+
+    void HighlightRegex(const QString &Text, const QRegularExpression& Reg, const QTextCharFormat& Fmt);
     QRegularExpression SinglePhonemeExp;
+    QRegularExpression TooLongExp;
     QTextCharFormat PhonemeFormat;
+    QTextCharFormat ErrorFormat;
 
 };
 
