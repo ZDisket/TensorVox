@@ -20,6 +20,8 @@
 #include "phoneticdict.h"
 
 #include "rnnoise.h"
+#include <QClipboard>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -68,6 +70,10 @@ private:
     uint32_t CurrentAmtThreads;
     PhoneticDict PhonDict;
 
+    QClipboard* ClipBrd;
+
+    uint32_t LastInferBatchSize;
+
 
 public:
     void* pDarkFw;
@@ -79,6 +85,7 @@ protected:
 public slots:
     void OnAudioRecv(std::vector<float> InDat,std::chrono::duration<double> infer_span,uint32_t inID);
     void OnAudioStateChange(QAudio::State newState);
+    void OnClipboardDataChanged();
 
 private slots:
     void on_btnInfer_clicked();

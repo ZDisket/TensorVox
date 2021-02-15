@@ -84,6 +84,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     UpdateLogiLed();
 
+    ClipBrd = QGuiApplication::clipboard();
+    connect(ClipBrd,&QClipboard::dataChanged,this,&MainWindow::OnClipboardDataChanged);
+
+    LastInferBatchSize = 0;
+
 
 
 
@@ -154,7 +159,12 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
     {
         LogiLedSetLighting(0,100,50);
 
-        LogiLedFlashLighting(0,100,50,6000,500);
+
+        // Prevent lighting from being flashed if it's just one or a few utterances.
+        if (LastInferBatchSize > 3)
+            LogiLedFlashLighting(0,100,50,6000,500);
+
+
 
 
     }
@@ -197,6 +207,18 @@ void MainWindow::OnAudioStateChange(QAudio::State newState)
 
 
     }
+}
+
+void MainWindow::OnClipboardDataChanged()
+{
+
+    if (ui->actAutoInferClipBrd->isChecked() && !ui->edtInput->hasFocus() && !ClipBrd->text().isEmpty())
+    {
+        ui->edtInput->setText(ClipBrd->text());
+        on_btnInfer_clicked();
+
+    }
+
 }
 
 
@@ -247,6 +269,7 @@ void MainWindow::on_btnInfer_clicked()
     {
         InputSplits.append(SuperWordSplit(LiSplit,ui->spbSeqLen->value()));
     }
+    LastInferBatchSize = InputSplits.size();
 
     for (QString& idvInput : InputSplits)
     {

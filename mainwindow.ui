@@ -634,6 +634,7 @@
     </property>
     <addaction name="actionOverrides"/>
     <addaction name="actionRefresh_model_listing"/>
+    <addaction name="actAutoInferClipBrd"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -669,6 +670,14 @@
    </property>
    <property name="text">
     <string>Refresh model listing</string>
+   </property>
+  </action>
+  <action name="actAutoInferClipBrd">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto-infer clipboard</string>
    </property>
   </action>
  </widget>
