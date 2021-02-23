@@ -6,10 +6,9 @@
 bool MultiBandMelGAN::Initialize(const std::string & VocoderPath)
 {
 	try {
-		MelGAN = new Model(VocoderPath);
+        MelGAN = std::make_unique<Model>(VocoderPath);
 	}
 	catch (...) {
-		MelGAN = nullptr;
 		return false;
 
 	}
@@ -47,7 +46,6 @@ MultiBandMelGAN::MultiBandMelGAN()
 
 MultiBandMelGAN::~MultiBandMelGAN()
 {
-    if (MelGAN)
-        delete MelGAN;
+
 
 }

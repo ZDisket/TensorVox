@@ -4,7 +4,6 @@
 
 FastSpeech2::FastSpeech2()
 {
-	FastSpeech = nullptr;
 }
 
 FastSpeech2::FastSpeech2(const std::string & SavedModelFolder)
@@ -16,10 +15,9 @@ FastSpeech2::FastSpeech2(const std::string & SavedModelFolder)
 bool FastSpeech2::Initialize(const std::string & SavedModelFolder)
 {
     try {
-        FastSpeech = new Model(SavedModelFolder);
+        FastSpeech = std::make_unique<Model>(SavedModelFolder);
     }
     catch (...) {
-        FastSpeech = nullptr;
         return false;
 
     }
@@ -88,6 +86,5 @@ TFTensor<float> FastSpeech2::DoInference(const std::vector<int32_t>& InputIDs, i
 
 FastSpeech2::~FastSpeech2()
 {
-	if (FastSpeech)
-		delete FastSpeech;
+
 }

@@ -592,7 +592,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>Auto-join all lines together into one single WAV file and export</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto-join all lines together into one single WAV file and export. Shift + Click to export every line separately, with their order numbers appended.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Export all to WAV</string>

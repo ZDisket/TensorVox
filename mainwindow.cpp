@@ -687,15 +687,9 @@ void MainWindow::on_btnExportSel_clicked()
         return;
 
     std::vector<float> Audat;
-    QByteArray& CurrentBuff = AudBuffs[(size_t)ui->lstUtts->currentRow()]->buffer();
+    QByteArray& AuBuff = AudBuffs[(size_t)ui->lstUtts->currentRow()]->buffer();
+    ExportAudBuffer(ofname,AuBuff,CommonSampleRate);
 
-    Audat.resize((size_t)CurrentBuff.size() / sizeof(float));
-
-
-    smemcpy(Audat.data(),Audat.size() * sizeof(float),CurrentBuff.data(),(size_t)CurrentBuff.size());
-
-
-    VoxUtil::ExportWAV(ofname.toStdString(),Audat,CommonSampleRate);
 
 }
 
@@ -725,30 +719,55 @@ void MainWindow::on_chkRecPerfLog_clicked(bool checked)
 
 void MainWindow::on_btnExReport_clicked()
 {
-    QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export WAV file"), "Utt", tr("WAV, float32 PCM (*.wav)"));
+
+    bool AltExport = GetAsyncKeyState(VK_LSHIFT);
+
+
+    QString ExTitle = "Export WAV file";
+
+    if (AltExport)
+        ExTitle += "s (separately)";
+
+    QString ofname = QFileDialog::getSaveFileName(FwParent,ExTitle, "Utt", tr("WAV, float32 PCM (*.wav)"));
     if (!ofname.size())
         return;
 
 
     LogiLedSetLighting(100,100,100);
-    std::vector<float> Audat;
-    QByteArray CurrentBuff;
 
-    for (int32_t i = 0; i < ui->lstUtts->count();i++)
+    if (AltExport)
     {
-        CurrentBuff.append(AudBuffs[(uint64_t)GetID(i)]->buffer());
+        for (int32_t i = 0; i < ui->lstUtts->count();i++)
+        {
+
+            // Since QString.replace modifies the string we have to operate on a copy of the ofname every time
+            // otherwise we get things like file1.wav,file12.wav,file123.wav, etc...
+            QString ExFn = ofname;
+
+            ExportAudBuffer(ExFn.replace(".wav",QString::number(i) + ".wav"),AudBuffs[(uint64_t)GetID(i)]->buffer(),CommonSampleRate);
+
+        }
+
+
+        LogiLedFlashLighting(0,50,100,5000,500);
+
+
+        ResetLogiLedIn(8);
+        return;
+
 
     }
 
+    QByteArray CuBuff;
+
+    for (int32_t i = 0; i < ui->lstUtts->count();i++)
+    {
+        CuBuff.append(AudBuffs[(uint64_t)GetID(i)]->buffer());
+
+    }
+    ExportAudBuffer(ofname,CuBuff,CommonSampleRate);
 
 
-    Audat.resize((size_t)CurrentBuff.size() / sizeof(float));
-
-
-    smemcpy(Audat.data(),Audat.size() * sizeof(float),CurrentBuff.data(),(size_t)CurrentBuff.size());
-
-
-    VoxUtil::ExportWAV(ofname.toStdString(),Audat,CommonSampleRate);
 
     LogiLedFlashLighting(0,50,100,5000,500);
 
@@ -958,6 +977,22 @@ void MainWindow::on_chkMultiThreaded_stateChanged(int arg1)
 void MainWindow::OnFireLogiLed()
 {
     UpdateLogiLed();
+}
+
+void MainWindow::ExportAudBuffer(const QString &InFilename, const QByteArray &CurrentBuff, uint32_t InSampleRate)
+{
+
+
+    std::vector<float> Audat;
+
+    Audat.resize((size_t)CurrentBuff.size() / sizeof(float));
+
+
+    smemcpy(Audat.data(),Audat.size() * sizeof(float),CurrentBuff.data(),(size_t)CurrentBuff.size());
+
+
+    VoxUtil::ExportWAV(InFilename.toStdString(),Audat,InSampleRate);
+
 }
 
 void MainWindow::ResetLogiLedIn(unsigned secs)

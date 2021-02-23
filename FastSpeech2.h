@@ -2,10 +2,14 @@
 
 #include "ext/CppFlow/include/Model.h"
 #include "VoxCommon.hpp"
+#include <memory>
+
+
+
 class FastSpeech2
 {
 private:
-	Model* FastSpeech;
+    std::unique_ptr<Model> FastSpeech;
 
 public:
 	FastSpeech2();

@@ -130,6 +130,8 @@ private slots:
 
 private:
 
+    void ExportAudBuffer(const QString& InFilename,const QByteArray& CurrentBuff,uint32_t InSampleRate);
+
     bool LogiLedAvailable;
 
     void ResetLogiLedIn(unsigned secs);
