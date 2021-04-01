@@ -8,7 +8,6 @@ const std::vector<std::string> RepoNames = {"TensorflowTTS","Mozilla/TTS"};
 
 const std::vector<std::string> LanguageNames = {"English","Spanish"};
 
-
 void VoxUtil::ExportWAV(const std::string & Filename, const std::vector<float>& Data, unsigned SampleRate) {
 	AudioFile<float>::AudioBuffer Buffer;
 	Buffer.resize(1);
@@ -40,7 +39,12 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
     std::ifstream JFile(InfoFilename);
     json JS;
 
-    JFile >> JS;
+
+    try {
+        JFile >> JS;
+    } catch(json::parse_error Err) {
+        QMessageBox::critical(nullptr,"JSON parse error",QString::fromUtf8(Err.what()));
+    }
 
 
     JFile.close();

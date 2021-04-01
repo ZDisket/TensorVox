@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FastSpeech2.h"
+#include "tacotron2.h"
 #include "MultiBandMelGAN.h"
 #include "EnglishPhoneticProcessor.h"
 
@@ -9,7 +10,7 @@
 class Voice
 {
 private:
-	FastSpeech2 MelPredictor;
+    std::unique_ptr<MelGen> MelPredictor;
 	MultiBandMelGAN Vocoder;
 	EnglishPhoneticProcessor Processor;
     VoiceInfo VoxInfo;

@@ -7,6 +7,7 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::addLibraryPath("./");
     QApplication a(argc, argv);
     a.setStyle(new DarkStyle);
 

@@ -6,6 +6,7 @@
 #include <vector>
 #include "ext/AudioFile.hpp"
 #include "ext/CppFlow/include/Tensor.h"
+#include <QMessageBox>
 
 #define IF_RETURN(cond,ret) if (cond){return ret;}
 
@@ -33,7 +34,7 @@ enum Enum{
 namespace EText2MelModel {
 enum Enum{
     FastSpeech2 = 0,
-    Tacotron2 // not implemented yet
+    Tacotron2
 };
 
 }

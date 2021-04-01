@@ -15,25 +15,41 @@ bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn)
 	return true;
 }
 
-std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InText, const std::vector<string> &InPhonemes,const std::vector<DictEntry>& InDict,ETTSLanguage::Enum InLanguage)
+std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InText, const std::vector<string> &InPhonemes, const std::vector<DictEntry>& InDict, ETTSLanguage::Enum InLanguage, bool IsTac)
 {
     if (!Phoner)
 		return "ERROR";
 
 
 
-    vector<string> Words = Tokenizer.Tokenize(InText,InLanguage);
+    vector<string> Words = Tokenizer.Tokenize(InText,InLanguage,IsTac);
 
 	string Assemble = "";
     // Make a copy of the dict passed.
     std::vector<DictEntry> CurrentDict = InDict;
 
+
+
 	for (size_t w = 0; w < Words.size();w++) 
 	{
 		const string& Word = Words[w];
 
+
         if (Word.size() > 22)
             continue;
+
+
+        // Double email symbol indicates Tacotron punctuation handling
+        if (Word.find("@@") != std::string::npos)
+        {
+            std::string AddPonct = Word.substr(2); // Remove the @@
+            Assemble.append(AddPonct);
+            Assemble.append(" ");
+
+            continue;
+
+
+        }
 
         if (Word.find("@") != std::string::npos){
             std::string AddPh = Word.substr(1); // Remove the @
@@ -82,6 +98,7 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 
 	if (Assemble[Assemble.size() - 1] == ' ')
 		Assemble.pop_back();
+
 
 
 	return Assemble;

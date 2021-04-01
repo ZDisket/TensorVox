@@ -1,27 +1,34 @@
-#include "FastSpeech2.h"
+#include "tacotron2.h"
 
-
-
-FastSpeech2::FastSpeech2()
+Tacotron2::Tacotron2()
 {
+
 }
 
-
-TFTensor<float> FastSpeech2::DoInference(const std::vector<int32_t>& InputIDs,const std::vector<float>& ArgsFloat,const std::vector<int32_t> ArgsInt, int32_t SpeakerID , int32_t EmotionID)
+TFTensor<float> Tacotron2::DoInference(const std::vector<int32_t> &InputIDs, const std::vector<float> &ArgsFloat, const std::vector<int32_t> ArgsInt, int32_t SpeakerID, int32_t EmotionID)
 {
     if (!CurrentMdl)
         throw std::exception("Tried to do inference on unloaded or invalid model!");
+
+
+
+
+    QString dastr;
+    for (int32_t fish : InputIDs)
+        dastr += QString::number(fish) + " ";
+
+
 
     // Convenience reference so that we don't have to constantly derefer pointers.
     Model& Mdl = *CurrentMdl;
 
     // Define the tensors
+
     Tensor input_ids{ Mdl,"serving_default_input_ids" };
-    Tensor energy_ratios{ Mdl,"serving_default_energy_ratios" };
-    Tensor f0_ratios{ Mdl,"serving_default_f0_ratios" };
     Tensor speaker_ids{ Mdl,"serving_default_speaker_ids" };
-    Tensor speed_ratios{ Mdl,"serving_default_speed_ratios" };
+    Tensor input_lengths{Mdl,"serving_default_input_lengths"};
     Tensor* emotion_ids = nullptr;
+
 
     // This is a multi-emotion model
     if (EmotionID != -1)
@@ -36,25 +43,25 @@ TFTensor<float> FastSpeech2::DoInference(const std::vector<int32_t>& InputIDs,co
     std::vector<int64_t> InputIDShape = { 1, (int64_t)InputIDs.size() };
 
     input_ids.set_data(InputIDs, InputIDShape);
+    input_lengths.set_data(std::vector<int32_t>{(int32_t)InputIDs.size()});
 
-    speed_ratios.set_data(std::vector<float>{ArgsFloat[0]});
-    energy_ratios.set_data(std::vector<float>{ ArgsFloat[1] });
-    f0_ratios.set_data(std::vector<float>{ArgsFloat[2]});
 
     speaker_ids.set_data(std::vector<int32_t>{SpeakerID});
 
     // Define output tensor
+
     Tensor output{ Mdl,"StatefulPartitionedCall" };
 
 
     // Vector of input tensors
-    std::vector<Tensor*> inputs = { &input_ids,&speaker_ids,&speed_ratios,&f0_ratios,&energy_ratios };
+    std::vector<Tensor*> inputs = { &input_ids, &input_lengths,&speaker_ids};
 
     if (EmotionID != -1)
         inputs.push_back(emotion_ids);
 
 
     // Do inference
+
     CurrentMdl->run(inputs, output);
 
     // Define output and return it
@@ -67,9 +74,5 @@ TFTensor<float> FastSpeech2::DoInference(const std::vector<int32_t>& InputIDs,co
     // We could just straight out define it in the return statement, but I like it more this way
 
     return Output;
-}
-
-FastSpeech2::~FastSpeech2()
-{
 
 }

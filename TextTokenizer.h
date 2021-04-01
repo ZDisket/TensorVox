@@ -14,7 +14,7 @@ public:
 	TextTokenizer();
 	~TextTokenizer();
 
-    std::vector<std::string> Tokenize(const std::string& InTxt,ETTSLanguage::Enum Language = ETTSLanguage::English);
+    std::vector<std::string> Tokenize(const std::string& InTxt, ETTSLanguage::Enum Language = ETTSLanguage::English, bool IsTacotron = false);
     void SetAllowedChars(const std::string &value);
 };
 

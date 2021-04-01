@@ -100,21 +100,33 @@ std::vector<std::string> Voice::GetLinedFile(const std::string &Path)
 
 Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer *InPhn)
 {
-	MelPredictor.Initialize(VoxPath + "/melgen");
-	Vocoder.Initialize(VoxPath + "/vocoder");
+    ReadModelInfo(VoxPath + "/info.txt");
+
+    VoxInfo = VoxUtil::ReadModelJSON(VoxPath + "/info.json");
+
+    if (VoxInfo.Architecture.Text2Mel == EText2MelModel::Tacotron2)
+        MelPredictor = std::make_unique<Tacotron2>();
+    else
+        MelPredictor = std::make_unique<FastSpeech2>();
+
+
+    MelPredictor->Initialize(VoxPath + "/melgen");
+
+
+
+
+    Vocoder.Initialize(VoxPath + "/vocoder");
 
     if (InPhn)
         Processor.Initialize(InPhn);
 
 
-    VoxInfo = VoxUtil::ReadModelJSON(VoxPath + "/info.json");
     Name = inName;
     ReadPhonemes(VoxPath + "/phonemes.txt");
     ReadSpeakers(VoxPath + "/speakers.txt");
     ReadEmotions(VoxPath + "/emotions.txt");
 
 
-    ReadModelInfo(VoxPath + "/info.txt");
 
 
 
@@ -135,9 +147,29 @@ void Voice::AddPhonemizer(Phonemizer *InPhn)
 std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID)
 {
 
-    std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt + VoxInfo.EndPadding,Phonemes,CurrentDict,(ETTSLanguage::Enum)VoxInfo.Language);
 
-    TFTensor<float> Mel = MelPredictor.DoInference(PhonemesToID(PhoneticTxt), SpeakerID, Speed, Energy, F0,EmotionID);
+    bool VoxIsTac = VoxInfo.Architecture.Text2Mel == EText2MelModel::Tacotron2;
+    std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt + VoxInfo.EndPadding,Phonemes,CurrentDict,
+                                                            (ETTSLanguage::Enum)VoxInfo.Language,
+                                                           VoxIsTac);
+    TFTensor<float> Mel;
+    if (VoxIsTac)
+    {
+        std::vector<float> FloatArgs;
+        std::vector<int32_t> IntArgs;
+
+        Mel = ((Tacotron2*)MelPredictor.get())->DoInference(PhonemesToID(PhoneticTxt),FloatArgs,IntArgs,SpeakerID, EmotionID);
+
+    }
+    else
+    {
+
+        std::vector<float> FloatArgs = {Speed,Energy,F0};
+        std::vector<int32_t> IntArgs;
+        Mel = ((FastSpeech2*)MelPredictor.get())->DoInference(PhonemesToID(PhoneticTxt),FloatArgs,IntArgs,SpeakerID, EmotionID);
+
+    }
+
 
 	TFTensor<float> AuData = Vocoder.DoInference(Mel);
 

@@ -94,7 +94,7 @@ TextTokenizer::~TextTokenizer()
 {
 }
 
-vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::Enum Language)
+vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::Enum Language,bool IsTacotron)
 {
 	vector<string> ProcessedTokens;
 
@@ -153,7 +153,22 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
 					ProcessedTokens.push_back(AppTok);
 					AppTok = "";
 				}
-                ProcessedTokens.push_back("@SIL");
+
+                if (IsTacotron){
+
+                    // Double at-symbol is handled later
+                    AppTok += "@@";
+                    AppTok += tok[s];
+
+                    ProcessedTokens.push_back(AppTok);
+
+
+                }
+                else{
+                    ProcessedTokens.push_back("@SIL");
+
+                }
+
 			}
 
 

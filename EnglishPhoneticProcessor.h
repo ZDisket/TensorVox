@@ -18,7 +18,7 @@ private:
 
 public:
     bool Initialize(Phonemizer *InPhn);
-    std::string ProcessTextPhonetic(const std::string& InText, const std::vector<std::string> &InPhonemes,const std::vector<DictEntry>& InDict,ETTSLanguage::Enum InLanguage);
+    std::string ProcessTextPhonetic(const std::string& InText, const std::vector<std::string> &InPhonemes, const std::vector<DictEntry>& InDict, ETTSLanguage::Enum InLanguage, bool IsTac);
 	EnglishPhoneticProcessor();
     EnglishPhoneticProcessor(Phonemizer *InPhn);
 	~EnglishPhoneticProcessor();

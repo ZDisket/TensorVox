@@ -799,6 +799,8 @@ void MainWindow::on_cbModels_currentTextChanged(const QString &arg1)
     int32_t CurrentIndex = VoMan.FindVoice(arg1,false);
 
     if (CurrentIndex != -1){
+
+
         ui->lblModelNote->setText(QString::fromStdString(VoMan[(size_t)CurrentIndex]->GetInfo().Note));
         HandleIsMultiSpeaker((size_t)CurrentIndex);
 
@@ -816,6 +818,23 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
     HandleIsMultiEmotion(inVid);
 
     Voice& CurrentVoice = *VoMan[inVid];
+
+
+    ArchitectureInfo Inf = CurrentVoice.GetInfo().Architecture;
+    if (Inf.Text2Mel == EText2MelModel::FastSpeech2)
+    {
+        ui->grpFs2Params->show();
+        ui->chkBiPad->setEnabled(true);
+    }
+    else
+    {
+        ui->grpFs2Params->hide();
+        ui->chkBiPad->setEnabled(false);
+
+
+
+    }
+
 
     if (!CurrentVoice.GetSpeakers().size()){
         ui->lblSpeaker->setVisible(false);
@@ -843,6 +862,8 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
         ui->cbEmotions->setVisible(false);
         return;
     }
+
+
 
 
 

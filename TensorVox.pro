@@ -33,11 +33,13 @@ SOURCES += \
     ext/ZFile.cpp \
     main.cpp \
     mainwindow.cpp \
+    melgen.cpp \
     modelinfodlg.cpp \
     phddialog.cpp \
     phonemizer.cpp \
     phoneticdict.cpp \
     phonetichighlighter.cpp \
+    tacotron2.cpp \
     tfg2p.cpp \
     voicemanager.cpp \
     voxer.cpp
@@ -60,11 +62,13 @@ HEADERS += \
     ext/ZFile.h \
     ext/json.hpp \
     mainwindow.h \
+    melgen.h \
     modelinfodlg.h \
     phddialog.h \
     phonemizer.h \
     phoneticdict.h \
     phonetichighlighter.h \
+    tacotron2.h \
     tfg2p.h \
     voicemanager.h \
     voxer.h
