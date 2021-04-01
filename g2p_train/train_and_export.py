@@ -23,7 +23,7 @@ def preprocess(in_fname):
         words.append(spl[0].lower()) #convert to lowercase for re-exporting later
         phn.append(spl[1])
 
-  phntok = tf.keras.preprocessing.text.Tokenizer(lower=False)
+  phntok = tf.keras.preprocessing.text.Tokenizer(lower=False,filters='"\t\n')
   txttok = tf.keras.preprocessing.text.Tokenizer(char_level=True)
   
   print("Fitting on texts...")

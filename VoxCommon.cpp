@@ -19,7 +19,8 @@ void VoxUtil::ExportWAV(const std::string & Filename, const std::vector<float>& 
 
 
 	AudioFile<float> File;
-	File.setAudioBuffer(Buffer);
+
+    File.setAudioBuffer(Buffer);
 	File.setAudioBufferSize(1, (int)BufSz);
 	File.setNumSamplesPerChannel((int)BufSz);
 	File.setNumChannels(1);

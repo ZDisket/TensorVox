@@ -38,6 +38,10 @@ struct InferDetails{
   QString VoiceName;
   bool Denoise;
 
+  uint32_t SampleRate;
+
+  std::vector<float> ForcedAudio;
+
 
 
 
@@ -127,6 +131,8 @@ private slots:
     void on_chkMultiThreaded_stateChanged(int arg1);
 
     void OnFireLogiLed();
+
+    void on_actDenWAV_triggered();
 
 private:
 

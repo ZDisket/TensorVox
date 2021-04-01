@@ -66,8 +66,8 @@ std::vector<float> DoDenoise(const std::vector<float>& InAudata,DenoiseState* De
     float buf[RNNoiseFrameSize];
 
     // Find the min and max vals in the vector
-    float MinVal = *std::min_element(InAudata.begin(), InAudata.end());
-    float MaxVal = *std::max_element(InAudata.begin(), InAudata.end());
+    float MinVal = -1.f;
+    float MaxVal = 1.f;
 
     for (size_t f = 0; f < InAudata.size();f += RNNoiseFrameSize)
     {
@@ -104,8 +104,8 @@ std::vector<float> DoDenoise(const std::vector<float>& InAudata,DenoiseState* De
 
 
     // Due to post-normalization, the audio is about 2.1x louder. Apply makeup deamplification
-    for (float& f : NewAudata)
-        f *= 0.4f;
+   // for (float& f : NewAudata)
+     //   f *= 0.4f;
 
     return NewAudata;
 }
@@ -116,7 +116,14 @@ void Voxer::run()
     pAttItem->setBackgroundColor(InProcessColor);
 
     high_resolution_clock::time_point Start = high_resolution_clock::now();
-    std::vector<float> Audat = pAttVoice->Vocalize(Prompt.toStdString(),Speed,SpeakerID,Energy,F0,EmotionID);
+    std::vector<float> Audat;
+
+    if (!ForcedAudio.size())
+        Audat = pAttVoice->Vocalize(Prompt.toStdString(),Speed,SpeakerID,Energy,F0,EmotionID);
+    else
+        Audat = ForcedAudio;
+
+
     high_resolution_clock::time_point End = high_resolution_clock::now();
 
 

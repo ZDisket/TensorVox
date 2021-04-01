@@ -636,9 +636,16 @@
     <addaction name="actionRefresh_model_listing"/>
     <addaction name="actAutoInferClipBrd"/>
    </widget>
+   <widget class="QMenu" name="menuExtras">
+    <property name="title">
+     <string>Extras</string>
+    </property>
+    <addaction name="actDenWAV"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
    <addaction name="menuTriggers"/>
+   <addaction name="menuExtras"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionExport_performance_report">
@@ -678,6 +685,11 @@
    </property>
    <property name="text">
     <string>Auto-infer clipboard</string>
+   </property>
+  </action>
+  <action name="actDenWAV">
+   <property name="text">
+    <string>Denoise WAV with RNNoise</string>
    </property>
   </action>
  </widget>

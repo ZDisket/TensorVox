@@ -35,6 +35,8 @@ public:
 
     uint32_t CurrentID;
 
+    std::vector<float> ForcedAudio;
+
 
 
 signals:

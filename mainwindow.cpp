@@ -104,7 +104,7 @@ void MainWindow::showEvent(QShowEvent *e)
 
 
 #endif
-    FwParent->setWindowTitle("TensorVox");
+    //FwParent->setWindowTitle("TensorVox");
 
     e->accept();
 }
@@ -301,6 +301,9 @@ void MainWindow::on_btnInfer_clicked()
         Dets.EmotionID = -1;
         Dets.Denoise = ui->chkDenoise->isChecked();
         Dets.Amplification = (float)ui->sliVolBoost->value() / 1000.f;
+        size_t VoiceID = (size_t)VoMan.FindVoice(ui->cbModels->currentText(),true);
+
+        Dets.SampleRate = VoMan[VoiceID]->GetInfo().SampleRate;
 
         if (ui->cbSpeaker->isVisible())
             Dets.SpeakerID = ui->cbSpeaker->currentIndex();
@@ -580,12 +583,13 @@ void MainWindow::DoInference(InferDetails &Dets)
     size_t VoiceID = (size_t)VoMan.FindVoice(Dets.VoiceName,true);
     //Auto-load is true, so we will always get a good pointer.
     VoxThread->pAttVoice = VoMan[VoiceID];
-    VoxThread->SampleRate = VoMan[VoiceID]->GetInfo().SampleRate;
+    VoxThread->SampleRate = Dets.SampleRate;
     VoxThread->EmotionID = Dets.EmotionID;
 
     VoxThread->CurrentID = (uint32_t)CurrentInferIndex;
     VoxThread->Denoise = Dets.Denoise;
     VoxThread->Amplify = Dets.Amplification;
+    VoxThread->ForcedAudio = Dets.ForcedAudio;
 
     connect(VoxThread,&Voxer::Done,this,&MainWindow::OnAudioRecv);
 
@@ -1025,5 +1029,47 @@ void MainWindow::UpdateLogiLed()
     else
         LogiLedSetLighting(0,100,50);
 
+
+}
+
+void MainWindow::on_actDenWAV_triggered()
+{
+
+    QString fnamei = QFileDialog::getOpenFileName(this, tr("Open WAV to denoise"), QString(), tr("Wave files (*.wav)"));
+
+    if (fnamei == "")
+        return;
+
+    AudioFile<float> AudFile;
+    AudFile.load(fnamei.toStdString());
+
+
+    InferDetails Dets;
+
+
+    QString RawFn = fnamei.split("/").last();
+    QListWidgetItem* widItm = new QListWidgetItem("Denoise " + RawFn,ui->lstUtts);
+
+
+
+
+    Dets.F0 = RangeToFloat(ui->sliF0->value());
+    Dets.Speed = RangeToFloat(ui->sliSpeed->value());
+    Dets.Energy = RangeToFloat(ui->sliEnergy->value());
+    Dets.pItem = widItm;
+    Dets.Prompt = "";
+    Dets.SpeakerID = 0;
+    Dets.EmotionID = -1;
+    Dets.Denoise = true;
+    Dets.Amplification = (float)ui->sliVolBoost->value() / 1000.f;
+
+
+    Dets.VoiceName = ui->cbModels->currentText();
+    Dets.ForcedAudio = AudFile.samples[0];
+    Dets.SampleRate = AudFile.getSampleRate();
+
+    Infers.push(Dets);
+    if (MustExplicitlyIterateQueue())
+        IterateQueue();
 
 }
