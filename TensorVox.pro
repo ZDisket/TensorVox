@@ -2,7 +2,7 @@ QT += core gui
 QT += multimedia
 QT += winextras
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++14
 
@@ -31,6 +31,7 @@ SOURCES += \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/windowdragger.cpp \
     ext/ZCharScanner.cpp \
     ext/ZFile.cpp \
+    ext/qcustomplot.cpp \
     main.cpp \
     mainwindow.cpp \
     melgen.cpp \
@@ -41,6 +42,7 @@ SOURCES += \
     phonetichighlighter.cpp \
     tacotron2.cpp \
     tfg2p.cpp \
+    track.cpp \
     voicemanager.cpp \
     voxer.cpp
 
@@ -61,6 +63,7 @@ HEADERS += \
     ext/ZCharScanner.h \
     ext/ZFile.h \
     ext/json.hpp \
+    ext/qcustomplot.h \
     mainwindow.h \
     melgen.h \
     modelinfodlg.h \
@@ -70,6 +73,7 @@ HEADERS += \
     phonetichighlighter.h \
     tacotron2.h \
     tfg2p.h \
+    track.h \
     voicemanager.h \
     voxer.h
 

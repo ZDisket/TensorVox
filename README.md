@@ -40,6 +40,7 @@ TODO: Add instructions for compile from scratch.
  - **r8brain-free-src** (Resampling): https://github.com/avaneev/r8brain-free-src
  - **rnnoise** (CMake version, denoising output): https://github.com/almogh52/rnnoise-cmake
  - **Logitech LED Illumination SDK** (Mouse RGB integration): https://www.logitechg.com/en-us/innovation/developer-lab.html
+ - **QCustomPlot** : https://www.qcustomplot.com/index.php/introduction
 
 ## Contact
 You can open an issue here or join the [Discord server](https://discord.gg/yqFDAWH) and discuss/ask anything there

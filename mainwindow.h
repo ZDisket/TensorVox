@@ -134,6 +134,10 @@ private slots:
 
     void on_actDenWAV_triggered();
 
+    void on_actShowWaveform_triggered();
+
+    void on_actShowWaveform_toggled(bool arg1);
+
 private:
 
     void ExportAudBuffer(const QString& InFilename,const QByteArray& CurrentBuff,uint32_t InSampleRate);

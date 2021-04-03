@@ -21,7 +21,7 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QWidget" name="layoutWidget">
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,8,0">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,8,0,0">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
@@ -359,6 +359,9 @@
           </item>
          </layout>
         </item>
+        <item>
+         <widget class="Track" name="widAudioPlot" native="true"/>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="verticalLayoutWidget">
@@ -635,6 +638,7 @@
     <addaction name="actionOverrides"/>
     <addaction name="actionRefresh_model_listing"/>
     <addaction name="actAutoInferClipBrd"/>
+    <addaction name="actShowWaveform"/>
    </widget>
    <widget class="QMenu" name="menuExtras">
     <property name="title">
@@ -692,7 +696,29 @@
     <string>Denoise WAV with RNNoise</string>
    </property>
   </action>
+  <action name="actShowWaveform">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show wavefom</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Track</class>
+   <extends>QWidget</extends>
+   <header>track.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="stdres.qrc"/>
  </resources>

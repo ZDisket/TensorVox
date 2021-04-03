@@ -16,6 +16,7 @@
 #include <QMessageBox>
 #include "modelinfodlg.h"
 #include <LogitechLEDLib.h>
+#include "track.h"
 #define FwParent ((FramelessWindow*)pDarkFw)
 
 MainWindow::MainWindow(QWidget *parent)
@@ -89,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     LastInferBatchSize = 0;
 
-
+    ui->widAudioPlot->hide();
 
 
 }
@@ -368,11 +369,21 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
     if (!ui->chkAutoPlay->isChecked() && !ByUser)
         return;
 
+
+
     pBuff->open(QBuffer::ReadWrite);
 
+    QAudioBuffer BuffAud(pBuff->buffer(),StdFmt);
+    ui->widAudioPlot->setSource(BuffAud);
+    ui->widAudioPlot->plot();
+    if (ui->actShowWaveform->isChecked())
+        ui->widAudioPlot->show();
 
     StdOutput->start(pBuff);
     CanPlayAudio = false;
+
+
+
 
 
 }
@@ -1092,5 +1103,17 @@ void MainWindow::on_actDenWAV_triggered()
     Infers.push(Dets);
     if (MustExplicitlyIterateQueue())
         IterateQueue();
+
+}
+
+void MainWindow::on_actShowWaveform_triggered()
+{
+
+}
+
+void MainWindow::on_actShowWaveform_toggled(bool arg1)
+{
+    if (!arg1)
+        ui->widAudioPlot->hide();
 
 }
