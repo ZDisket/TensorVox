@@ -48,7 +48,7 @@ TFTensor<int32_t> TFG2P::DoInference(const std::vector<int32_t> &InputIDs, float
 
     auto Outs = Mdl({{"serving_default_input_ids:0",input_ids},
          {"serving_default_input_len:0",input_len},
-         {"serving_default_input_temp:0",input_temp}},{"StatefulPartitionedCall:0"});
+         {"serving_default_input_temperature:0",input_temp}},{"StatefulPartitionedCall:0"});
 
     TFTensor<int32_t> RetTensor = VoxUtil::CopyTensor<int32_t>(Outs[0]);
 
