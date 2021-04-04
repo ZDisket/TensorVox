@@ -13,54 +13,52 @@ TFTensor<float> FastSpeech2::DoInference(const std::vector<int32_t>& InputIDs,co
         throw std::exception("Tried to do inference on unloaded or invalid model!");
 
     // Convenience reference so that we don't have to constantly derefer pointers.
-    Model& Mdl = *CurrentMdl;
+    cppflow::model& Mdl = *CurrentMdl;
+
+    // This is the shape of the input IDs, our equivalent to tf.expand_dims.
+
+    std::vector<int64_t> InputIDShape = { 1, (int64_t)InputIDs.size() };
 
     // Define the tensors
-    Tensor input_ids{ Mdl,"serving_default_input_ids" };
-    Tensor energy_ratios{ Mdl,"serving_default_energy_ratios" };
-    Tensor f0_ratios{ Mdl,"serving_default_f0_ratios" };
-    Tensor speaker_ids{ Mdl,"serving_default_speaker_ids" };
-    Tensor speed_ratios{ Mdl,"serving_default_speed_ratios" };
-    Tensor* emotion_ids = nullptr;
+    cppflow::tensor input_ids{InputIDs, InputIDShape };
+    cppflow::tensor energy_ratios{ ArgsFloat[1] };
+    cppflow::tensor f0_ratios{ArgsFloat[2]};
+    cppflow::tensor speaker_ids{ SpeakerID };
+    cppflow::tensor speed_ratios{ ArgsFloat[0] };
+    cppflow::tensor* emotion_ids = nullptr;
+
+
+
+
+
+
+    // Vector of input tensors
+    TensorVec Inputs = {{"serving_default_input_ids:0",input_ids},
+                        {"serving_default_speaker_ids:0",speaker_ids},
+                        {"serving_default_energy_ratios:0",energy_ratios},
+                        {"serving_default_f0_ratios:0",f0_ratios},
+                        {"serving_default_speed_ratios:0",speed_ratios}};
 
     // This is a multi-emotion model
     if (EmotionID != -1)
     {
-        emotion_ids = new Tensor{Mdl,"serving_default_emotion_ids"};
-        emotion_ids->set_data(std::vector<int32_t>{EmotionID});
+        emotion_ids = new cppflow::tensor{EmotionID};
+        Inputs.push_back({"serving_default_emotion_ids:0",emotion_ids});
+
 
     }
 
 
-    // This is the shape of the input IDs, our equivalent to tf.expand_dims.
-    std::vector<int64_t> InputIDShape = { 1, (int64_t)InputIDs.size() };
 
-    input_ids.set_data(InputIDs, InputIDShape);
-
-    speed_ratios.set_data(std::vector<float>{ArgsFloat[0]});
-    energy_ratios.set_data(std::vector<float>{ ArgsFloat[1] });
-    f0_ratios.set_data(std::vector<float>{ArgsFloat[2]});
-
-    speaker_ids.set_data(std::vector<int32_t>{SpeakerID});
-
-    // Define output tensor
-    Tensor output{ Mdl,"StatefulPartitionedCall" };
-
-
-    // Vector of input tensors
-    std::vector<Tensor*> inputs = { &input_ids,&speaker_ids,&speed_ratios,&f0_ratios,&energy_ratios };
-
-    if (EmotionID != -1)
-        inputs.push_back(emotion_ids);
 
 
     // Do inference
-    CurrentMdl->run(inputs, output);
+    auto Outputs = Mdl(Inputs,{"StatefulPartitionedCall:0","StatefulPartitionedCall:1","StatefulPartitionedCall:2"});
 
     // Define output and return it
-    TFTensor<float> Output = VoxUtil::CopyTensor<float>(output);
+    TFTensor<float> Output = VoxUtil::CopyTensor<float>(Outputs[1]);
 
-    // We allocated the emotion_ids tensor dynamically, delete it
+    // We allocated the emotion_ids cppflow::tensor dynamically, delete it
     if (emotion_ids)
         delete emotion_ids;
 

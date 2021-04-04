@@ -1,13 +1,13 @@
 #ifndef TFG2P_H
 #define TFG2P_H
-#include "ext/CppFlow/include/Model.h"
+
 #include "VoxCommon.hpp"
 
 
 class TFG2P
 {
 private:
-    Model* G2P;
+    cppflow::model* G2P;
 
 public:
     TFG2P();

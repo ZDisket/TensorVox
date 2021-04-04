@@ -6,7 +6,7 @@
 bool MultiBandMelGAN::Initialize(const std::string & VocoderPath)
 {
 	try {
-        MelGAN = std::make_unique<Model>(VocoderPath);
+        MelGAN = std::make_unique<cppflow::model>(VocoderPath);
 	}
 	catch (...) {
 		return false;
@@ -22,14 +22,12 @@ TFTensor<float> MultiBandMelGAN::DoInference(const TFTensor<float>& InMel)
     IF_EXCEPT(!MelGAN, "Tried to infer MB-MelGAN on uninitialized model!!!!")
 
 	// Convenience reference so that we don't have to constantly derefer pointers.
-	Model& Mdl = *MelGAN;
+    cppflow::model& Mdl = *MelGAN;
 
-	Tensor input_mels{ Mdl,"serving_default_mels" };
-	input_mels.set_data(InMel.Data, InMel.Shape);
+    cppflow::tensor input_mels{ InMel.Data, InMel.Shape};
 
-	Tensor out_audio{ Mdl,"StatefulPartitionedCall" };
 
-	MelGAN->run(input_mels, out_audio);
+    auto out_audio = Mdl({{"serving_default_mels:0",input_mels}}, {"StatefulPartitionedCall:0"})[0];
 
 	TFTensor<float> RetTensor = VoxUtil::CopyTensor<float>(out_audio);
 

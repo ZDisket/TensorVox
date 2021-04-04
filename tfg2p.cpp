@@ -16,7 +16,7 @@ bool TFG2P::Initialize(const std::string &SavedModelFolder)
 {
     try {
 
-        G2P = new Model(SavedModelFolder);
+        G2P = new cppflow::model(SavedModelFolder);
 
     }
     catch (...) {
@@ -33,27 +33,24 @@ TFTensor<int32_t> TFG2P::DoInference(const std::vector<int32_t> &InputIDs, float
         throw std::exception("Tried to do inference on unloaded or invalid model!");
 
     // Convenience reference so that we don't have to constantly derefer pointers.
-    Model& Mdl = *G2P;
+    cppflow::model& Mdl = *G2P;
 
 
     // Convenience reference so that we don't have to constantly derefer pointers.
 
-    Tensor input_ids{ Mdl,"serving_default_input_ids" };
-    Tensor input_len{Mdl,"serving_default_input_len"};
-    Tensor input_temp{Mdl,"serving_default_input_temperature"};
-
-    input_ids.set_data(InputIDs, std::vector<int64_t>{(int64_t)InputIDs.size()});
-    input_len.set_data(std::vector<int32_t>{(int32_t)InputIDs.size()});
-    input_temp.set_data(std::vector<float>{Temperature});
+    cppflow::tensor input_ids{ InputIDs, std::vector<int64_t>{(int64_t)InputIDs.size()}};
+    cppflow::tensor input_len{(int32_t)InputIDs.size()};
+    cppflow::tensor input_temp{Temperature};
 
 
 
-    std::vector<Tensor*> Inputs {&input_ids,&input_len,&input_temp};
-    Tensor out_ids{ Mdl,"StatefulPartitionedCall" };
 
-    Mdl.run(Inputs, out_ids);
 
-    TFTensor<int32_t> RetTensor = VoxUtil::CopyTensor<int32_t>(out_ids);
+    auto Outs = Mdl({{"serving_default_input_ids:0",input_ids},
+         {"serving_default_input_len:0",input_len},
+         {"serving_default_input_temp:0",input_temp}},{"StatefulPartitionedCall:0"});
+
+    TFTensor<int32_t> RetTensor = VoxUtil::CopyTensor<int32_t>(Outs[0]);
 
     return RetTensor;
 
