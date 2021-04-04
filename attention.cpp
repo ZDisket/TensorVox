@@ -1,7 +1,7 @@
 #include "attention.h"
 
 
-Attention::Attention(QWidget *parent)
+Attention::Attention(QWidget *parent) : QCustomPlot(parent)
 {
 
     QBrush FillBrush(QColor(100,100,100));
@@ -13,6 +13,19 @@ Attention::Attention(QWidget *parent)
 
     xAxis->setBasePen(AxisPen);
     yAxis->setBasePen(AxisPen);
+
+    yAxis->setLabel("Encoder timestep");
+    xAxis->setLabel("Decoder timestep");
+
+    xAxis->setLabelColor(White);
+    yAxis->setLabelColor(White);
+    QFont Fnt = QFont(font().family(), 10);
+
+    xAxis->setLabelFont(QFont(font().family(), 8));
+    yAxis->setLabelFont(QFont(font().family(), 8));
+
+
+
 }
 
 void Attention::DoPlot(const TFTensor<float> &Alignment)

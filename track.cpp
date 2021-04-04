@@ -51,7 +51,7 @@ Track::Track(QWidget *parent)
     SecsTxt->position->setType(QCPItemPosition::ptViewportRatio);
     SecsTxt->position->setCoords(0.03, 0.15);
     SecsTxt->setText("Ready");
-    SecsTxt->setFont(QFont(font().family(), 10)); // make font a bit larger
+    SecsTxt->setFont(QFont(font().family(), 10));
     SecsTxt->setColor(QColor(255,255,255));
 
     //wavePlot->setPen(ThePen);
@@ -124,7 +124,9 @@ void Track::TimerTick()
     PlayRect->topLeft->setCoords(TickSet,0);
     SetTimeLabel(CurrentPos,TotSecs);
 
-    replot();
+
+
+    replot(rpQueuedRefresh);
 
 
 }

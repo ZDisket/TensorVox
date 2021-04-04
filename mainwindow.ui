@@ -339,7 +339,7 @@
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>4</horstretch>
-              <verstretch>6</verstretch>
+              <verstretch>9</verstretch>
              </sizepolicy>
             </property>
             <property name="acceptRichText">
@@ -374,7 +374,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="tbWaveform">
              <attribute name="title">

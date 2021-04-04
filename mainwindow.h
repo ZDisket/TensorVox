@@ -47,8 +47,14 @@ struct InferDetails{
 
 
 };
+struct InferIDTrueID{
+  uint32_t first;
+  size_t second;
 
-typedef std::pair<uint32_t,size_t> InferIDTrueID;
+  int32_t Align;
+
+};
+
 
 
 
@@ -61,6 +67,10 @@ class MainWindow : public QMainWindow
 private:
 
     std::vector<InferIDTrueID> IdVec;
+
+    std::vector<TFTensor<float>> Alignments;
+    std::vector<TFTensor<float>> Mels;
+
     VoiceManager VoMan;
     QAudioFormat StdFmt;
     QAudioOutput* StdOutput;
@@ -77,6 +87,8 @@ private:
     QClipboard* ClipBrd;
 
     uint32_t LastInferBatchSize;
+
+    InferIDTrueID* FindByFirst(uint32_t inGetID);
 
 
 public:
@@ -142,6 +154,7 @@ private slots:
     void on_tabMetrics_currentChanged(int index);
 
 private:
+    void PlotAttention(const TFTensor<float> &TacAtt);
 
     void ExportAudBuffer(const QString& InFilename,const QByteArray& CurrentBuff,uint32_t InSampleRate);
 

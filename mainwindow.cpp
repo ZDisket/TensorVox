@@ -19,6 +19,7 @@
 #include "track.h"
 #define FwParent ((FramelessWindow*)pDarkFw)
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -107,6 +108,21 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
+InferIDTrueID* MainWindow::FindByFirst(uint32_t inGetID)
+{
+    for (auto& ID : IdVec)
+    {
+        if (inGetID == ID.first)
+            return &ID;
+
+    }
+    return nullptr;
+
+
+}
+
+
+
 void MainWindow::showEvent(QShowEvent *e)
 {
 
@@ -124,12 +140,12 @@ void MainWindow::showEvent(QShowEvent *e)
 
 MainWindow::~MainWindow()
 {
+    on_btnClear_clicked();
     delete ui;
 }
 
 void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<double> infer_span,uint32_t inID)
 {
-    ui->tabMetrics->setTabEnabled(1,false);
 
 
 
@@ -138,7 +154,7 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
 
 
     AudBuffs.push_back(Buf);
-    IdVec.push_back(InferIDTrueID{inID,AudBuffs.size() - 1});
+    IdVec.push_back(InferIDTrueID{inID,AudBuffs.size() - 1,-1});
     if (CanPlayAudio)
         PlayBuffer(Buf);
 
@@ -238,9 +254,22 @@ void MainWindow::OnClipboardDataChanged()
 
 void MainWindow::OnAttentionRecv(TFTensor<float> InAtt, uint32_t inID)
 {
-    ui->tabMetrics->setTabEnabled(1,true);
+    // The audio recv event should have added the thing to the vec
+    InferIDTrueID* pInferEntry = FindByFirst(inID);
 
-    ui->widAttention->DoPlot(InAtt);
+    if (pInferEntry)
+    {
+        Alignments.push_back(InAtt);
+
+        pInferEntry->Align = Alignments.size() - 1;
+
+    }
+
+
+
+    PlotAttention(InAtt);
+
+
 
 
 }
@@ -648,7 +677,12 @@ void MainWindow::on_btnLoad_clicked()
     LogiLedStopEffects();
 
     LogiLedFlashLighting(0,100,100,5000,500);
-    ui->tabMetrics->setTabEnabled(1,false);
+
+
+    if (VoMan[VoID]->GetInfo().Architecture.Text2Mel != EText2MelModel::Tacotron2)
+        ui->tabMetrics->setTabEnabled(1,false);
+
+
 
 
 
@@ -681,10 +715,29 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
     if (item->backgroundColor() == DoneColor){
 
 
-        QBuffer* pBuff = AudBuffs[(uint64_t)GetID(ui->lstUtts->row(item))];
+        InferIDTrueID* pInfer = FindByFirst(ui->lstUtts->row(item));
+        if (!pInfer)
+        {
+            QMessageBox::critical(this,"Error!!!!","Could not find the inference ID to play, but it's apparently done???? (You shouldn't be seeing this error!!!!)");
+            return;
+
+        }
+
+        QBuffer* pBuff = AudBuffs[(uint64_t)pInfer->second];
+
         PlayBuffer(pBuff,true);
+        if (pInfer->Align != -1)
+        {
+            PlotAttention(Alignments[(size_t)pInfer->Align]);
+
+        }else{
+            ui->tabMetrics->setTabEnabled(1,false);
+        }
+
         int32_t MSecsShow = pBuff->size() / (int32_t)(CommonSampleRate / 1000);
         LogiLedFlashLighting(100,100,100,MSecsShow / 4,200);
+
+
 
 
 
@@ -710,6 +763,9 @@ void MainWindow::on_btnClear_clicked()
     CurrentAmtThreads = 0;
 
     UpdateLogiLed();
+
+    Alignments.clear();
+    Mels.clear();
 
 
 }
@@ -1162,6 +1218,15 @@ void MainWindow::on_tabMetrics_currentChanged(int index)
 
 
     update();
+
+
+}
+
+void MainWindow::PlotAttention(const TFTensor<float>& TacAtt)
+{
+    ui->tabMetrics->setTabEnabled(1,true);
+
+    ui->widAttention->DoPlot(TacAtt);
 
 
 }
