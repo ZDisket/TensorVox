@@ -56,7 +56,8 @@ TFTensor<float> Tacotron2::DoInference(const std::vector<int32_t> &InputIDs, con
 
     // Do inference
 
-    auto Outputs = Mdl(Inputs,{"StatefulPartitionedCall:0","StatefulPartitionedCall:1","StatefulPartitionedCall:2"});
+    // We only care about the after mel-after [1] and alignment history [3]
+    auto Outputs = Mdl(Inputs,{"StatefulPartitionedCall:0","StatefulPartitionedCall:1","StatefulPartitionedCall:2","StatefulPartitionedCall:3"});
 
     // Define output and return it
     TFTensor<float> Output = VoxUtil::CopyTensor<float>(Outputs[1]);

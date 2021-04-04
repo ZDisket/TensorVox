@@ -53,7 +53,8 @@ TFTensor<float> FastSpeech2::DoInference(const std::vector<int32_t>& InputIDs,co
 
 
     // Do inference
-    auto Outputs = Mdl(Inputs,{"StatefulPartitionedCall:0","StatefulPartitionedCall:1","StatefulPartitionedCall:2"});
+    // If we don't extract every single output it crashes.
+    auto Outputs = Mdl(Inputs,{"StatefulPartitionedCall:0","StatefulPartitionedCall:1","StatefulPartitionedCall:2","StatefulPartitionedCall:3","StatefulPartitionedCall:4"});
 
     // Define output and return it
     TFTensor<float> Output = VoxUtil::CopyTensor<float>(Outputs[1]);

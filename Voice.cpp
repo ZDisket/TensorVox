@@ -111,16 +111,6 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
 
     MelPredictor->Initialize(VoxPath + "/melgen");
-    QString mess = "";
-
-    for (const auto& param : MelPredictor->CurrentMdl->get_operations())
-    {
-        mess += QString::fromStdString(param) + "\n";
-
-    }
-    QMessageBox::information(nullptr,"sa",mess);
-
-
 
 
     Vocoder.Initialize(VoxPath + "/vocoder");
