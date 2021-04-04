@@ -9,7 +9,6 @@ Track::Track(QWidget *parent)
 
     wavePlot = addGraph();
 
-    setMinimumHeight(50);
     QBrush FillBrush(QColor(100,100,100));
     this->setBackground(FillBrush);
     QPen ThePen(QColor(127,255,0));
@@ -50,7 +49,7 @@ Track::Track(QWidget *parent)
     SecsTxt = new QCPItemText(this);
     SecsTxt->setPositionAlignment(Qt::AlignTop|Qt::AlignLeft);
     SecsTxt->position->setType(QCPItemPosition::ptViewportRatio);
-    SecsTxt->position->setCoords(0.025, 0.15);
+    SecsTxt->position->setCoords(0.03, 0.15);
     SecsTxt->setText("Ready");
     SecsTxt->setFont(QFont(font().family(), 10)); // make font a bit larger
     SecsTxt->setColor(QColor(255,255,255));

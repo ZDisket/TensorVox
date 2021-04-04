@@ -61,6 +61,7 @@ TFTensor<float> Tacotron2::DoInference(const std::vector<int32_t> &InputIDs, con
 
     // Define output and return it
     TFTensor<float> Output = VoxUtil::CopyTensor<float>(Outputs[1]);
+    Attention = VoxUtil::CopyTensor<float>(Outputs[3]);
 
     // We allocated the emotion_ids cppflow::tensor dynamically, delete it
     if (emotion_ids)

@@ -91,6 +91,7 @@ public slots:
     void OnAudioStateChange(QAudio::State newState);
     void OnClipboardDataChanged();
 
+    void OnAttentionRecv(TFTensor<float> InAtt,uint32_t inID);
 private slots:
     void on_btnInfer_clicked();
 
@@ -137,6 +138,8 @@ private slots:
     void on_actShowWaveform_triggered();
 
     void on_actShowWaveform_toggled(bool arg1);
+
+    void on_tabMetrics_currentChanged(int index);
 
 private:
 

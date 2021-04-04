@@ -56,6 +56,8 @@ public:
      --- If multi-emotion, a lined .txt file called emotions.txt
 
 	*/
+
+    TFTensor<float> TacAttention;
     Voice(const std::string& VoxPath, const std::string& inName,Phonemizer* InPhn);
 
     void AddPhonemizer(Phonemizer* InPhn);

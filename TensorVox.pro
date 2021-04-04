@@ -23,6 +23,7 @@ SOURCES += \
     TextTokenizer.cpp \
     Voice.cpp \
     VoxCommon.cpp \
+    attention.cpp \
     ext/ByteArr.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/DarkStyle.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.cpp \
@@ -51,6 +52,7 @@ HEADERS += \
     TextTokenizer.h \
     Voice.h \
     VoxCommon.hpp \
+    attention.h \
     ext/AudioFile.hpp \
     ext/ByteArr.h \
     ext/CppFlow/context.h \

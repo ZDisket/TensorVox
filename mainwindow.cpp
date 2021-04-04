@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
     qRegisterMetaType< QVector<int> >( "QVector<int>" );
     qRegisterMetaType<std::chrono::duration<double>>("std::chrono::duration<double>");
     qRegisterMetaType<uint32_t>("uint32_t");
+    qRegisterMetaType< TFTensor<float> >( "TFTensor<float>" );
+
 
 
     ui->splitter->setSizes(QList<int>() << width() * 0.8  << width() * 0.2 );
@@ -88,9 +90,19 @@ MainWindow::MainWindow(QWidget *parent)
     ClipBrd = QGuiApplication::clipboard();
     connect(ClipBrd,&QClipboard::dataChanged,this,&MainWindow::OnClipboardDataChanged);
 
+
     LastInferBatchSize = 0;
 
-    ui->widAudioPlot->hide();
+    //ui->widAudioPlot->hide();
+
+
+    QCPColorMap* ColMap = new QCPColorMap(ui->widAttention->xAxis, ui->widAttention->yAxis);
+    ColMap->setName("Alignment");
+    ui->widAttention->Map = ColMap;
+    ColMap->setGradient(QCPColorGradient::gpThermal);
+
+    ui->tabMetrics->hide();
+    ui->tabMetrics->setTabEnabled(1,false);
 
 
 }
@@ -117,6 +129,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<double> infer_span,uint32_t inID)
 {
+    ui->tabMetrics->setTabEnabled(1,false);
+
 
 
     QBuffer* Buf = new QBuffer(this);
@@ -219,6 +233,15 @@ void MainWindow::OnClipboardDataChanged()
         on_btnInfer_clicked();
 
     }
+
+}
+
+void MainWindow::OnAttentionRecv(TFTensor<float> InAtt, uint32_t inID)
+{
+    ui->tabMetrics->setTabEnabled(1,true);
+
+    ui->widAttention->DoPlot(InAtt);
+
 
 }
 
@@ -377,7 +400,7 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
     ui->widAudioPlot->setSource(BuffAud);
     ui->widAudioPlot->plot();
     if (ui->actShowWaveform->isChecked())
-        ui->widAudioPlot->show();
+        ui->tabMetrics->show();
 
     StdOutput->start(pBuff);
     CanPlayAudio = false;
@@ -603,6 +626,7 @@ void MainWindow::DoInference(InferDetails &Dets)
     VoxThread->ForcedAudio = Dets.ForcedAudio;
 
     connect(VoxThread,&Voxer::Done,this,&MainWindow::OnAudioRecv);
+    connect(VoxThread,&Voxer::AttentionReady,this,&MainWindow::OnAttentionRecv);
 
     VoxThread->start();
     ++CurrentAmtThreads;
@@ -624,6 +648,8 @@ void MainWindow::on_btnLoad_clicked()
     LogiLedStopEffects();
 
     LogiLedFlashLighting(0,100,100,5000,500);
+    ui->tabMetrics->setTabEnabled(1,false);
+
 
 
 
@@ -1114,6 +1140,28 @@ void MainWindow::on_actShowWaveform_triggered()
 void MainWindow::on_actShowWaveform_toggled(bool arg1)
 {
     if (!arg1)
-        ui->widAudioPlot->hide();
+        ui->tabMetrics->hide();
+
+}
+
+void MainWindow::on_tabMetrics_currentChanged(int index)
+{
+    if (index == 1)
+    {
+        ui->tabMetrics->setSizePolicy(QSizePolicy::Policy::Expanding,QSizePolicy::Policy::Expanding);
+        ui->tabMetrics->setMinimumHeight(100);
+
+
+    }
+    else
+    {
+        ui->tabMetrics->setSizePolicy(QSizePolicy::Policy::Expanding,QSizePolicy::Policy::Preferred);
+        ui->tabMetrics->setMinimumHeight(60);
+
+    }
+
+
+    update();
+
 
 }

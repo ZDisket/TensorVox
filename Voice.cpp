@@ -146,6 +146,7 @@ std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int3
 {
 
 
+
     bool VoxIsTac = VoxInfo.Architecture.Text2Mel == EText2MelModel::Tacotron2;
     std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt + VoxInfo.EndPadding,Phonemes,CurrentDict,
                                                             (ETTSLanguage::Enum)VoxInfo.Language,
@@ -157,6 +158,7 @@ std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int3
         std::vector<int32_t> IntArgs;
 
         Mel = ((Tacotron2*)MelPredictor.get())->DoInference(PhonemesToID(PhoneticTxt),FloatArgs,IntArgs,SpeakerID, EmotionID);
+        TacAttention = ((Tacotron2*)MelPredictor.get())->Attention;
 
     }
     else

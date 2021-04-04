@@ -156,6 +156,9 @@ void Voxer::run()
     pAttItem->setBackgroundColor(DoneColor);
     emit Done(AudRes,duration_cast<duration<double>>(End - Start),CurrentID);
 
+    if (pAttVoice->TacAttention.Data.size() > 0)
+        emit AttentionReady(pAttVoice->TacAttention,CurrentID);
+
     // rnnoise_destroy throws some exception we can't do anything about
     if (Denoise)
     {
