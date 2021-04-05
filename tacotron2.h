@@ -7,6 +7,7 @@ class Tacotron2 : public MelGen
 {
 public:
     Tacotron2();
+    TFTensor<float> Attention;
 
     /*
     Do inference on a Tacotron2 model.

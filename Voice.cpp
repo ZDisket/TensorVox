@@ -113,8 +113,6 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
     MelPredictor->Initialize(VoxPath + "/melgen");
 
 
-
-
     Vocoder.Initialize(VoxPath + "/vocoder");
 
     if (InPhn)
@@ -144,8 +142,9 @@ void Voice::AddPhonemizer(Phonemizer *InPhn)
 }
 
 
-std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID)
+VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID)
 {
+
 
 
     bool VoxIsTac = VoxInfo.Architecture.Text2Mel == EText2MelModel::Tacotron2;
@@ -153,12 +152,14 @@ std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int3
                                                             (ETTSLanguage::Enum)VoxInfo.Language,
                                                            VoxIsTac);
     TFTensor<float> Mel;
+    TFTensor<float> Attention;
     if (VoxIsTac)
     {
         std::vector<float> FloatArgs;
         std::vector<int32_t> IntArgs;
 
         Mel = ((Tacotron2*)MelPredictor.get())->DoInference(PhonemesToID(PhoneticTxt),FloatArgs,IntArgs,SpeakerID, EmotionID);
+        Attention = ((Tacotron2*)MelPredictor.get())->Attention;
 
     }
     else
@@ -197,7 +198,7 @@ std::vector<float> Voice::Vocalize(const std::string & Prompt, float Speed, int3
 	}
 
 
-    return AudioData;
+    return {AudioData,Attention,Mel};
 }
 
 void Voice::SetDictEntries(const std::vector<DictEntry> &InEntries)

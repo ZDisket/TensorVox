@@ -118,12 +118,15 @@ void Voxer::run()
     high_resolution_clock::time_point Start = high_resolution_clock::now();
     std::vector<float> Audat;
 
+    VoxResults Res;
+
     if (!ForcedAudio.size())
-        Audat = pAttVoice->Vocalize(Prompt.toStdString(),Speed,SpeakerID,Energy,F0,EmotionID);
+        Res = pAttVoice->Vocalize(Prompt.toStdString(),Speed,SpeakerID,Energy,F0,EmotionID);
     else
         Audat = ForcedAudio;
 
 
+    Audat = Res.Audio;
     high_resolution_clock::time_point End = high_resolution_clock::now();
 
 
@@ -154,7 +157,10 @@ void Voxer::run()
 
 
     pAttItem->setBackgroundColor(DoneColor);
-    emit Done(AudRes,duration_cast<duration<double>>(End - Start),CurrentID);
+    emit Done(AudRes,Res.Mel,duration_cast<duration<double>>(End - Start),CurrentID);
+
+    if (Res.Alignment.Data.size() > 0)
+        emit AttentionReady(Res.Alignment,CurrentID);
 
     // rnnoise_destroy throws some exception we can't do anything about
     if (Denoise)

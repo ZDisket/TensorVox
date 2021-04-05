@@ -15,7 +15,7 @@ class Track : public QCustomPlot
 public:
     Track(QWidget *parent = Q_NULLPTR);
     ~Track();
-    void setSource(const QAudioBuffer &inbuffer);
+    void setSource(const QAudioBuffer &inbuffer, bool DoSlide);
 
 public:
     void setBuffer();

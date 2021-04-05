@@ -47,8 +47,14 @@ struct InferDetails{
 
 
 };
+struct InferIDTrueID{
+  uint32_t first;
+  size_t second;
 
-typedef std::pair<uint32_t,size_t> InferIDTrueID;
+  int32_t Align;
+
+};
+
 
 
 
@@ -61,6 +67,10 @@ class MainWindow : public QMainWindow
 private:
 
     std::vector<InferIDTrueID> IdVec;
+
+    std::vector<TFTensor<float>> Alignments;
+    std::vector<TFTensor<float>> Mels;
+
     VoiceManager VoMan;
     QAudioFormat StdFmt;
     QAudioOutput* StdOutput;
@@ -78,6 +88,8 @@ private:
 
     uint32_t LastInferBatchSize;
 
+    InferIDTrueID* FindByFirst(uint32_t inGetID);
+
 
 public:
     void* pDarkFw;
@@ -87,10 +99,11 @@ public:
 protected:
    void showEvent(QShowEvent *e) override;
 public slots:
-    void OnAudioRecv(std::vector<float> InDat,std::chrono::duration<double> infer_span,uint32_t inID);
+    void OnAudioRecv(std::vector<float> InDat,TFTensor<float> InMel,std::chrono::duration<double> infer_span,uint32_t inID);
     void OnAudioStateChange(QAudio::State newState);
     void OnClipboardDataChanged();
 
+    void OnAttentionRecv(TFTensor<float> InAtt,uint32_t inID);
 private slots:
     void on_btnInfer_clicked();
 
@@ -138,7 +151,11 @@ private slots:
 
     void on_actShowWaveform_toggled(bool arg1);
 
+    void on_tabMetrics_currentChanged(int index);
+
 private:
+    void PlotSpec(const TFTensor<float>& InMel, float TimeInSecs);
+    void PlotAttention(const TFTensor<float> &TacAtt);
 
     void ExportAudBuffer(const QString& InFilename,const QByteArray& CurrentBuff,uint32_t InSampleRate);
 

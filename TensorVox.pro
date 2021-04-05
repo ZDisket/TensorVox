@@ -4,7 +4,7 @@ QT += winextras
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
-CONFIG += c++14
+CONFIG += c++17
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -23,9 +23,8 @@ SOURCES += \
     TextTokenizer.cpp \
     Voice.cpp \
     VoxCommon.cpp \
+    attention.cpp \
     ext/ByteArr.cpp \
-    ext/CppFlow/src/Model.cpp \
-    ext/CppFlow/src/Tensor.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/DarkStyle.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/windowdragger.cpp \
@@ -40,6 +39,7 @@ SOURCES += \
     phonemizer.cpp \
     phoneticdict.cpp \
     phonetichighlighter.cpp \
+    spectrogram.cpp \
     tacotron2.cpp \
     tfg2p.cpp \
     track.cpp \
@@ -53,10 +53,17 @@ HEADERS += \
     TextTokenizer.h \
     Voice.h \
     VoxCommon.hpp \
+    attention.h \
     ext/AudioFile.hpp \
     ext/ByteArr.h \
-    ext/CppFlow/include/Model.h \
-    ext/CppFlow/include/Tensor.h \
+    ext/CppFlow/context.h \
+    ext/CppFlow/cppflow.h \
+    ext/CppFlow/datatype.h \
+    ext/CppFlow/defer.h \
+    ext/CppFlow/model.h \
+    ext/CppFlow/ops.h \
+    ext/CppFlow/raw_ops.h \
+    ext/CppFlow/tensor.h \
     ext/Qt-Frameless-Window-DarkStyle-master/DarkStyle.h \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.h \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/windowdragger.h \
@@ -71,6 +78,7 @@ HEADERS += \
     phonemizer.h \
     phoneticdict.h \
     phonetichighlighter.h \
+    spectrogram.h \
     tacotron2.h \
     tfg2p.h \
     track.h \
@@ -104,5 +112,7 @@ RESOURCES += \
 
 win32:RC_ICONS += winicon.ico
 
-VERSION = 0.8.2.0
+VERSION = 0.8.8.0
 CONFIG += force_debug_info
+
+QMAKE_CXXFLAGS += /std:c++17

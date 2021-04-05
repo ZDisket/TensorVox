@@ -1,7 +1,9 @@
 #ifndef MELGEN_H
 #define MELGEN_H
 
-#include "ext/CppFlow/include/Model.h"
+#include "ext/CppFlow/ops.h"
+#include "ext/CppFlow/model.h"
+
 #include "VoxCommon.hpp"
 #include <memory>
 
@@ -26,7 +28,7 @@ public:
     virtual bool Initialize(const std::string& SavedModelFolder);
 
 
-    std::unique_ptr<Model> CurrentMdl;
+    std::unique_ptr<cppflow::model> CurrentMdl;
 
 };
 

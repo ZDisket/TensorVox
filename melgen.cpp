@@ -14,7 +14,7 @@ MelGen::MelGen(const std::string &SavedModelFolder)
 bool MelGen::Initialize(const std::string &SavedModelFolder)
 {
     try {
-        CurrentMdl = std::make_unique<Model>(SavedModelFolder);
+        CurrentMdl = std::make_unique<cppflow::model>(SavedModelFolder);
     }
     catch (...) {
         return false;

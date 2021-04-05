@@ -1,12 +1,11 @@
 #pragma once
 
-#include "ext/CppFlow/include/Model.h"
 #include "VoxCommon.hpp"
 #include <memory>
 class MultiBandMelGAN
 {
 private:
-    std::unique_ptr<Model> MelGAN;
+    std::unique_ptr<cppflow::model> MelGAN;
 
 
 public:

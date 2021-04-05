@@ -5,7 +5,8 @@
 #include <iostream>
 #include <vector>
 #include "ext/AudioFile.hpp"
-#include "ext/CppFlow/include/Tensor.h"
+#include "ext/CppFlow/ops.h"
+#include "ext/CppFlow/model.h"
 #include <QMessageBox>
 
 #define IF_RETURN(cond,ret) if (cond){return ret;}
@@ -14,6 +15,7 @@ const uint32_t CommonSampleRate = 48000;
 
 // https://github.com/almogh52/rnnoise-cmake/blob/d981adb2e797216f456cfcf158f73761a29981f8/examples/rnnoise_demo.c#L31
 const uint32_t RNNoiseFrameSize = 480;
+typedef std::vector<std::tuple<std::string,cppflow::tensor>> TensorVec;
 
 template<typename T>
 struct TFTensor {
@@ -92,10 +94,10 @@ namespace VoxUtil {
 
 
 	template<typename F>
-	TFTensor<F> CopyTensor(Tensor& InTens) 
+    TFTensor<F> CopyTensor(cppflow::tensor& InTens)
 	{
 		std::vector<F> Data = InTens.get_data<F>();
-		std::vector<int64_t> Shape = InTens.get_shape();
+        std::vector<int64_t> Shape = InTens.shape().get_data<int64_t>();
 		size_t TotalSize = 1;
 		for (const int64_t& Dim : Shape)
 			TotalSize *= Dim;

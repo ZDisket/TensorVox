@@ -40,7 +40,8 @@ public:
 
 
 signals:
-    void Done(std::vector<float> AudioData,std::chrono::duration<double> infer_span,uint32_t ID);
+    void Done(std::vector<float> AudioData,TFTensor<float> Mel,std::chrono::duration<double> infer_span,uint32_t ID);
+    void AttentionReady(TFTensor<float> Att,uint32_t ID);
 
 };
 
