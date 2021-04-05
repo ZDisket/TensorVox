@@ -96,14 +96,35 @@ MainWindow::MainWindow(QWidget *parent)
 
     //ui->widAudioPlot->hide();
 
+    QCPColorGradient Viridis;
+    // Build Viridis color gradient.
+    Viridis.clearColorStops();
+    Viridis.setColorStops({{0.0,QColor(54, 1, 81)},
+                           {0.25,QColor(45, 62, 120)},
+                           {0.5,QColor(30, 131, 121)},
+                           {0.75,QColor(94, 200, 71)},
+                           {1.0,QColor(245, 228 ,27)}
+                          });
 
     QCPColorMap* ColMap = new QCPColorMap(ui->widAttention->xAxis, ui->widAttention->yAxis);
     ColMap->setName("Alignment");
     ui->widAttention->Map = ColMap;
-    ColMap->setGradient(QCPColorGradient::gpThermal);
+    ColMap->setGradient(Viridis);
 
     ui->tabMetrics->hide();
-    ui->tabMetrics->setTabEnabled(1,false);
+    ui->tabMetrics->setTabEnabled(2,false);
+
+
+
+    // The spectrogram in Python is shown with np.rot90, otherwise it looks wrong
+    // So I flip the axes to make it look right, instead of bothering to do the math (I lost an evening trying this)
+    QCPColorMap* SpecMap = new QCPColorMap(ui->widSpec->yAxis, ui->widSpec->xAxis);
+    SpecMap->setName("Spectrogram");
+    ui->widSpec->Map = SpecMap;
+    SpecMap->setGradient(Viridis);
+
+
+
 
 
 }
@@ -135,7 +156,7 @@ void MainWindow::showEvent(QShowEvent *e)
 #endif
     //FwParent->setWindowTitle("TensorVox");
 
-    e->accept();
+   e->accept();
 }
 
 MainWindow::~MainWindow()
@@ -144,7 +165,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<double> infer_span,uint32_t inID)
+void MainWindow::OnAudioRecv(std::vector<float> InDat, TFTensor<float> InMel, std::chrono::duration<double> infer_span, uint32_t inID)
 {
 
 
@@ -153,10 +174,17 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, std::chrono::duration<dou
     Buf->setData((const char*)InDat.data(),sizeof(float) * InDat.size());
 
 
+    // We push to the mel and audbuff always at the same time, so the IDs will be the same.
+    Mels.push_back(InMel);
     AudBuffs.push_back(Buf);
+
     IdVec.push_back(InferIDTrueID{inID,AudBuffs.size() - 1,-1});
     if (CanPlayAudio)
+    {
         PlayBuffer(Buf);
+        PlotSpec(InMel,( (float)InDat.size()) / ((float)CommonSampleRate) );
+
+    }
 
 
     if (RecPerfLines){
@@ -426,7 +454,7 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
     pBuff->open(QBuffer::ReadWrite);
 
     QAudioBuffer BuffAud(pBuff->buffer(),StdFmt);
-    ui->widAudioPlot->setSource(BuffAud);
+    ui->widAudioPlot->setSource(BuffAud,ui->tabMetrics->currentIndex() == 0);
     ui->widAudioPlot->plot();
     if (ui->actShowWaveform->isChecked())
         ui->tabMetrics->show();
@@ -680,7 +708,7 @@ void MainWindow::on_btnLoad_clicked()
 
 
     if (VoMan[VoID]->GetInfo().Architecture.Text2Mel != EText2MelModel::Tacotron2)
-        ui->tabMetrics->setTabEnabled(1,false);
+        ui->tabMetrics->setTabEnabled(2,false);
 
 
 
@@ -731,8 +759,13 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
             PlotAttention(Alignments[(size_t)pInfer->Align]);
 
         }else{
-            ui->tabMetrics->setTabEnabled(1,false);
+            ui->tabMetrics->setTabEnabled(2,false);
         }
+
+        uint64_t NumSamples = pBuff->size() / sizeof (float);
+        const TFTensor<float>& MelSpec = Mels[pInfer->second];
+        PlotSpec(MelSpec,( ((float)NumSamples) / ((float)CommonSampleRate)));
+
 
         int32_t MSecsShow = pBuff->size() / (int32_t)(CommonSampleRate / 1000);
         LogiLedFlashLighting(100,100,100,MSecsShow / 4,200);
@@ -1202,17 +1235,19 @@ void MainWindow::on_actShowWaveform_toggled(bool arg1)
 
 void MainWindow::on_tabMetrics_currentChanged(int index)
 {
-    if (index == 1)
+    if (index == 0)
     {
-        ui->tabMetrics->setSizePolicy(QSizePolicy::Policy::Expanding,QSizePolicy::Policy::Expanding);
-        ui->tabMetrics->setMinimumHeight(100);
+        ui->tabMetrics->setSizePolicy(QSizePolicy::Policy::Expanding,QSizePolicy::Policy::Preferred);
+        ui->tabMetrics->setMinimumHeight(70);
+
 
 
     }
     else
     {
-        ui->tabMetrics->setSizePolicy(QSizePolicy::Policy::Expanding,QSizePolicy::Policy::Preferred);
-        ui->tabMetrics->setMinimumHeight(60);
+        ui->tabMetrics->setSizePolicy(QSizePolicy::Policy::Expanding,QSizePolicy::Policy::Expanding);
+        ui->tabMetrics->setMinimumHeight(150);
+
 
     }
 
@@ -1222,9 +1257,15 @@ void MainWindow::on_tabMetrics_currentChanged(int index)
 
 }
 
+void MainWindow::PlotSpec(const TFTensor<float> &InMel,float TimeInSecs)
+{
+    ui->widSpec->DoPlot(InMel,ui->tabMetrics->currentIndex() == 1,TimeInSecs);
+
+}
+
 void MainWindow::PlotAttention(const TFTensor<float>& TacAtt)
 {
-    ui->tabMetrics->setTabEnabled(1,true);
+    ui->tabMetrics->setTabEnabled(2,true);
 
     ui->widAttention->DoPlot(TacAtt);
 

@@ -99,7 +99,7 @@ public:
 protected:
    void showEvent(QShowEvent *e) override;
 public slots:
-    void OnAudioRecv(std::vector<float> InDat,std::chrono::duration<double> infer_span,uint32_t inID);
+    void OnAudioRecv(std::vector<float> InDat,TFTensor<float> InMel,std::chrono::duration<double> infer_span,uint32_t inID);
     void OnAudioStateChange(QAudio::State newState);
     void OnClipboardDataChanged();
 
@@ -154,6 +154,7 @@ private slots:
     void on_tabMetrics_currentChanged(int index);
 
 private:
+    void PlotSpec(const TFTensor<float>& InMel, float TimeInSecs);
     void PlotAttention(const TFTensor<float> &TacAtt);
 
     void ExportAudBuffer(const QString& InFilename,const QByteArray& CurrentBuff,uint32_t InSampleRate);

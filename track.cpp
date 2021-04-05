@@ -49,10 +49,11 @@ Track::Track(QWidget *parent)
     SecsTxt = new QCPItemText(this);
     SecsTxt->setPositionAlignment(Qt::AlignTop|Qt::AlignLeft);
     SecsTxt->position->setType(QCPItemPosition::ptViewportRatio);
-    SecsTxt->position->setCoords(0.03, 0.15);
+    SecsTxt->position->setCoords(0.02, 0.05);
     SecsTxt->setText("Ready");
     SecsTxt->setFont(QFont(font().family(), 10));
     SecsTxt->setColor(QColor(255,255,255));
+    SecsTxt->setClipToAxisRect(false);
 
     //wavePlot->setPen(ThePen);
 
@@ -64,12 +65,15 @@ Track::~Track()
     // wavePlot delete auto ?
 }
 
-void Track::setSource(const QAudioBuffer &inbuffer)
+void Track::setSource(const QAudioBuffer &inbuffer, bool DoSlide)
 {
     buffer = inbuffer;
 
 
     setBuffer();
+
+    if (DoSlide)
+        startPlaying(((float)buffer.duration()) / 1e+6);
 
 }
 
@@ -85,8 +89,6 @@ void Track::setBuffer()
         samples.append(val);
     }
 
-    float secs = ((float)buffer.duration()) / 1e+6;
-    startPlaying(secs);
 }
 
 void Track::plot()

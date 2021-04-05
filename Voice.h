@@ -7,6 +7,14 @@
 
 
 #include "phoneticdict.h"
+
+
+struct VoxResults{
+  std::vector<float> Audio;
+  TFTensor<float> Alignment;
+  TFTensor<float> Mel;
+};
+
 class Voice
 {
 private:
@@ -57,13 +65,13 @@ public:
 
 	*/
 
-    TFTensor<float> TacAttention;
+
     Voice(const std::string& VoxPath, const std::string& inName,Phonemizer* InPhn);
 
     void AddPhonemizer(Phonemizer* InPhn);
 
 
-    std::vector<float> Vocalize(const std::string& Prompt, float Speed = 1.f, int32_t SpeakerID = 0, float Energy = 1.f, float F0 = 1.f,int32_t EmotionID = -1);
+    VoxResults Vocalize(const std::string& Prompt, float Speed = 1.f, int32_t SpeakerID = 0, float Energy = 1.f, float F0 = 1.f,int32_t EmotionID = -1);
 
     std::string Name;
     inline const VoiceInfo& GetInfo(){return VoxInfo;}

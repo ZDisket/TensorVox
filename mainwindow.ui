@@ -364,17 +364,17 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_8">
+         <layout class="QVBoxLayout" name="verticalLayout_8" stretch="0">
           <item>
            <widget class="QTabWidget" name="tabMetrics">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
               <horstretch>0</horstretch>
-              <verstretch>2</verstretch>
+              <verstretch>1</verstretch>
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>1</number>
+             <number>2</number>
             </property>
             <widget class="QWidget" name="tbWaveform">
              <attribute name="title">
@@ -383,6 +383,16 @@
              <layout class="QVBoxLayout" name="verticalLayout_9">
               <item>
                <widget class="Track" name="widAudioPlot" native="true"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tbMel">
+             <attribute name="title">
+              <string>Spectrogram</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="Spectrogram" name="widSpec" native="true"/>
               </item>
              </layout>
             </widget>
@@ -763,6 +773,12 @@
    <class>Attention</class>
    <extends>QWidget</extends>
    <header>attention.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Spectrogram</class>
+   <extends>QWidget</extends>
+   <header>spectrogram.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

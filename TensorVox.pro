@@ -39,6 +39,7 @@ SOURCES += \
     phonemizer.cpp \
     phoneticdict.cpp \
     phonetichighlighter.cpp \
+    spectrogram.cpp \
     tacotron2.cpp \
     tfg2p.cpp \
     track.cpp \
@@ -77,6 +78,7 @@ HEADERS += \
     phonemizer.h \
     phoneticdict.h \
     phonetichighlighter.h \
+    spectrogram.h \
     tacotron2.h \
     tfg2p.h \
     track.h \
