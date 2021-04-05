@@ -112,7 +112,7 @@ RESOURCES += \
 
 win32:RC_ICONS += winicon.ico
 
-VERSION = 0.8.2.0
+VERSION = 0.8.8.0
 CONFIG += force_debug_info
 
 QMAKE_CXXFLAGS += /std:c++17
