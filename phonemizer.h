@@ -66,6 +66,8 @@ public:
 
     std::string GetGraphemeChars();
 
+    ~Phonemizer();
+
 };
 
 

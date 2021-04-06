@@ -245,6 +245,11 @@ std::string Phonemizer::GetGraphemeChars()
 
 }
 
+Phonemizer::~Phonemizer()
+{
+
+}
+
 
 
 

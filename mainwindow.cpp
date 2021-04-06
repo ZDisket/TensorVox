@@ -446,6 +446,10 @@ float MainWindow::RangeToFloat(int val)
 void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
 {
 
+    // Prevent an utterance being played twice by the auto-play after he finishes playing it himself, by suspending it.
+    if (ByUser)
+        CurrentBuffIndex = AudBuffs.size();
+
     if (!ui->chkAutoPlay->isChecked() && !ByUser)
         return;
 
@@ -784,7 +788,11 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 void MainWindow::on_btnClear_clicked()
 {
     ui->lstUtts->clear();
+
     AudBuffs.clear();
+    Alignments.clear();
+    Mels.clear();
+
     CurrentBuffIndex = 0;
     PerfReportLines.clear();
     CurrentInferIndex = 0;
@@ -797,8 +805,7 @@ void MainWindow::on_btnClear_clicked()
 
     UpdateLogiLed();
 
-    Alignments.clear();
-    Mels.clear();
+
 
 
 }

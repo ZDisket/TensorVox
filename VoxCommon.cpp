@@ -36,6 +36,7 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
 {
     const size_t MaxNoteSize = 80;
 
+
     std::ifstream JFile(InfoFilename);
     json JS;
 

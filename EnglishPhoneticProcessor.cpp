@@ -119,6 +119,10 @@ EnglishPhoneticProcessor::EnglishPhoneticProcessor(Phonemizer *InPhn)
 
 EnglishPhoneticProcessor::~EnglishPhoneticProcessor()
 {
+    // Causes annoying crash on exit. It's also irrelevant because the OS frees what little memory this had.
+    /*
     if (Phoner)
-        delete Phoner;
+       delete Phoner;
+
+   */
 }
