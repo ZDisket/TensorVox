@@ -4,13 +4,17 @@ TensorVox is an application designed to enable user-friendly and lightweight neu
 
 Powered by [TensorflowTTS](https://github.com/TensorSpeech/TensorFlowTTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of pip libraries, just a 100MB DLL.
 
+![Interface with Tac2 model loaded](https://i.imgur.com/9MuzQ3I.png)
+
+
 ### Try it out
 Grab it from the releases and check [the Google Drive folder](https://drive.google.com/drive/folders/1atUyxBbstKZpMqQEZMdNmRF2AKrlahKy?usp=sharing) for models and installation instructions
+
 TODO: Add instructions for training and exporting models
 
 ## Supported architectures
 
-Currently, only FastSpeech2 (phoneme-based) and Multi-Band MelGAN from TensorflowTTS are supported. 
+Currently, only FastSpeech2, Tacotron2 (phoneme-based) and Multi-Band MelGAN from TensorflowTTS are supported. 
 
 
 ## Build instructions
