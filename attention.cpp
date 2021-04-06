@@ -14,8 +14,8 @@ Attention::Attention(QWidget *parent) : QCustomPlot(parent)
     xAxis->setBasePen(AxisPen);
     yAxis->setBasePen(AxisPen);
 
-    yAxis->setLabel("Encoder timestep");
     xAxis->setLabel("Decoder timestep");
+    yAxis->setLabel("Encoder timestep");
 
     xAxis->setLabelColor(White);
     yAxis->setLabelColor(White);
@@ -37,7 +37,7 @@ void Attention::DoPlot(const TFTensor<float> &Alignment)
 
     Map->data()->setSize((int32_t)Shp[2],(int32_t)Shp[1]);
 
-    Map->data()->setRange(QCPRange(0.0,(double)Shp[1]),QCPRange(0.0,(double)Shp[2]));
+    Map->data()->setRange(QCPRange(0.0,(double)Shp[2]),QCPRange(0.0,(double)Shp[1]));
     for (int64_t x = 0; x < Shp[2];x++)
     {
         for (int64_t y = 0;y < Shp[1];y++)

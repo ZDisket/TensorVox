@@ -5,6 +5,10 @@
 
 class Tacotron2 : public MelGen
 {
+private:
+
+
+
 public:
     Tacotron2();
     TFTensor<float> Attention;

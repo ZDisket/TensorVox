@@ -1,5 +1,6 @@
 #include "tacotron2.h"
 
+
 Tacotron2::Tacotron2()
 {
 
@@ -60,8 +61,9 @@ TFTensor<float> Tacotron2::DoInference(const std::vector<int32_t> &InputIDs, con
     auto Outputs = Mdl(Inputs,{"StatefulPartitionedCall:0","StatefulPartitionedCall:1","StatefulPartitionedCall:2","StatefulPartitionedCall:3"});
 
     // Define output and return it
-    TFTensor<float> Output = VoxUtil::CopyTensor<float>(Outputs[1]);
+    TFTensor<float> MelOut = VoxUtil::CopyTensor<float>(Outputs[1]);
     Attention = VoxUtil::CopyTensor<float>(Outputs[3]);
+
 
     // We allocated the emotion_ids cppflow::tensor dynamically, delete it
     if (emotion_ids)
@@ -69,6 +71,6 @@ TFTensor<float> Tacotron2::DoInference(const std::vector<int32_t> &InputIDs, con
 
     // We could just straight out define it in the return statement, but I like it more this way
 
-    return Output;
+    return MelOut;
 
 }

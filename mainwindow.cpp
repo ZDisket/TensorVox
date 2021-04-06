@@ -246,6 +246,7 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, TFTensor<float> InMel, st
     --CurrentAmtThreads;
 
     IterateQueue();
+    CountBlues();
 
 
 
@@ -295,7 +296,9 @@ void MainWindow::OnAttentionRecv(TFTensor<float> InAtt, uint32_t inID)
 
 
 
-    PlotAttention(InAtt);
+    if (ui->chkAutoPlay->isChecked())
+        PlotAttention(InAtt);
+
 
 
 
@@ -490,21 +493,29 @@ void MainWindow::AdvanceQueue()
      ++CurrentInferIndex;
 
 
+
 }
 
 int32_t MainWindow::CountBlues()
 {
-    if (!ui->lstUtts->count())
-        return 0;
 
     int32_t NumBlues = 0;
+    int32_t NumGreen = 0;
 
     for (int i = 0; i < ui->lstUtts->count();i++)
     {
         if (ui->lstUtts->item(i)->backgroundColor() == InProcessColor)
             NumBlues += 1;
+        else if (ui->lstUtts->item(i)->backgroundColor() == DoneColor)
+            NumGreen += 1;
+
 
     }
+
+
+
+    // Letting the user click clear when there is an in process utterance will make a crash
+    ui->btnClear->setEnabled(NumBlues == 0 && NumGreen == ui->lstUtts->count());
 
 
     return NumBlues;
@@ -658,7 +669,11 @@ void MainWindow::IterateQueue()
 
         AdvanceQueue();
 
+
+
     }
+
+    CountBlues();
 
 
 
@@ -691,6 +706,8 @@ void MainWindow::DoInference(InferDetails &Dets)
 
     VoxThread->start();
     ++CurrentAmtThreads;
+
+    ui->btnClear->setEnabled(false);
 
 }
 
