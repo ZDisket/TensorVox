@@ -91,6 +91,8 @@ private:
     InferIDTrueID* FindByFirst(uint32_t inGetID);
 
 
+
+
 public:
     void* pDarkFw;
     MainWindow(QWidget *parent = nullptr);
@@ -154,6 +156,8 @@ private slots:
     void on_tabMetrics_currentChanged(int index);
 
 private:
+
+    void UpdateIfDoSlides();
     void PlotSpec(const TFTensor<float>& InMel, float TimeInSecs);
     void PlotAttention(const TFTensor<float> &TacAtt);
 

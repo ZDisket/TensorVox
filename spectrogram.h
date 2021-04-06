@@ -21,9 +21,10 @@ private:
 
 
 public:
+    bool DoSlide;
     Spectrogram(QWidget *parent = nullptr);
 
-    void DoPlot(const TFTensor<float>& InMel,bool DoSlide,float TimeInSeconds);
+    void DoPlot(const TFTensor<float>& InMel,float TimeInSeconds);
 
     QCPColorMap* Map;
 };

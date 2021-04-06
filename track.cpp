@@ -23,7 +23,7 @@ Track::Track(QWidget *parent)
     PlayRect->bottomRight->setType(QCPItemPosition::ptViewportRatio);
 
 
-    QPen RectPen(QColor(255,255,255));
+    QPen RectPen(QColor(255,255,255,150));
     QBrush RectBrush(QColor(200,200,200,75));
 
     RectPen.setWidth(3);
@@ -54,6 +54,7 @@ Track::Track(QWidget *parent)
     SecsTxt->setFont(QFont(font().family(), 10));
     SecsTxt->setColor(QColor(255,255,255));
     SecsTxt->setClipToAxisRect(false);
+    DoSlide = false;
 
     //wavePlot->setPen(ThePen);
 
@@ -65,15 +66,15 @@ Track::~Track()
     // wavePlot delete auto ?
 }
 
-void Track::setSource(const QAudioBuffer &inbuffer, bool DoSlide)
+void Track::setSource(const QAudioBuffer &inbuffer)
 {
     buffer = inbuffer;
 
 
     setBuffer();
 
-    if (DoSlide)
-        startPlaying(((float)buffer.duration()) / 1e+6);
+
+    startPlaying(((float)buffer.duration()) / 1e+6);
 
 }
 
@@ -118,6 +119,8 @@ void Track::startPlaying(float TimeInSecs)
 
 void Track::TimerTick()
 {
+    if (!DoSlide)
+        return;
 
     float RemSecs = ((float)timEndTick->remainingTime()) / 1000.f;
     float CurrentPos = TotSecs - RemSecs;
@@ -128,7 +131,7 @@ void Track::TimerTick()
 
 
 
-    replot(rpQueuedRefresh);
+    replot();
 
 
 }

@@ -4,6 +4,9 @@
 
 void Spectrogram::TimerTick()
 {
+    if (!DoSlide)
+        return;
+
     float RemSecs = ((float)timEndTick->remainingTime()) / 1000.f;
     float CurrentPos = TotSecs - RemSecs;
     float TickSet = CurrentPos/TotSecs;
@@ -74,7 +77,7 @@ Spectrogram::Spectrogram(QWidget *parent) : QCustomPlot(parent)
     // The rect is not visible without adding a layer, probably because we are using a more unusual type of plot
     addLayer("Lay2");
 
-    QPen RectPen(QColor(255,255,255));
+    QPen RectPen(QColor(255,255,255,150));
     QBrush RectBrush(QColor(200,200,200,75));
 
     RectPen.setWidth(3);
@@ -97,11 +100,12 @@ Spectrogram::Spectrogram(QWidget *parent) : QCustomPlot(parent)
     connect(timGenericTick,&QTimer::timeout,this,&Spectrogram::TimerTick);
     connect(timEndTick,&QTimer::timeout,this,&Spectrogram::EndSlide);
 
+    DoSlide = false;
 
 
 }
 
-void Spectrogram::DoPlot(const TFTensor<float> &InMel, bool DoSlide, float TimeInSeconds)
+void Spectrogram::DoPlot(const TFTensor<float> &InMel, float TimeInSeconds)
 {
 
     const TFTensor<float>& Mel = InMel;
@@ -137,19 +141,15 @@ void Spectrogram::DoPlot(const TFTensor<float> &InMel, bool DoSlide, float TimeI
     TotSecs = TimeInSeconds;
 
 
-    if (DoSlide)
-    {
-        PlayRect->setVisible(true);
+    PlayRect->setVisible(true);
 
-        PlayRect->topLeft->setCoords(1,0);
+    PlayRect->topLeft->setCoords(1,0);
 
-        timGenericTick->start();
+    timGenericTick->start();
 
-        timEndTick->start((int)(TimeInSeconds * 1000));
-    }else{
-        PlayRect->setVisible(false);
+    timEndTick->start((int)(TimeInSeconds * 1000));
 
-    }
+
 
 
 

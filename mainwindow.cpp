@@ -454,7 +454,7 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
     pBuff->open(QBuffer::ReadWrite);
 
     QAudioBuffer BuffAud(pBuff->buffer(),StdFmt);
-    ui->widAudioPlot->setSource(BuffAud,ui->tabMetrics->currentIndex() == 0);
+    ui->widAudioPlot->setSource(BuffAud);
     ui->widAudioPlot->plot();
     if (ui->actShowWaveform->isChecked())
         ui->tabMetrics->show();
@@ -1251,20 +1251,37 @@ void MainWindow::on_tabMetrics_currentChanged(int index)
 
     }
 
-
     update();
 
+    UpdateIfDoSlides();
+
+
+
+}
+
+void MainWindow::UpdateIfDoSlides()
+{
+    // Why do we do this instead of letting slides happen regardless?
+    // Because due to constant replotting this operation is quite expensive and can cause a noticeable performance drop
+    // if we let two of them go around at the same time
+
+    ui->widSpec->DoSlide = ui->tabMetrics->currentIndex() == 1;
+
+    ui->widAudioPlot->DoSlide = ui->tabMetrics->currentIndex() == 0;
 
 }
 
 void MainWindow::PlotSpec(const TFTensor<float> &InMel,float TimeInSecs)
 {
-    ui->widSpec->DoPlot(InMel,ui->tabMetrics->currentIndex() == 1,TimeInSecs);
+    UpdateIfDoSlides();
+    ui->widSpec->DoPlot(InMel,TimeInSecs);
 
 }
 
 void MainWindow::PlotAttention(const TFTensor<float>& TacAtt)
 {
+    UpdateIfDoSlides();
+
     ui->tabMetrics->setTabEnabled(2,true);
 
     ui->widAttention->DoPlot(TacAtt);
