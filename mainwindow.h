@@ -156,6 +156,7 @@ private slots:
     void on_tabMetrics_currentChanged(int index);
 
 private:
+    InferIDTrueID *FindBySecond(int32_t BuffID);
 
     void UpdateIfDoSlides();
     void PlotSpec(const TFTensor<float>& InMel, float TimeInSecs);
@@ -176,7 +177,7 @@ private:
     bool CanPlayAudio;
     QStringList ListDirs(const QString& ParentDir);
     float RangeToFloat(int val);
-    void PlayBuffer(QBuffer* pBuff,bool ByUser = false);
+    void PlayBuffer(QBuffer* pBuff, bool ByUser, int32_t RowID);
     bool RecPerfLines;
 
     void AdvanceBuffer();

@@ -9,6 +9,7 @@
 #include "rnnoise.h"
 
 const QColor DoneColor = QColor(0,128,0);
+const QColor PlayingColor = QColor(168, 40, 94);
 const QColor InProcessColor = QColor(0,0,255);
 
 // A Voxer is a thread spawned for the sole purpose of doing inference

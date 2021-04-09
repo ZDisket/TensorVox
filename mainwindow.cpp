@@ -181,8 +181,7 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, TFTensor<float> InMel, st
     IdVec.push_back(InferIDTrueID{inID,AudBuffs.size() - 1,-1});
     if (CanPlayAudio)
     {
-        PlayBuffer(Buf);
-        PlotSpec(InMel,( (float)InDat.size()) / ((float)CommonSampleRate) );
+        PlayBuffer(Buf,false,inID);
 
     }
 
@@ -256,6 +255,10 @@ void MainWindow::OnAudioStateChange(QAudio::State newState)
 {
     if (newState == QAudio::IdleState || newState == QAudio::StoppedState)
     {
+
+
+        ui->lstUtts->item(FindBySecond(CurrentBuffIndex)->first)->setBackgroundColor(DoneColor);
+
 
         // If the user queues up multiple utterances then due to the fast inference speed we can't play them all at once
         // It then becomes necessary that we advance on the event that audio finishes playing.
@@ -446,12 +449,12 @@ float MainWindow::RangeToFloat(int val)
 
 }
 
-void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
+void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser, int32_t RowID)
 {
 
-    // Prevent an utterance being played twice by the auto-play after he finishes playing it himself, by suspending it.
-    if (ByUser)
-        CurrentBuffIndex = AudBuffs.size();
+
+
+
 
     if (!ui->chkAutoPlay->isChecked() && !ByUser)
         return;
@@ -461,6 +464,11 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
     pBuff->open(QBuffer::ReadWrite);
 
     QAudioBuffer BuffAud(pBuff->buffer(),StdFmt);
+
+    uint64_t NumSamples = pBuff->size() / sizeof (float);
+    const TFTensor<float>& MelSpec = Mels[FindByFirst(RowID)->second];
+    PlotSpec(MelSpec,( ((float)NumSamples) / ((float)CommonSampleRate)));
+
     ui->widAudioPlot->setSource(BuffAud);
     ui->widAudioPlot->plot();
     if (ui->actShowWaveform->isChecked())
@@ -468,6 +476,8 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
 
     StdOutput->start(pBuff);
     CanPlayAudio = false;
+
+    ui->lstUtts->item(RowID)->setBackgroundColor(PlayingColor);
 
 
 
@@ -477,8 +487,8 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser)
 
 void MainWindow::AdvanceBuffer()
 {
-    PlayBuffer(AudBuffs[CurrentBuffIndex]);
-
+    InferIDTrueID* Infer = FindBySecond(CurrentBuffIndex);
+    PlayBuffer(AudBuffs[CurrentBuffIndex],false,FindBySecond(CurrentBuffIndex)->first);
 }
 
 void MainWindow::AdvanceQueue()
@@ -501,6 +511,7 @@ int32_t MainWindow::CountBlues()
 
     int32_t NumBlues = 0;
     int32_t NumGreen = 0;
+    int32_t NumPlaying = 0;
 
     for (int i = 0; i < ui->lstUtts->count();i++)
     {
@@ -508,6 +519,9 @@ int32_t MainWindow::CountBlues()
             NumBlues += 1;
         else if (ui->lstUtts->item(i)->backgroundColor() == DoneColor)
             NumGreen += 1;
+        else if (ui->lstUtts->item(i)->backgroundColor() == PlayingColor)
+            NumPlaying += 1;
+
 
 
     }
@@ -515,7 +529,7 @@ int32_t MainWindow::CountBlues()
 
 
     // Letting the user click clear when there is an in process utterance will make a crash
-    ui->btnClear->setEnabled(NumBlues == 0 && NumGreen == ui->lstUtts->count());
+    ui->btnClear->setEnabled(NumBlues == 0 && NumGreen + NumPlaying == ui->lstUtts->count());
 
 
     return NumBlues;
@@ -761,7 +775,7 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 {
 
 
-    if (item->backgroundColor() == DoneColor){
+    if (item->backgroundColor() == DoneColor || item->backgroundColor() == PlayingColor){
 
 
         InferIDTrueID* pInfer = FindByFirst(ui->lstUtts->row(item));
@@ -772,9 +786,23 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
 
         }
 
-        QBuffer* pBuff = AudBuffs[(uint64_t)pInfer->second];
+        InferIDTrueID* PreviousInfer = FindBySecond(CurrentBuffIndex);
+        if (PreviousInfer)
+        {
+            if (ui->lstUtts->item(PreviousInfer->first)->backgroundColor() == PlayingColor)
+            {
+                ui->lstUtts->item(PreviousInfer->first)->setBackgroundColor(DoneColor);
 
-        PlayBuffer(pBuff,true);
+
+            }
+
+
+        }
+
+        QBuffer* pBuff = AudBuffs[(uint64_t)pInfer->second];
+        CurrentBuffIndex = pInfer->second;
+
+        PlayBuffer(pBuff,true,pInfer->first);
         if (pInfer->Align != -1)
         {
             PlotAttention(Alignments[(size_t)pInfer->Align]);
@@ -783,13 +811,12 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
             ui->tabMetrics->setTabEnabled(2,false);
         }
 
-        uint64_t NumSamples = pBuff->size() / sizeof (float);
-        const TFTensor<float>& MelSpec = Mels[pInfer->second];
-        PlotSpec(MelSpec,( ((float)NumSamples) / ((float)CommonSampleRate)));
 
 
-        int32_t MSecsShow = pBuff->size() / (int32_t)(CommonSampleRate / 1000);
-        LogiLedFlashLighting(100,100,100,MSecsShow / 4,200);
+        int32_t MSecsShow = (pBuff->size() / sizeof (float)) / (int32_t)(CommonSampleRate / 1000);
+        LogiLedFlashLighting(100,100,100,MSecsShow,200);
+
+        UpdateIfDoSlides();
 
 
 
@@ -1281,6 +1308,17 @@ void MainWindow::on_tabMetrics_currentChanged(int index)
 
 
 
+}
+
+InferIDTrueID* MainWindow::FindBySecond(int32_t BuffID)
+{
+    for (auto& ID : IdVec)
+    {
+        if ((size_t)BuffID == ID.second)
+            return &ID;
+
+    }
+    return nullptr;
 }
 
 void MainWindow::UpdateIfDoSlides()
