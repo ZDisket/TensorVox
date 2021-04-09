@@ -511,17 +511,13 @@ int32_t MainWindow::CountBlues()
 
     int32_t NumBlues = 0;
     int32_t NumGreen = 0;
-    int32_t NumPlaying = 0;
 
     for (int i = 0; i < ui->lstUtts->count();i++)
     {
         if (ui->lstUtts->item(i)->backgroundColor() == InProcessColor)
             NumBlues += 1;
-        else if (ui->lstUtts->item(i)->backgroundColor() == DoneColor)
+        else if (ui->lstUtts->item(i)->backgroundColor() == DoneColor || ui->lstUtts->item(i)->backgroundColor() == PlayingColor)
             NumGreen += 1;
-        else if (ui->lstUtts->item(i)->backgroundColor() == PlayingColor)
-            NumPlaying += 1;
-
 
 
     }
@@ -529,7 +525,7 @@ int32_t MainWindow::CountBlues()
 
 
     // Letting the user click clear when there is an in process utterance will make a crash
-    ui->btnClear->setEnabled(NumBlues == 0 && NumGreen + NumPlaying == ui->lstUtts->count());
+    ui->btnClear->setEnabled(NumBlues == 0 && NumGreen == ui->lstUtts->count());
 
 
     return NumBlues;
@@ -1346,7 +1342,40 @@ void MainWindow::PlotAttention(const TFTensor<float>& TacAtt)
 
     ui->tabMetrics->setTabEnabled(2,true);
 
+
     ui->widAttention->DoPlot(TacAtt);
+
+
+}
+
+void MainWindow::on_actExAtt_triggered()
+{
+    if (!ui->tabMetrics->isTabEnabled(2))
+    {
+        QMessageBox::critical(FwParent,"Error","There is no attention map to export. Only Tacotron 2 models generate alignment.");
+        return;
+
+
+    }
+
+
+    QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export PNG file"), "AttentionMap", tr("PNG image (*.png)"));
+    if (!ofname.size())
+        return;
+
+    ui->widAttention->savePng(ofname,ui->widAttention->width(),ui->widAttention->height());
+
+
+}
+
+void MainWindow::on_actExSpec_triggered()
+{
+
+    QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export PNG file"), "Spect", tr("PNG image (*.png)"));
+    if (!ofname.size())
+        return;
+
+    ui->widSpec->savePng(ofname,ui->widSpec->width(),ui->widSpec->height());
 
 
 }

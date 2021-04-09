@@ -155,6 +155,10 @@ private slots:
 
     void on_tabMetrics_currentChanged(int index);
 
+    void on_actExAtt_triggered();
+
+    void on_actExSpec_triggered();
+
 private:
     InferIDTrueID *FindBySecond(int32_t BuffID);
 

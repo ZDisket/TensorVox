@@ -374,7 +374,7 @@
              </sizepolicy>
             </property>
             <property name="currentIndex">
-             <number>2</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tbWaveform">
              <attribute name="title">
@@ -671,7 +671,15 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuExport_metric">
+     <property name="title">
+      <string>Export metric</string>
+     </property>
+     <addaction name="actExSpec"/>
+     <addaction name="actExAtt"/>
+    </widget>
     <addaction name="actionExport_performance_report"/>
+    <addaction name="menuExport_metric"/>
    </widget>
    <widget class="QMenu" name="menuTriggers">
     <property name="title">
@@ -759,6 +767,19 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actExSpec">
+   <property name="text">
+    <string>Spectrogram</string>
+   </property>
+  </action>
+  <action name="actExAtt">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Attention</string>
    </property>
   </action>
  </widget>
