@@ -299,7 +299,7 @@ void MainWindow::OnAttentionRecv(TFTensor<float> InAtt, uint32_t inID)
 
 
 
-    if (ui->chkAutoPlay->isChecked())
+    if (ui->chkAutoPlay->isChecked() && ui->lstUtts->item((int32_t)inID)->backgroundColor() == PlayingColor)
         PlotAttention(InAtt);
 
 
@@ -365,6 +365,10 @@ void MainWindow::on_btnInfer_clicked()
 
         InferDetails Dets;
         ProcessCurlies(idvInput);
+
+        // If it ends in a period remove it since it will destabilize both Tacotron and FastSpeech
+        if (idvInput[idvInput.size() - 1] == '.')
+            idvInput = idvInput.left(idvInput.size() - 1);
 
         QString InputForShow = idvInput;
 
@@ -488,6 +492,14 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser, int32_t RowID)
 void MainWindow::AdvanceBuffer()
 {
     InferIDTrueID* Infer = FindBySecond(CurrentBuffIndex);
+    if (Infer->Align != -1)
+    {
+        PlotAttention(Alignments[(size_t)Infer->Align]);
+
+    }else{
+        ui->tabMetrics->setTabEnabled(2,false);
+    }
+
     PlayBuffer(AudBuffs[CurrentBuffIndex],false,FindBySecond(CurrentBuffIndex)->first);
 }
 
@@ -1363,7 +1375,7 @@ void MainWindow::on_actExAtt_triggered()
     if (!ofname.size())
         return;
 
-    ui->widAttention->savePng(ofname,ui->widAttention->width(),ui->widAttention->height());
+    ui->widAttention->savePng(ofname,ui->widAttention->width() * 2,ui->widAttention->height() * 2);
 
 
 }

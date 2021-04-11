@@ -24,6 +24,12 @@ Attention::Attention(QWidget *parent) : QCustomPlot(parent)
     xAxis->setLabelFont(QFont(font().family(), 8));
     yAxis->setLabelFont(QFont(font().family(), 8));
 
+    yAxis->setTickPen(AxisPen);
+    xAxis->setTickPen(AxisPen);
+
+    yAxis->setSubTickPen(AxisPen);
+    xAxis->setSubTickPen(AxisPen);
+
 
 
 }
