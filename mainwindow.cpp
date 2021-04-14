@@ -253,6 +253,7 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, TFTensor<float> InMel, st
 
 void MainWindow::OnAudioStateChange(QAudio::State newState)
 {
+
     if (newState == QAudio::IdleState || newState == QAudio::StoppedState)
     {
 

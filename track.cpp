@@ -85,7 +85,7 @@ void Track::setBuffer()
     const float *data = buffer.constData<float>();
     int count = buffer.sampleCount();
 
-    for (int i=0; i<count; i++){
+    for (int i=0; i<count; i += 2){
         double val = ((double)data[i])/peak;
         samples.append(val);
     }

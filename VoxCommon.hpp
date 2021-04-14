@@ -43,7 +43,8 @@ enum Enum{
 
 namespace EVocoderModel{
 enum Enum{
-    MultiBandMelGAN = 0
+    MultiBandMelGAN = 0,
+    MelGANSTFT // there is no architectural changes so we can use mb-melgan class for melgan-stft
 };
 }
 

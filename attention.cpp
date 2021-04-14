@@ -21,8 +21,8 @@ Attention::Attention(QWidget *parent) : QCustomPlot(parent)
     yAxis->setLabelColor(White);
     QFont Fnt = QFont(font().family(), 10);
 
-    xAxis->setLabelFont(QFont(font().family(), 8));
-    yAxis->setLabelFont(QFont(font().family(), 8));
+    xAxis->setLabelFont(QFont(font().family(), 9));
+    yAxis->setLabelFont(QFont(font().family(), 9));
 
     yAxis->setTickPen(AxisPen);
     xAxis->setTickPen(AxisPen);
@@ -55,7 +55,6 @@ void Attention::DoPlot(const TFTensor<float> &Alignment)
 
 
     }
-    //Map->rescaleDataRange(true);
     Map->setDataRange(QCPRange(0.0,1.0));
     xAxis->setRange(QCPRange(0.0,(double)Shp[2]));
 
