@@ -686,6 +686,7 @@
      <string>Triggers</string>
     </property>
     <addaction name="hkInfer"/>
+    <addaction name="actPhnSel"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -786,6 +787,14 @@
   <action name="actionPhonemize_filelist">
    <property name="text">
     <string>Phonemize filelist</string>
+   </property>
+  </action>
+  <action name="actPhnSel">
+   <property name="text">
+    <string>Phonemize selection</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

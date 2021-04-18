@@ -163,7 +163,10 @@ private slots:
 
     void on_actionPhonemize_filelist_triggered();
 
+    void on_actPhnSel_triggered();
+
 private:
+    QString PhonemizeStr(const QString& Text,Voice& VoxIn);
     QLabel* StatusLbl;
 
     size_t GetMemoryUsage();

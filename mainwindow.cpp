@@ -1439,7 +1439,6 @@ size_t MainWindow::GetMemoryUsage()
 
 void MainWindow::on_actionPhonemize_filelist_triggered()
 {
-    const QString punctuation = ",.-;";
     QString fnamei = QFileDialog::getOpenFileName(this, tr("Open TXT to phonemize"), QString(), tr("TXT filelist files (*.txt)"));
 
     if (fnamei == "")
@@ -1477,46 +1476,8 @@ void MainWindow::on_actionPhonemize_filelist_triggered()
           QString Transcript = Splitty[1];
           QString Filename = Splitty[0];
 
-          Transcript = QString::fromStdString(CurrentVoice.PhonemizeStr(Transcript.toStdString()));
 
-          QString NewTranscript = "";
-
-          bool InCurlies = false;
-
-          QStringList SplitTrans =  Transcript.split(" ");
-
-
-          for (int32_t i = 0; i < SplitTrans.size();i++)
-          {
-
-              // Add curly braces to phonemes and exclude them for punctuation.
-
-              if (!punctuation.contains(SplitTrans[i])  && !InCurlies){
-                  NewTranscript += " { ";
-                  InCurlies = true;
-              }
-
-              if (punctuation.contains(SplitTrans[i]) && InCurlies){
-                  NewTranscript += " } ";
-                  InCurlies = false;
-              }
-
-
-
-
-
-
-              NewTranscript += SplitTrans[i].replace("@","") + " ";
-
-
-
-
-
-          }
-          if (InCurlies)
-               NewTranscript += " } ";
-
-          NewTranscript = NewTranscript.simplified();
+          QString NewTranscript = PhonemizeStr(Transcript,CurrentVoice);
 
           OutStream << QStringList{Filename, NewTranscript}.join("|") << "\n";
 
@@ -1528,6 +1489,77 @@ void MainWindow::on_actionPhonemize_filelist_triggered()
        OutputFile.close();
     }
 
+
+
+
+
+}
+
+QString MainWindow::PhonemizeStr(const QString &Text, Voice &VoxIn)
+{
+    const QString punctuation = ",.-;";
+
+
+    QString PhonemedTxt = QString::fromStdString(VoxIn.PhonemizeStr(Text.toStdString()));
+
+    QString NewPhonemed = "";
+
+    bool InCurlies = false;
+
+    QStringList SplitTrans =  PhonemedTxt.split(" ");
+
+
+    for (int32_t i = 0; i < SplitTrans.size();i++)
+    {
+
+        // Add curly braces to phonemes and exclude them for punctuation.
+
+        if (!punctuation.contains(SplitTrans[i])  && !InCurlies){
+            NewPhonemed += " { ";
+            InCurlies = true;
+        }
+
+        if (punctuation.contains(SplitTrans[i]) && InCurlies){
+            NewPhonemed += " } ";
+            InCurlies = false;
+        }
+
+
+
+
+
+
+        NewPhonemed += SplitTrans[i].replace("@","") + " ";
+
+
+
+
+
+    }
+    if (InCurlies)
+         NewPhonemed += " } ";
+
+    return NewPhonemed.simplified();
+
+}
+
+void MainWindow::on_actPhnSel_triggered()
+{
+    int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
+
+    if (CurrentIndex == -1){
+        QMessageBox::critical(FwParent,"Error","You have to load the model before phonemizing");
+        return;
+
+    }
+
+    Voice& CurrentVoice = *VoMan[CurrentIndex];
+
+    QTextCursor TCursor = ui->edtInput->textCursor();
+    if (!TCursor.hasSelection())
+        return;
+
+    TCursor.insertText(PhonemizeStr(TCursor.selectedText(),CurrentVoice));
 
 
 
