@@ -87,3 +87,23 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
 
 
 }
+
+std::vector<std::string> VoxUtil::GetLinedFile(const std::string &Path)
+{
+    std::vector<std::string> RetLines;
+    std::ifstream Fi(Path);
+
+    if (!Fi.good()) // File not exists, ret empty vec
+        return RetLines;
+
+    std::string Line;
+    while (std::getline(Fi, Line))
+    {
+        if (Line.size() > 1)
+            RetLines.push_back(Line);
+
+
+    }
+
+    return RetLines;
+}

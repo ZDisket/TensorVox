@@ -90,6 +90,7 @@ struct VoiceInfo{
 };
 
 namespace VoxUtil {
+    std::vector<std::string> GetLinedFile(const std::string& Path);
 
     VoiceInfo ReadModelJSON(const std::string& InfoFilename);
 

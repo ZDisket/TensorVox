@@ -159,7 +159,14 @@ private slots:
 
     void on_actExSpec_triggered();
 
+    void OnMemoryUpdate();
+
+    void on_actionPhonemize_filelist_triggered();
+
 private:
+    QLabel* StatusLbl;
+
+    size_t GetMemoryUsage();
     InferIDTrueID *FindBySecond(int32_t BuffID);
 
     void UpdateIfDoSlides();

@@ -149,7 +149,8 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
             if (punctuation.find(tok[s]) != string::npos && !LastElem) {
 				// First, if the assembled string isn't empty, we add it in its current state
 				// Otherwise, the SIL could end up appearing before the word.
-				if (!AppTok.empty()) {
+
+                if (!AppTok.empty()) {
 					ProcessedTokens.push_back(AppTok);
 					AppTok = "";
 				}
@@ -160,13 +161,9 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
                     AppTok += "@@";
                     AppTok += tok[s];
 
-                    ProcessedTokens.push_back(AppTok);
-
-
                 }
                 else{
-                    ProcessedTokens.push_back("@SIL");
-
+                    AppTok = "@SIL";
                 }
 
 			}

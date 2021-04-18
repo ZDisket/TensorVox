@@ -102,7 +102,7 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 INCLUDEPATH += $$PWD/deps/include
 INCLUDEPATH += $$PWD/ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow
 win32: LIBS += -L$$PWD/deps/lib/ tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib
-win32: LIBS += Advapi32.lib User32.lib
+win32: LIBS += Advapi32.lib User32.lib Psapi.lib
 
 
 RESOURCES += \
@@ -115,4 +115,4 @@ win32:RC_ICONS += winicon.ico
 VERSION = 0.8.8.0
 CONFIG += force_debug_info
 
-QMAKE_CXXFLAGS += /std:c++17
+QMAKE_CXXFLAGS += /std:c++17 -DPSAPI_VERSION=1

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>856</width>
+    <width>1047</width>
     <height>526</height>
    </rect>
   </property>
@@ -663,7 +663,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>856</width>
+     <width>1047</width>
      <height>20</height>
     </rect>
    </property>
@@ -701,6 +701,7 @@
      <string>Extras</string>
     </property>
     <addaction name="actDenWAV"/>
+    <addaction name="actionPhonemize_filelist"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -780,6 +781,11 @@
    </property>
    <property name="text">
     <string>Attention</string>
+   </property>
+  </action>
+  <action name="actionPhonemize_filelist">
+   <property name="text">
+    <string>Phonemize filelist</string>
    </property>
   </action>
  </widget>

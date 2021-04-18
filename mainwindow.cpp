@@ -18,6 +18,7 @@
 #include <LogitechLEDLib.h>
 #include "track.h"
 #define FwParent ((FramelessWindow*)pDarkFw)
+#include <psapi.h>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -32,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent)
     qRegisterMetaType<std::chrono::duration<double>>("std::chrono::duration<double>");
     qRegisterMetaType<uint32_t>("uint32_t");
     qRegisterMetaType< TFTensor<float> >( "TFTensor<float>" );
+
+    StatusLbl = new QLabel(ui->statusbar);
+    ui->statusbar->addPermanentWidget(StatusLbl);
 
 
 
@@ -92,8 +96,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ClipBrd,&QClipboard::dataChanged,this,&MainWindow::OnClipboardDataChanged);
 
 
+    QTimer* timMemUp = new QTimer(this);
+    timMemUp->setSingleShot(false);
+    timMemUp->setInterval(5000);
+
+
+    connect(timMemUp,&QTimer::timeout,this,&MainWindow::OnMemoryUpdate);
     LastInferBatchSize = 0;
 
+    timMemUp->start();
     //ui->widAudioPlot->hide();
 
     QCPColorGradient Viridis;
@@ -1389,6 +1400,129 @@ void MainWindow::on_actExSpec_triggered()
         return;
 
     ui->widSpec->savePng(ofname,ui->widSpec->width(),ui->widSpec->height());
+
+
+}
+
+void MainWindow::OnMemoryUpdate()
+{
+    size_t MemUsg = GetMemoryUsage();
+
+    QString MemStr = QString::number((size_t)(MemUsg / 1e+6)) + " MB";
+    if (MemUsg > 1e+9)
+        MemStr = QString::number(MemUsg / 1e+9,'f',1) + " GB";
+
+
+    StatusLbl->setText("Memory usage: " + MemStr);
+
+}
+
+size_t MainWindow::GetMemoryUsage()
+{
+    PROCESS_MEMORY_COUNTERS MemCtr;
+
+    GetProcessMemoryInfo( GetCurrentProcess(), &MemCtr, sizeof(MemCtr));
+
+    return MemCtr.WorkingSetSize;
+
+
+
+
+}
+
+void MainWindow::on_actionPhonemize_filelist_triggered()
+{
+    const QString punctuation = ",.-;";
+    QString fnamei = QFileDialog::getOpenFileName(this, tr("Open TXT to phonemize"), QString(), tr("TXT filelist files (*.txt)"));
+
+    if (fnamei == "")
+        return;
+
+    int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
+
+    if (CurrentIndex == -1){
+        QMessageBox::critical(FwParent,"Error","You have to load the model before phonemizing");
+        return;
+
+    }
+
+    Voice& CurrentVoice = *VoMan[CurrentIndex];
+
+    QFile InputFile(fnamei);
+    QFile OutputFile(fnamei.replace(".txt","_p.txt"));
+
+    OutputFile.open(QIODevice::WriteOnly | QIODevice::Text);
+
+    if (InputFile.open(QIODevice::ReadOnly))
+    {
+       QTextStream InStream(&InputFile);
+       QTextStream OutStream(&OutputFile);
+
+       while (!InStream.atEnd())
+       {
+          QString Line = InStream.readLine().replace("\n","");
+
+          QStringList Splitty = Line.split("|");
+
+          if (Splitty.isEmpty())
+              continue;
+
+          QString Transcript = Splitty[1];
+          QString Filename = Splitty[0];
+
+          Transcript = QString::fromStdString(CurrentVoice.PhonemizeStr(Transcript.toStdString()));
+
+          QString NewTranscript = "";
+
+          bool InCurlies = false;
+
+          QStringList SplitTrans =  Transcript.split(" ");
+
+
+          for (int32_t i = 0; i < SplitTrans.size();i++)
+          {
+
+              // Add curly braces to phonemes and exclude them for punctuation.
+
+              if (!punctuation.contains(SplitTrans[i])  && !InCurlies){
+                  NewTranscript += " { ";
+                  InCurlies = true;
+              }
+
+              if (punctuation.contains(SplitTrans[i]) && InCurlies){
+                  NewTranscript += " } ";
+                  InCurlies = false;
+              }
+
+
+
+
+
+
+              NewTranscript += SplitTrans[i].replace("@","") + " ";
+
+
+
+
+
+          }
+          if (InCurlies)
+               NewTranscript += " } ";
+
+          NewTranscript = NewTranscript.simplified();
+
+          OutStream << QStringList{Filename, NewTranscript}.join("|") << "\n";
+
+
+
+       }
+
+       InputFile.close();
+       OutputFile.close();
+    }
+
+
+
 
 
 }

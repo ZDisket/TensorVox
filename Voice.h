@@ -44,7 +44,7 @@ private:
 
     void ReadModelInfo(const std::string& ModelInfoPath);
 
-    std::vector<std::string> GetLinedFile(const std::string& Path);
+
 
     std::vector<DictEntry> CurrentDict;
 
@@ -71,6 +71,7 @@ public:
     void AddPhonemizer(Phonemizer* InPhn);
 
 
+    std::string PhonemizeStr(const std::string& Prompt);
     VoxResults Vocalize(const std::string& Prompt, float Speed = 1.f, int32_t SpeakerID = 0, float Energy = 1.f, float F0 = 1.f,int32_t EmotionID = -1);
 
     std::string Name;

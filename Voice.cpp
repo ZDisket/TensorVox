@@ -55,13 +55,13 @@ void Voice::ReadPhonemes(const std::string &PhonemePath)
 
 void Voice::ReadSpeakers(const std::string &SpeakerPath)
 {
-    Speakers = GetLinedFile(SpeakerPath);
+    Speakers = VoxUtil::GetLinedFile(SpeakerPath);
 
 }
 
 void Voice::ReadEmotions(const std::string &EmotionPath)
 {
-    Emotions = GetLinedFile(EmotionPath);
+    Emotions = VoxUtil::GetLinedFile(EmotionPath);
 
 }
 
@@ -69,7 +69,7 @@ void Voice::ReadModelInfo(const std::string &ModelInfoPath)
 {
 
     ModelInfo = "";
-    std::vector<std::string> MiLines = GetLinedFile(ModelInfoPath);
+    std::vector<std::string> MiLines = VoxUtil::GetLinedFile(ModelInfoPath);
 
     for (const std::string& ss : MiLines)
         ModelInfo += ss + "\n";
@@ -77,26 +77,6 @@ void Voice::ReadModelInfo(const std::string &ModelInfoPath)
 
 }
 
-std::vector<std::string> Voice::GetLinedFile(const std::string &Path)
-{
-    std::vector<std::string> RetLines;
-    std::ifstream Fi(Path);
-
-    if (!Fi.good()) // File not exists, ret empty vec
-        return RetLines;
-
-    std::string Line;
-    while (std::getline(Fi, Line))
-    {
-        if (Line.size() > 1)
-            RetLines.push_back(Line);
-
-
-    }
-
-    return RetLines;
-
-}
 
 Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer *InPhn)
 {
@@ -138,6 +118,16 @@ void Voice::AddPhonemizer(Phonemizer *InPhn)
 {
     Processor.Initialize(InPhn);
 
+
+}
+
+std::string Voice::PhonemizeStr(const std::string &Prompt)
+{
+
+
+    return Processor.ProcessTextPhonetic(Prompt,Phonemes,CurrentDict,
+                                                            (ETTSLanguage::Enum)VoxInfo.Language,
+                                                           true); // default voxistac to true to preserve punctuation.
 
 }
 
