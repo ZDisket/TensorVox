@@ -193,7 +193,14 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
 void Voice::SetDictEntries(const std::vector<DictEntry> &InEntries)
 {
-    CurrentDict = InEntries;
+    for (const DictEntry& Entr : InEntries)
+    {
+        if (Entr.Language != VoxInfo.s_Language)
+            continue;
+
+        CurrentDict.push_back(Entr);
+
+    }
 
 }
 

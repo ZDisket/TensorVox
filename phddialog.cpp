@@ -57,6 +57,7 @@ void PhdDialog::accept()
         DictEntry de;
         de.Word = ui->tbDict->item(i,0)->text().toStdString();
         de.PhSpelling = ui->tbDict->item(i,1)->text().toStdString();
+        de.Language = ui->tbDict->item(i,2)->text().toStdString();
         Entrs.push_back(de);
 
 
@@ -69,7 +70,12 @@ void PhdDialog::accept()
 void PhdDialog::on_btnAdd_clicked()
 {
     ui->tbDict->insertRow(ui->tbDict->rowCount());
-    ui->tbDict->scrollToItem(ui->tbDict->item(ui->tbDict->rowCount(),0));
+    ui->tbDict->scrollToItem(ui->tbDict->item(ui->tbDict->rowCount() - 1,0));
+
+    QTableWidgetItem* LangItem = new QTableWidgetItem(QString::fromStdString(CurrentLang));
+    LangItem->setFlags(LangItem->flags() ^ Qt::ItemIsEditable);
+
+    ui->tbDict->setItem(ui->tbDict->rowCount() - 1,2,LangItem);
 
 }
 
@@ -81,6 +87,11 @@ void PhdDialog::PopulateWithEntries()
     {
         ui->tbDict->setItem((int)i,0,new QTableWidgetItem(QString::fromStdString(Entrs[i].Word)));
         ui->tbDict->setItem((int)i,1,new QTableWidgetItem(QString::fromStdString(Entrs[i].PhSpelling)));
+
+        QTableWidgetItem* LangItem = new QTableWidgetItem(QString::fromStdString(Entrs[i].Language));
+        LangItem->setFlags(LangItem->flags() ^ Qt::ItemIsEditable);
+
+        ui->tbDict->setItem((int)i,2,LangItem);
 
 
     }

@@ -4,12 +4,14 @@
 ZFILE_IOVR(DictEntry,inentr){
     right << inentr.Word;
     right << inentr.PhSpelling;
+    right << inentr.Language;
     return right;
 }
 
 ZFILE_OOVR(DictEntry,entr){
     right >> entr.Word;
     right >> entr.PhSpelling;
+    right >> entr.Language;
     return right;
 
 }

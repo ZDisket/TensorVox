@@ -20,6 +20,8 @@ public:
 
     std::vector<DictEntry> Entrs;
 
+
+    std::string CurrentLang;
 private slots:
     void on_btnAdd_clicked();
 

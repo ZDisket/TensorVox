@@ -40,6 +40,11 @@
          <string>Phonetic spelling</string>
         </property>
        </column>
+       <column>
+        <property name="text">
+         <string>Language</string>
+        </property>
+       </column>
       </widget>
      </item>
      <item>

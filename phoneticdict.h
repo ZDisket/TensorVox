@@ -6,6 +6,7 @@
 struct DictEntry{
     std::string Word;
     std::string PhSpelling;
+    std::string Language;
 };
 
 

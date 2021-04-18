@@ -1104,6 +1104,14 @@ void MainWindow::HandleIsMultiEmotion(size_t inVid)
 
 void MainWindow::on_actionOverrides_triggered()
 {
+    int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
+
+    if (CurrentIndex == -1){
+        QMessageBox::critical(FwParent,"Error","You have to have a model loaded before accessing the phonetic dictionary.");
+        return;
+
+    }
+
     FramelessWindow FDlg(FwParent);
     FDlg.setWindowIcon(QIcon(":/res/phoneticdico.png"));
     FDlg.setWindowTitle("Phonetic Overrides");
@@ -1112,6 +1120,7 @@ void MainWindow::on_actionOverrides_triggered()
 
     PhdDialog Dlg(FwParent);
     Dlg.Entrs = PhonDict.Entries;
+    Dlg.CurrentLang = VoMan[CurrentIndex]->GetInfo().s_Language;
 
     FDlg.setContent(&Dlg);
     FDlg.ContentDlg(&Dlg);
