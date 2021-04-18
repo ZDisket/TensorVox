@@ -483,12 +483,18 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser, int32_t RowID)
 
     uint64_t NumSamples = pBuff->size() / sizeof (float);
     const TFTensor<float>& MelSpec = Mels[FindByFirst(RowID)->second];
-    PlotSpec(MelSpec,( ((float)NumSamples) / ((float)CommonSampleRate)));
+
+    if (MelSpec.Shape[0] != -1)
+        PlotSpec(MelSpec,( ((float)NumSamples) / ((float)CommonSampleRate)));
+
+
 
     ui->widAudioPlot->setSource(BuffAud);
     ui->widAudioPlot->plot();
     if (ui->actShowWaveform->isChecked())
         ui->tabMetrics->show();
+
+
 
     StdOutput->start(pBuff);
     CanPlayAudio = false;
@@ -496,6 +502,7 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser, int32_t RowID)
     ui->lstUtts->item(RowID)->setBackgroundColor(PlayingColor);
 
 
+    UpdateIfDoSlides();
 
 
 

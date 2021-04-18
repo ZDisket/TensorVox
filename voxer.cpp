@@ -121,12 +121,18 @@ void Voxer::run()
     VoxResults Res;
 
     if (!ForcedAudio.size())
+    {
         Res = pAttVoice->Vocalize(Prompt.toStdString(),Speed,SpeakerID,Energy,F0,EmotionID);
+        Audat = Res.Audio;
+
+    }
     else
+    {
         Audat = ForcedAudio;
 
+    }
 
-    Audat = Res.Audio;
+
     high_resolution_clock::time_point End = high_resolution_clock::now();
 
 
@@ -157,6 +163,9 @@ void Voxer::run()
 
 
     pAttItem->setBackgroundColor(DoneColor);
+    if (ForcedAudio.size())
+        Res.Mel.Shape.push_back(-1);
+
     emit Done(AudRes,Res.Mel,duration_cast<duration<double>>(End - Start),CurrentID);
 
     if (Res.Alignment.Data.size() > 0)
