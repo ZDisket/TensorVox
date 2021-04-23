@@ -88,6 +88,8 @@ private:
 
     uint32_t LastInferBatchSize;
 
+    bool DoUpdateSplitAuto;
+
     InferIDTrueID* FindByFirst(uint32_t inGetID);
 
 
@@ -165,8 +167,15 @@ private slots:
 
     void on_actPhnSel_triggered();
 
+    void on_spbSeqLen_editingFinished();
+
 private:
-    QString PhonemizeStr(const QString& Text,Voice& VoxIn);
+
+
+
+
+    void AutoUpdateSplit();
+    QString PhonemizeStr(QString &Text, Voice& VoxIn);
     QLabel* StatusLbl;
 
     size_t GetMemoryUsage();

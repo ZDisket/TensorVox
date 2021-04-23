@@ -116,3 +116,6 @@ VERSION = 0.8.8.0
 CONFIG += force_debug_info
 
 QMAKE_CXXFLAGS += /std:c++17 -DPSAPI_VERSION=1
+
+DISTFILES += \
+    res/defaultim.png

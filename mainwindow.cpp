@@ -25,8 +25,11 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+
     ui->setupUi(this);
     PopulateComboBox();
+
+    DoUpdateSplitAuto = true;
     qRegisterMetaType< std::vector<float> >( "std::vector<float>" );
 
     qRegisterMetaType< QVector<int> >( "QVector<int>" );
@@ -808,7 +811,7 @@ void MainWindow::on_lstUtts_itemDoubleClicked(QListWidgetItem *item)
         InferIDTrueID* pInfer = FindByFirst(ui->lstUtts->row(item));
         if (!pInfer)
         {
-            QMessageBox::critical(this,"Error!!!!","Could not find the inference ID to play, but it's apparently done???? (You shouldn't be seeing this error!!!!)");
+            QMessageBox::critical(this,"Error!!!!","Could not find the inference ID to play, but it's apparently done???? (You shouldn't be seeing this error!!!!) (panik)");
             return;
 
         }
@@ -1008,7 +1011,9 @@ void MainWindow::on_cbModels_currentTextChanged(const QString &arg1)
         ui->lblModelNote->setText(QString::fromStdString(VoMan[(size_t)CurrentIndex]->GetInfo().Note));
         HandleIsMultiSpeaker((size_t)CurrentIndex);
 
+
     }
+
 
 }
 
@@ -1022,6 +1027,8 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
     HandleIsMultiEmotion(inVid);
 
     Voice& CurrentVoice = *VoMan[inVid];
+
+    AutoUpdateSplit();
 
 
     ArchitectureInfo Inf = CurrentVoice.GetInfo().Architecture;
@@ -1107,7 +1114,7 @@ void MainWindow::on_actionOverrides_triggered()
     int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
 
     if (CurrentIndex == -1){
-        QMessageBox::critical(FwParent,"Error","You have to have a model loaded before accessing the phonetic dictionary.");
+        QMessageBox::critical(FwParent,"Error","You gotta have a model loaded before accessing the phonetic dictionary. (We need to know which language you want to use)");
         return;
 
     }
@@ -1173,7 +1180,7 @@ void MainWindow::on_btnLoadInfo_clicked()
     FDlg.setWindowIcon(QIcon(":/res/infico.png"));
     FDlg.setWindowTitle("Model Info");
     FDlg.SetTitleBarBtns(false,false,true);
-    FDlg.resize(500,450);
+    FDlg.resize(600,550);
 
     ModelInfoDlg Dlg(FwParent);
 
@@ -1504,9 +1511,12 @@ void MainWindow::on_actionPhonemize_filelist_triggered()
 
 }
 
-QString MainWindow::PhonemizeStr(const QString &Text, Voice &VoxIn)
+QString MainWindow::PhonemizeStr(QString &Text, Voice &VoxIn)
 {
-    const QString punctuation = ",.-;";
+    const QString punctuation = ",.;¡!¿?':";
+    Text.replace("-"," ");
+
+
 
 
     QString PhonemedTxt = QString::fromStdString(VoxIn.PhonemizeStr(Text.toStdString()));
@@ -1568,9 +1578,38 @@ void MainWindow::on_actPhnSel_triggered()
     if (!TCursor.hasSelection())
         return;
 
-    TCursor.insertText(PhonemizeStr(TCursor.selectedText(),CurrentVoice));
+    QString SelTxt = TCursor.selectedText();
+    TCursor.insertText(PhonemizeStr(SelTxt,CurrentVoice));
 
 
 
 
+}
+
+void MainWindow::AutoUpdateSplit()
+{
+    if (!DoUpdateSplitAuto)
+        return;
+
+    int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
+
+    if (CurrentIndex == -1)
+        return;
+
+    Voice& CurrentVoice = *VoMan[CurrentIndex];
+
+    if (CurrentVoice.GetInfo().Architecture.Text2Mel == EText2MelModel::Tacotron2)
+        ui->spbSeqLen->setValue(500);
+    else
+        ui->spbSeqLen->setValue(180);
+
+
+
+
+
+}
+
+void MainWindow::on_spbSeqLen_editingFinished()
+{
+    DoUpdateSplitAuto = false;
 }

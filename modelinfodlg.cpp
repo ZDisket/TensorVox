@@ -1,5 +1,6 @@
 #include "modelinfodlg.h"
 #include "ui_modelinfodlg.h"
+#include <QFile>
 
 ModelInfoDlg::ModelInfoDlg(QWidget *parent) :
     QDialog(parent),
@@ -24,4 +25,11 @@ void ModelInfoDlg::SetInfo(const QString &ModelName, const QString &Info, int32_
 
     ui->lblModelArchitecture->setText("Architecture: " + Repo + " " + MelGen + " & " + Vocoder);
     ui->lblSampleRate->setText("Sampling rate: " + QString::number(SampleRate / 1000) + "KHz");
+
+    QString ImgPath = QApplication::applicationDirPath() + "/models/" + ModelName + "/image.png";
+    if (QFile::exists(ImgPath))
+    {
+        ui->lblImg->setPixmap(QPixmap::fromImage(QImage(ImgPath)));
+
+    }
 }

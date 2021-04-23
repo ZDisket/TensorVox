@@ -4,5 +4,6 @@
         <file>res/phoneticdico.png</file>
         <file>res/infico.png</file>
         <file>res/refresh.png</file>
+        <file>res/noim.png</file>
     </qresource>
 </RCC>
