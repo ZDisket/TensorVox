@@ -15,6 +15,7 @@ bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn)
 	return true;
 }
 
+
 std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InText, const std::vector<string> &InPhonemes, const std::vector<DictEntry>& InDict, ETTSLanguage::Enum InLanguage, bool IsTac)
 {
     if (!Phoner)
@@ -27,7 +28,6 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 	string Assemble = "";
     // Make a copy of the dict passed.
     std::vector<DictEntry> CurrentDict = InDict;
-
 
 
 	for (size_t w = 0; w < Words.size();w++) 
@@ -43,6 +43,7 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
         if (Word.find("@@") != std::string::npos)
         {
             std::string AddPonct = Word.substr(2); // Remove the @@
+            Assemble.append(" ");
             Assemble.append(AddPonct);
             Assemble.append(" ");
 

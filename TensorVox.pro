@@ -10,7 +10,7 @@ CONFIG += c++17
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
-DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += QT_DEPRECATED_WARNINGS _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
@@ -115,7 +115,7 @@ win32:RC_ICONS += winicon.ico
 VERSION = 0.8.8.0
 CONFIG += force_debug_info
 
-QMAKE_CXXFLAGS += /std:c++17 -DPSAPI_VERSION=1
+QMAKE_CXXFLAGS += /std:c++17 /utf-8 -DPSAPI_VERSION=1
 
 DISTFILES += \
     res/defaultim.png

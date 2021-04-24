@@ -8,14 +8,17 @@ const std::vector<std::string> first14 = { "zero", "one", "two", "three", "four"
 const std::vector<std::string> prefixes = { "twen", "thir", "for", "fif", "six", "seven", "eigh", "nine" };
 
 // Punctuation, this gets auto-converted to SIL
-const std::string punctuation = ",.-;";
+const std::u32string punctuation_f = U",.-;";
+
+// For Tacotron2, including question and other marks
+const std::u32string punctuation_tac = U",.;¡!¿?':";
 
 
 using namespace std;
 
 void TextTokenizer::SetAllowedChars(const std::string &value)
 {
-    AllowedChars = value;
+    AllowedChars = VoxUtil::StrToU32(value);
 }
 
 string TextTokenizer::IntToStr(int number)
@@ -94,22 +97,32 @@ TextTokenizer::~TextTokenizer()
 {
 }
 
+
 vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::Enum Language,bool IsTacotron)
 {
 	vector<string> ProcessedTokens;
 
 
+
+
 	ZStringDelimiter Delim(InTxt);
 	Delim.AddDelimiter(" ");
 
-	vector<string> DelimitedTokens = Delim.GetTokens();
+    vector<string> DelimitedTokens = Delim.GetTokens();
+
+
 
 	// Single word handler
-	if (!Delim.szTokens())
-		DelimitedTokens.push_back(InTxt);
+    if (!Delim.szTokens())
+        DelimitedTokens.push_back(InTxt);
 
     if (Language == ETTSLanguage::English)
         DelimitedTokens = ExpandNumbers(DelimitedTokens);
+
+    std::u32string punctuation = punctuation_f;
+
+    if (IsTacotron)
+        punctuation = punctuation_tac;
 
 
 
@@ -121,15 +134,16 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
 	In this step we go through the string and only allow qualified character to pass through.
 	*/
     for (size_t TokCtr = 0; TokCtr < DelimitedTokens.size();TokCtr++)
-	{
-        const auto& tok = DelimitedTokens[TokCtr];
-		string AppTok = "";
+    {
+        // We are now using U32string because it's guaranteed to be 1 character = 1 element
+        const auto& tok = VoxUtil::StrToU32(DelimitedTokens[TokCtr]);
+        std::u32string AppTok = U"";
 
 
-        if (tok.find("@") != string::npos)
+        if (tok.find(U"@") != string::npos)
         {
 
-            ProcessedTokens.push_back(tok);
+            ProcessedTokens.push_back(VoxUtil::U32ToStr(tok));
             continue;
 
         }
@@ -138,7 +152,7 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
 		{
 
 
-            if (AllowedChars.find(tok[s]) != std::string::npos)
+            if (AllowedChars.find(tok[s]) != std::u32string::npos)
                 AppTok += tok[s];
 
 
@@ -146,25 +160,30 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
             bool LastElem = TokCtr == DelimitedTokens.size() - 1 && s == tok.size() - 1;
 			// Punctuation handler
             // This time we explicitly add a token to the vector
-            if (punctuation.find(tok[s]) != string::npos && !LastElem) {
+            if (punctuation.find(tok[s]) != std::u32string::npos) {
 				// First, if the assembled string isn't empty, we add it in its current state
 				// Otherwise, the SIL could end up appearing before the word.
 
                 if (!AppTok.empty()) {
-					ProcessedTokens.push_back(AppTok);
-					AppTok = "";
+                    ProcessedTokens.push_back(VoxUtil::U32ToStr(AppTok));
+
+                    AppTok = U"";
 				}
 
                 if (IsTacotron){
 
                     // Double at-symbol is handled later
-                    AppTok += "@@";
+                    AppTok += U"@@";
                     AppTok += tok[s];
 
                 }
                 else{
-                    AppTok = "@SIL";
+                    AppTok = U"@SIL";
                 }
+
+                ProcessedTokens.push_back(VoxUtil::U32ToStr(AppTok));
+                AppTok = U"";
+                continue;
 
 			}
 
@@ -174,8 +193,13 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
 
 
 		}
-		if (!AppTok.empty())
-			ProcessedTokens.push_back(AppTok);
+        if (!AppTok.empty())
+        {
+            ProcessedTokens.push_back(VoxUtil::U32ToStr(AppTok));
+            AppTok = U"";
+
+
+        }
 
 	}
 	// Prevent out of range error if the user inputs one word

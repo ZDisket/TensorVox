@@ -90,6 +90,10 @@ struct VoiceInfo{
 };
 
 namespace VoxUtil {
+
+    std::string U32ToStr(const std::u32string& InU32);
+    std::u32string StrToU32(const std::string& InStr);
+
     std::vector<std::string> GetLinedFile(const std::string& Path);
 
     VoiceInfo ReadModelJSON(const std::string& InfoFilename);

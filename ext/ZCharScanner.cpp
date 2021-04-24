@@ -14,7 +14,7 @@ int ZStringDelimiter::key_search(const GString& s, const GString& key)
 }
 void ZStringDelimiter::UpdateTokens()
 {
-	if (!m_vDelimiters.size() || m_sString == "")
+    if (!m_vDelimiters.size() || m_sString == "")
 		return;
 
 	m_vTokens.clear();
@@ -80,7 +80,7 @@ void ZStringDelimiter::Bar(const int & pos)
 
 ZStringDelimiter::ZStringDelimiter()
 {
-	m_sString = "";
+    m_sString = "";
 	tokenIndex = 0;
 	PgBar = false;
 }
@@ -93,7 +93,7 @@ bool ZStringDelimiter::GetFirstToken(GString & in_out)
 		return true;
 	}
 	else {
-		return false;
+        return false;
 	}
 }
 
@@ -118,7 +118,7 @@ GString ZStringDelimiter::operator[](const size_t & in_index)
 }
 GString ZStringDelimiter::Reassemble(const GString& delim, const int& nelem)
 {
-	GString Result = "";
+    GString Result = "";
 	TokenIterator RasIt = m_vTokens.begin();
 	int r = 0;
 	if (nelem == -1) {
@@ -156,7 +156,7 @@ GString ZStringDelimiter::Reassemble(const GString& delim, const int& nelem)
 
 GString ZStringDelimiter::Reassemble(const GString & delim, const std::vector<GString>& Strs,int nelem)
 {
-	GString Result = "";
+    GString Result = "";
 	TokenIterator RasIt = Strs.begin();
 	int r = 0;
 	if (nelem == -1) {

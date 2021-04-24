@@ -6,7 +6,7 @@
 class TextTokenizer
 {
 private:
-    std::string AllowedChars;
+    std::u32string AllowedChars;
 	std::string IntToStr(int number);
 
 	std::vector<std::string> ExpandNumbers(const std::vector<std::string>& SpaceTokens);

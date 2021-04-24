@@ -1,6 +1,8 @@
 #include "VoxCommon.hpp"
 #include "ext/json.hpp"
 using namespace nlohmann;
+#include <codecvt>
+#include <locale>         // std::wstring_convert
 
 const std::vector<std::string> Text2MelNames = {"FastSpeech2","Tacotron2"};
 const std::vector<std::string> VocoderNames = {"Multi-Band MelGAN","MelGAN-STFT"};
@@ -106,4 +108,20 @@ std::vector<std::string> VoxUtil::GetLinedFile(const std::string &Path)
     }
 
     return RetLines;
+}
+
+std::string VoxUtil::U32ToStr(const std::u32string &InU32)
+{
+    std::wstring_convert<std::codecvt_utf8<char32_t>,char32_t> Converter;
+    return Converter.to_bytes(InU32);
+
+
+
+}
+
+std::u32string VoxUtil::StrToU32(const std::string &InStr)
+{
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> Converter;
+    return Converter.from_bytes(InStr);
+
 }

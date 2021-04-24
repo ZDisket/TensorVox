@@ -672,7 +672,12 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
 
 
 
-            NewTokens.push_back("@" + Tk.toUpper());
+            // Only English requires all phn input to be uppercase
+
+            if (GetCurrentVoice()->GetInfo().Language == 0)
+                Tk = Tk.toUpper();
+
+            NewTokens.push_back("@" + Tk);
 
         }
 
@@ -1521,9 +1526,15 @@ QString MainWindow::PhonemizeStr(QString &Text, Voice &VoxIn)
 
     QString PhonemedTxt = QString::fromStdString(VoxIn.PhonemizeStr(Text.toStdString()));
 
-    QString NewPhonemed = "";
+
 
     bool InCurlies = false;
+
+    QString NewPhonemed = "";
+
+
+
+
 
     QStringList SplitTrans =  PhonemedTxt.split(" ");
 
@@ -1612,4 +1623,12 @@ void MainWindow::AutoUpdateSplit()
 void MainWindow::on_spbSeqLen_editingFinished()
 {
     DoUpdateSplitAuto = false;
+}
+
+Voice *MainWindow::GetCurrentVoice()
+{
+    int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
+    return VoMan[(size_t)CurrentIndex];
+
+
 }

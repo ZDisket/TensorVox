@@ -172,6 +172,7 @@ private slots:
 private:
 
 
+    Voice* GetCurrentVoice();
 
 
     void AutoUpdateSplit();

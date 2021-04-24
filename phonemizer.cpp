@@ -182,13 +182,16 @@ std::string Phonemizer::ProcessWord(const std::string &InWord,float Temperature)
         return PhnDict;
 
     std::vector<int32_t> InIndexes;
-    InIndexes.reserve(InWord.size());
+    std::u32string IterStr = VoxUtil::StrToU32(InWord);
+
+    InIndexes.reserve(IterStr.size());
+
 
     // Turn word into indices
-    for (const char ch : InWord)
+    for (const char32_t ch : IterStr)
     {
-        std::string Single(1,ch);
-        int32_t Idx = GetID(CharId,Single);
+        std::u32string Single(1,ch);
+        int32_t Idx = GetID(CharId,VoxUtil::U32ToStr(Single));
 
         if (Idx != -1)
             InIndexes.push_back(Idx);
