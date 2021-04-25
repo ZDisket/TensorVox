@@ -11,7 +11,7 @@ const std::vector<std::string> prefixes = { "twen", "thir", "for", "fif", "six",
 const std::u32string punctuation_f = U",.-;";
 
 // For Tacotron2, including question and other marks
-const std::u32string punctuation_tac = U",.;¡!¿?':";
+const std::u32string punctuation_tac = U",.;¡!¿?:";
 
 
 using namespace std;
@@ -156,8 +156,6 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
                 AppTok += tok[s];
 
 
-            // Prevent an ending period from adding another SIL
-            bool LastElem = TokCtr == DelimitedTokens.size() - 1 && s == tok.size() - 1;
 			// Punctuation handler
             // This time we explicitly add a token to the vector
             if (punctuation.find(tok[s]) != std::u32string::npos) {
