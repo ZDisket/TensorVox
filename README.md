@@ -4,7 +4,7 @@ TensorVox is an application designed to enable user-friendly and lightweight neu
 
 Powered by [TensorflowTTS](https://github.com/TensorSpeech/TensorFlowTTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of pip libraries, just a 100MB DLL.
 
-![Interface with Tac2 model loaded](https://i.imgur.com/9MuzQ3I.png)
+![Interface with Tac2 model loaded](https://i.imgur.com/wtPzzNh.png)
 
 
 ### Try it out
@@ -45,6 +45,8 @@ TODO: Add instructions for compile from scratch.
  - **rnnoise** (CMake version, denoising output): https://github.com/almogh52/rnnoise-cmake
  - **Logitech LED Illumination SDK** (Mouse RGB integration): https://www.logitechg.com/en-us/innovation/developer-lab.html
  - **QCustomPlot** : https://www.qcustomplot.com/index.php/introduction
+ - **libnumbertext** : https://github.com/Numbertext/libnumbertext
+
 
 ## Contact
 You can open an issue here or join the [Discord server](https://discord.gg/yqFDAWH) and discuss/ask anything there

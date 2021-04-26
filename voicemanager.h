@@ -12,8 +12,7 @@ private:
 
     std::vector<Phonemizer*> Phonemizers;
 
-    Phonemizer* LoadPhonemizer(const QString &InPhnLang);
-
+    Phonemizer* LoadPhonemizer(const QString& InPhnLang,const QString& InNumberLang);
 
 
 

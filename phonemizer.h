@@ -4,6 +4,7 @@
 #include <tuple>
 #include <set>
 #include <algorithm>
+#include <Numbertext.hxx>
 
 struct IdStr{
     int32_t ID;
@@ -28,6 +29,9 @@ private:
     std::vector<IdStr> PhnId;
 
     std::vector<VBucket> DictBuckets;
+
+    Numbertext NumTxt;
+    std::string NumTxtLang;
 
 
 
@@ -57,17 +61,21 @@ public:
      * -- phn2id.txt: Translation from output ID from the model to phoneme
      * - A model/ folder where a G2P-Tensorflow model was saved as SavedModel
      * - dict.txt: Phonetic dictionary. First it searches the word there and if it can't be found then it uses the model.
+     * - (two-char name).sor: Name of num2text.
 
     */
-    bool Initialize(const std::string InPath);
+    bool Initialize(const std::string InPath, const std::string& NLangName);
     std::string ProcessWord(const std::string& InWord, float Temperature = 0.1f);
     std::string GetPhnLanguage() const;
     void SetPhnLanguage(const std::string &value);
 
     std::string GetGraphemeChars();
 
+    inline Numbertext& GetNumTxt() {return NumTxt;}
+
     ~Phonemizer();
 
+    inline const std::string& GetNumTxtLang() {return NumTxtLang;}
 };
 
 

@@ -9,6 +9,7 @@ bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn)
 
     Phoner = InPhn;
     Tokenizer.SetAllowedChars(Phoner->GetGraphemeChars());
+    Tokenizer.SetNumberText(Phoner->GetNumTxt(),Phoner->GetNumTxtLang());
 
 
 

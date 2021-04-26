@@ -9,6 +9,8 @@ const std::vector<std::string> VocoderNames = {"Multi-Band MelGAN","MelGAN-STFT"
 const std::vector<std::string> RepoNames = {"TensorflowTTS","Mozilla/TTS"};
 
 const std::vector<std::string> LanguageNames = {"English","Spanish"};
+const std::vector<std::string> LangaugeNamesNumToWords = {"en", "es"};
+
 
 void VoxUtil::ExportWAV(const std::string & Filename, const std::vector<float>& Data, unsigned SampleRate) {
 	AudioFile<float>::AudioBuffer Buffer;
@@ -75,6 +77,7 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
                  JS["sarate"].get<uint32_t>(),
                  Lang,
                 LanguageNames[Lang],
+                LangaugeNamesNumToWords[Lang],
                  " " + JS["pad"].get<std::string>()}; // Add a space for separation since we directly append the value to the prompt
 
     if (Inf.Note.size() > MaxNoteSize)

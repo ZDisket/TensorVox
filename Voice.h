@@ -5,7 +5,6 @@
 #include "MultiBandMelGAN.h"
 #include "EnglishPhoneticProcessor.h"
 
-
 #include "phoneticdict.h"
 
 
@@ -40,6 +39,7 @@ private:
     void ReadSpeakers(const std::string& SpeakerPath);
 
     void ReadEmotions(const std::string& EmotionPath);
+
 
 
     void ReadModelInfo(const std::string& ModelInfoPath);

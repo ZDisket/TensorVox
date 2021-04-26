@@ -22,6 +22,8 @@ std::string GetSTR(const std::vector<IdStr>& In, int32_t InID)
 
 }
 
+
+
 std::vector<IdStr> Phonemizer::GetDelimitedFile(const std::string &InFname)
 {
 
@@ -154,7 +156,7 @@ Phonemizer::Phonemizer()
 
 }
 
-bool Phonemizer::Initialize(const std::string InPath)
+bool Phonemizer::Initialize(const std::string InPath, const std::string &NLangName)
 {
     // Load indices
     CharId = GetDelimitedFile(InPath + "/char2id.txt");
@@ -164,6 +166,9 @@ bool Phonemizer::Initialize(const std::string InPath)
     G2pModel.Initialize(InPath + "/model");
 
     LoadDictionary(InPath + "/dict.txt");
+
+    NumTxt.load(NLangName,InPath + "/" + NLangName + ".sor");
+    NumTxtLang = NLangName;
 
 
 

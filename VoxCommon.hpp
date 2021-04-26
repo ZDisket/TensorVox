@@ -82,6 +82,7 @@ struct VoiceInfo{
 
   uint32_t Language;
   std::string s_Language;
+  std::string s_Language_Num;
 
   std::string EndPadding;
 
