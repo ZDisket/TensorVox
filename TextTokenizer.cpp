@@ -4,15 +4,17 @@
 #include <cassert>
 #include <cctype>
 #include <iostream>
-const std::vector<std::string> first14 = { "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen" };
-const std::vector<std::string> prefixes = { "twen", "thir", "for", "fif", "six", "seven", "eigh", "nine" };
+#include <algorithm>
+
+
+
 
 // Punctuation, this gets auto-converted to SIL
 const std::u32string punctuation_f = U",.-;";
 
 // For Tacotron2, including question and other marks
 const std::u32string punctuation_tac = U",.;¡!¿?:";
-#include <algorithm>
+
 
 
 using namespace std;
