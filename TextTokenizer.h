@@ -16,6 +16,12 @@ private:
     std::string NumLang;
 
 
+    // Go through the string and add spaces before and after punctuation.
+    // This is because ExpandNumbers won't recognize numbers if they've got punctuation like 500, or .9000
+    std::string SpaceChars(const std::string& InStr);
+
+
+
 public:
 	TextTokenizer();
 	~TextTokenizer();

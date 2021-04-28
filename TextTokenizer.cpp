@@ -48,7 +48,40 @@ vector<string> TextTokenizer::ExpandNumbers(const std::vector<std::string>& Spac
 	}
 
 	return RetVec;
-	
+
+}
+
+string TextTokenizer::SpaceChars(const string &InStr)
+{
+    std::u32string AsmStr = U"";
+    std::u32string Stry = VoxUtil::StrToU32(InStr);
+
+
+    for (size_t i = 0; i < Stry.size();i++)
+    {
+        auto uChar = Stry[i];
+        if (punctuation_tac.find(uChar) != std::u32string::npos)
+        {
+            AsmStr += U" ";
+            AsmStr += uChar;
+            AsmStr += U" ";
+
+        }
+        else
+        {
+            AsmStr += uChar;
+
+        }
+
+
+
+
+
+    }
+
+    return VoxUtil::U32ToStr(AsmStr);
+
+
 }
 
 TextTokenizer::TextTokenizer()
@@ -74,8 +107,9 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
 
 
 
+    std::string TxtPreProc = SpaceChars(InTxt);
 
-	ZStringDelimiter Delim(InTxt);
+    ZStringDelimiter Delim(TxtPreProc);
 	Delim.AddDelimiter(" ");
 
     vector<string> DelimitedTokens = Delim.GetTokens();
@@ -84,7 +118,7 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::E
 
 	// Single word handler
     if (!Delim.szTokens())
-        DelimitedTokens.push_back(InTxt);
+        DelimitedTokens.push_back(TxtPreProc);
 
     DelimitedTokens = ExpandNumbers(DelimitedTokens);
 
