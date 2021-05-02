@@ -16,6 +16,7 @@ const std::u32string punctuation_f = U",.-;";
 const std::u32string punctuation_tac = U",.;¡!¿?:";
 
 
+const std::u32string digits = U"1234567890";
 
 using namespace std;
 
@@ -56,24 +57,31 @@ string TextTokenizer::SpaceChars(const string &InStr)
     std::u32string AsmStr = U"";
     std::u32string Stry = VoxUtil::StrToU32(InStr);
 
+    bool InNumChain = false;
 
     for (size_t i = 0; i < Stry.size();i++)
     {
         auto uChar = Stry[i];
-        if (punctuation_tac.find(uChar) != std::u32string::npos)
+
+        if (digits.find(uChar) != std::u32string::npos && !InNumChain)
         {
             AsmStr += U" ";
             AsmStr += uChar;
-            AsmStr += U" ";
-
+            InNumChain = true;
+            continue;
         }
-        else
+
+        if (digits.find(uChar) == std::u32string::npos && InNumChain )
         {
+            AsmStr += U" ";
             AsmStr += uChar;
 
+            InNumChain = false;
+            continue;
+
         }
 
-
+        AsmStr += uChar;
 
 
 
