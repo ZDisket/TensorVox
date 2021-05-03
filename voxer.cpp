@@ -113,7 +113,12 @@ std::vector<float> DoDenoise(const std::vector<float>& InAudata,DenoiseState* De
 void Voxer::run()
 {
 
+
+
+
+
     pAttItem->setBackgroundColor(InProcessColor);
+
 
     high_resolution_clock::time_point Start = high_resolution_clock::now();
     std::vector<float> Audat;
@@ -162,11 +167,29 @@ void Voxer::run()
         f *= Amplify;
 
 
-    pAttItem->setBackgroundColor(DoneColor);
+
+     pAttItem->setBackgroundColor(DoneColor);
+
+
     if (ForcedAudio.size())
         Res.Mel.Shape.push_back(-1);
 
+
+
+
+
+
+    if (ExportFileName.size())
+    {
+        VoxUtil::ExportWAV(ExportFileName.toStdString(),AudRes,CommonSampleRate);
+        AudRes.clear();
+
+        CurrentID = UINT32_MAX;
+    }
     emit Done(AudRes,Res.Mel,duration_cast<duration<double>>(End - Start),CurrentID);
+
+
+
 
     if (Res.Alignment.Data.size() > 0)
         emit AttentionReady(Res.Alignment,CurrentID);

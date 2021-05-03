@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    DoingBatchDenoising = false;
 
     ui->setupUi(this);
     PopulateComboBox();
@@ -137,6 +138,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->widSpec->Map = SpecMap;
     SpecMap->setGradient(Viridis);
 
+    DenBatchSize = 0;
+    DenDone = 0;
+
 
 
 
@@ -154,6 +158,28 @@ InferIDTrueID* MainWindow::FindByFirst(uint32_t inGetID)
     return nullptr;
 
 
+}
+
+void MainWindow::PushToInfers(InferDetails &InDets)
+{
+
+    if (!InDets.pItem)
+        InDets.pItem = new QListWidgetItem(InDets.ExportFileName.split('/').last(),ui->lstUtts);
+
+
+
+
+    Infers.push(InDets);
+    pTskProg->show();
+
+    IterateQueue();
+
+
+}
+
+int32_t MainWindow::GetCountItems()
+{
+    return ui->lstUtts->count();
 }
 
 
@@ -181,6 +207,34 @@ MainWindow::~MainWindow()
 
 void MainWindow::OnAudioRecv(std::vector<float> InDat, TFTensor<float> InMel, std::chrono::duration<double> infer_span, uint32_t inID)
 {
+    if (inID == UINT32_MAX)
+    {
+        DoingBatchDenoising = true;
+        ++DenDone;
+
+        --CurrentAmtThreads;
+
+
+        ui->chkMultiThreaded->setChecked(ui->lstUtts->count() > ui->spbThreads->value());
+
+
+
+
+
+        if (DenDone == DenBatchSize){
+            on_btnClear_clicked();
+            return;
+
+        }
+
+
+
+        IterateQueue();
+
+        return;
+
+    }
+    DoingBatchDenoising = false;
 
 
 
@@ -324,6 +378,8 @@ void MainWindow::OnAttentionRecv(TFTensor<float> InAtt, uint32_t inID)
 }
 
 
+
+
 void MainWindow::on_btnInfer_clicked()
 {
     // While the Voice class can already autoload, we explicitly do so here so we can handle everything (note text, disabling)
@@ -407,6 +463,7 @@ void MainWindow::on_btnInfer_clicked()
         Dets.EmotionID = -1;
         Dets.Denoise = ui->chkDenoise->isChecked();
         Dets.Amplification = (float)ui->sliVolBoost->value() / 1000.f;
+        Dets.ExportFileName = "";
         size_t VoiceID = (size_t)VoMan.FindVoice(ui->cbModels->currentText(),true);
 
         Dets.SampleRate = VoMan[VoiceID]->GetInfo().SampleRate;
@@ -543,15 +600,24 @@ void MainWindow::AdvanceQueue()
 int32_t MainWindow::CountBlues()
 {
 
+    if (DoingBatchDenoising)
+        return 0;
+
+
     int32_t NumBlues = 0;
     int32_t NumGreen = 0;
 
     for (int i = 0; i < ui->lstUtts->count();i++)
     {
+        if (!ui->lstUtts->item(i))
+            continue;
+
         if (ui->lstUtts->item(i)->backgroundColor() == InProcessColor)
             NumBlues += 1;
         else if (ui->lstUtts->item(i)->backgroundColor() == DoneColor || ui->lstUtts->item(i)->backgroundColor() == PlayingColor)
             NumGreen += 1;
+
+
 
 
     }
@@ -560,6 +626,7 @@ int32_t MainWindow::CountBlues()
 
     // Letting the user click clear when there is an in process utterance will make a crash
     ui->btnClear->setEnabled(NumBlues == 0 && NumGreen == ui->lstUtts->count());
+
 
 
     return NumBlues;
@@ -722,7 +789,9 @@ void MainWindow::IterateQueue()
 
     }
 
-    CountBlues();
+    if (!DoingBatchDenoising)
+         CountBlues();
+
 
 
 
@@ -739,19 +808,34 @@ void MainWindow::DoInference(InferDetails &Dets)
     VoxThread->Prompt = Dets.Prompt;
     VoxThread->pAttItem = Dets.pItem;
     VoxThread->SpeakerID = Dets.SpeakerID;
-    size_t VoiceID = (size_t)VoMan.FindVoice(Dets.VoiceName,true);
-    //Auto-load is true, so we will always get a good pointer.
-    VoxThread->pAttVoice = VoMan[VoiceID];
+    VoxThread->ForcedAudio = Dets.ForcedAudio;
+
+    if (!VoxThread->ForcedAudio.size())
+    {
+        size_t VoiceID = (size_t)VoMan.FindVoice(Dets.VoiceName,true);
+        //Auto-load is true, so we will always get a good pointer.
+        VoxThread->pAttVoice = VoMan[VoiceID];
+    }else
+    {
+        // Denoising threads don't need voices.
+        VoxThread->pAttVoice = nullptr;
+
+    }
+
     VoxThread->SampleRate = Dets.SampleRate;
     VoxThread->EmotionID = Dets.EmotionID;
 
     VoxThread->CurrentID = (uint32_t)CurrentInferIndex;
     VoxThread->Denoise = Dets.Denoise;
     VoxThread->Amplify = Dets.Amplification;
-    VoxThread->ForcedAudio = Dets.ForcedAudio;
+    VoxThread->ExportFileName = Dets.ExportFileName;
 
     connect(VoxThread,&Voxer::Done,this,&MainWindow::OnAudioRecv);
     connect(VoxThread,&Voxer::AttentionReady,this,&MainWindow::OnAttentionRecv);
+
+    // Otherwise the thread lingers and causes a memory leak
+    connect(VoxThread, &Voxer::finished, VoxThread, &QObject::deleteLater);
+
 
     VoxThread->start();
     ++CurrentAmtThreads;
@@ -1308,6 +1392,7 @@ void MainWindow::on_actDenWAV_triggered()
     Dets.EmotionID = -1;
     Dets.Denoise = true;
     Dets.Amplification = (float)ui->sliVolBoost->value() / 1000.f;
+    Dets.ExportFileName = "";
 
 
     Dets.VoiceName = ui->cbModels->currentText();
@@ -1630,5 +1715,35 @@ Voice *MainWindow::GetCurrentVoice()
     int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
     return VoMan[(size_t)CurrentIndex];
 
+
+}
+
+void MainWindow::on_actBatchDen_triggered()
+{
+
+    FramelessWindow FDlg(FwParent);
+    FDlg.setWindowIcon(QIcon(":/res/infico.png"));
+    FDlg.setWindowTitle("Batch Denoiser");
+    FDlg.SetTitleBarBtns(false,false,true);
+    FDlg.resize(520,300);
+
+    BatchDenoiseDlg Dlg(FwParent);
+
+    FDlg.setContent(&Dlg);
+    FDlg.ContentDlg(&Dlg);
+
+    Dlg.pMainWindow = this;
+
+    ui->chkAutoPlay->setChecked(false);
+    ui->chkMultiThreaded->setChecked(true);
+
+    on_btnClear_clicked();
+
+
+    FDlg.show();
+
+    Dlg.setModal(true);
+
+    Dlg.exec();
 
 }

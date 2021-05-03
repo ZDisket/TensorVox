@@ -24,6 +24,7 @@ SOURCES += \
     Voice.cpp \
     VoxCommon.cpp \
     attention.cpp \
+    batchdenoisedlg.cpp \
     ext/ByteArr.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/DarkStyle.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     Voice.h \
     VoxCommon.hpp \
     attention.h \
+    batchdenoisedlg.h \
     ext/AudioFile.hpp \
     ext/ByteArr.h \
     ext/CppFlow/context.h \
@@ -86,6 +88,7 @@ HEADERS += \
     voxer.h
 
 FORMS += \
+    batchdenoisedlg.ui \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.ui \
     mainwindow.ui \
     modelinfodlg.ui \
@@ -112,7 +115,7 @@ RESOURCES += \
 
 win32:RC_ICONS += winicon.ico
 
-VERSION = 0.8.8.0
+VERSION = 0.8.8.1
 CONFIG += force_debug_info
 
 QMAKE_CXXFLAGS += /std:c++17 /utf-8 -DPSAPI_VERSION=1

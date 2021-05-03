@@ -31,6 +31,9 @@ public:
     int32_t EmotionID;
     bool Denoise;
 
+    // DANGER: If this is set, the item will not emit anything
+    QString ExportFileName;
+
     float Amplify;
     Voxer();
 

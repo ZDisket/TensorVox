@@ -703,6 +703,7 @@
     </property>
     <addaction name="actDenWAV"/>
     <addaction name="actionPhonemize_filelist"/>
+    <addaction name="actBatchDen"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -795,6 +796,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actBatchDen">
+   <property name="text">
+    <string>Batch Denoising </string>
    </property>
   </action>
  </widget>

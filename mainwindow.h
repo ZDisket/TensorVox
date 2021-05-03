@@ -18,7 +18,7 @@
 #include <QWinTaskbarProgress>
 
 #include "phoneticdict.h"
-
+#include "batchdenoisedlg.h"
 #include "rnnoise.h"
 #include <QClipboard>
 
@@ -41,6 +41,7 @@ struct InferDetails{
   uint32_t SampleRate;
 
   std::vector<float> ForcedAudio;
+  QString ExportFileName;
 
 
 
@@ -94,6 +95,15 @@ private:
 
 
 
+protected:
+    friend class BatchDenoiseDlg;
+
+    void PushToInfers(InferDetails& InDets);
+    int32_t GetCountItems();
+    bool DoingBatchDenoising;
+
+    int32_t DenBatchSize;
+    int32_t DenDone;
 
 public:
     void* pDarkFw;
@@ -109,6 +119,7 @@ public slots:
 
     void OnAttentionRecv(TFTensor<float> InAtt,uint32_t inID);
 private slots:
+
     void on_btnInfer_clicked();
 
     void on_btnLoad_clicked();
@@ -168,6 +179,8 @@ private slots:
     void on_actPhnSel_triggered();
 
     void on_spbSeqLen_editingFinished();
+
+    void on_actBatchDen_triggered();
 
 private:
 
