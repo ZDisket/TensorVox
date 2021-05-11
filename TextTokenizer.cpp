@@ -58,10 +58,26 @@ string TextTokenizer::SpaceChars(const string &InStr)
     std::u32string Stry = VoxUtil::StrToU32(InStr);
 
     bool InNumChain = false;
+    bool InPhn = false;
 
     for (size_t i = 0; i < Stry.size();i++)
     {
         auto uChar = Stry[i];
+
+        if (uChar == U'@')
+            InPhn = true;
+
+        if (uChar == U' ')
+            InPhn = false;
+
+
+        if (InPhn)
+        {
+            AsmStr += uChar;
+            continue;
+
+        }
+
 
         if (digits.find(uChar) != std::u32string::npos && !InNumChain)
         {

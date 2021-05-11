@@ -90,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
     NumDone = 0;
     CurrentAmtThreads = 0;
 
-    LogiLedAvailable = LogiLedInitWithName("TensorVox");
+    LogiLedAvailable = LogiLedInitWithName("Vox");
     if (LogiLedAvailable)
         LogiLedSetTargetDevice(LOGI_DEVICETYPE_RGB);
 
