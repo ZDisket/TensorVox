@@ -1,6 +1,7 @@
 #include "tacotron2.h"
 
 
+
 Tacotron2::Tacotron2()
 {
 
@@ -10,13 +11,6 @@ TFTensor<float> Tacotron2::DoInference(const std::vector<int32_t> &InputIDs, con
 {
     if (!CurrentMdl)
         throw std::exception("Tried to do inference on unloaded or invalid model!");
-
-
-
-
-    QString dastr;
-    for (int32_t fish : InputIDs)
-        dastr += QString::number(fish) + " ";
 
 
 
