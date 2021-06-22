@@ -140,6 +140,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     DenBatchSize = 0;
     DenDone = 0;
+    LastExportDir = QCoreApplication::applicationDirPath() + "/Utt.wav";
 
 
 
@@ -982,13 +983,15 @@ void MainWindow::on_btnExportSel_clicked()
     }
 
 
-    QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export WAV file"), "Utt", tr("WAV, float32 PCM (*.wav)"));
+    QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export WAV file"), LastExportDir, tr("WAV, float32 PCM (*.wav)"));
     if (!ofname.size())
         return;
 
     std::vector<float> Audat;
     QByteArray& AuBuff = AudBuffs[(size_t)ui->lstUtts->currentRow()]->buffer();
     ExportAudBuffer(ofname,AuBuff,CommonSampleRate);
+
+    LastExportDir = ofname;
 
 
 }
@@ -1028,7 +1031,7 @@ void MainWindow::on_btnExReport_clicked()
     if (AltExport)
         ExTitle += "s (separately)";
 
-    QString ofname = QFileDialog::getSaveFileName(FwParent,ExTitle, "Utt", tr("WAV, float32 PCM (*.wav)"));
+    QString ofname = QFileDialog::getSaveFileName(FwParent,ExTitle,LastExportDir, tr("WAV, float32 PCM (*.wav)"));
     if (!ofname.size())
         return;
 
@@ -1053,6 +1056,8 @@ void MainWindow::on_btnExReport_clicked()
 
 
         ResetLogiLedIn(8);
+        LastExportDir = ofname;
+
         return;
 
 
@@ -1070,6 +1075,8 @@ void MainWindow::on_btnExReport_clicked()
 
 
     LogiLedFlashLighting(0,50,100,5000,500);
+
+    LastExportDir = ofname;
 
 
     ResetLogiLedIn(8);

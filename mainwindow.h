@@ -92,6 +92,7 @@ private:
     bool DoUpdateSplitAuto;
 
     InferIDTrueID* FindByFirst(uint32_t inGetID);
+    QString LastExportDir;
 
 
 
