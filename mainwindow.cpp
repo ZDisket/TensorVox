@@ -1043,11 +1043,12 @@ void MainWindow::on_btnExReport_clicked()
         for (int32_t i = 0; i < ui->lstUtts->count();i++)
         {
 
-            // Since QString.replace modifies the string we have to operate on a copy of the ofname every time
-            // otherwise we get things like file1.wav,file12.wav,file123.wav, etc...
-            QString ExFn = ofname;
 
-            ExportAudBuffer(ExFn.replace(".wav",QString::number(i) + ".wav"),AudBuffs[(uint64_t)GetID(i)]->buffer(),CommonSampleRate);
+            QString FnNoFex = ofname.split(".")[0];
+            FnNoFex += QString::number(i);
+            FnNoFex += ".wav";
+
+            ExportAudBuffer(FnNoFex,AudBuffs[(uint64_t)GetID(i)]->buffer(),CommonSampleRate);
 
         }
 
@@ -1616,7 +1617,7 @@ QString MainWindow::PhonemizeStr(QString &Text, Voice &VoxIn)
 
 
 
-    QString PhonemedTxt = QString::fromStdString(VoxIn.PhonemizeStr(Text.toStdString()));
+    QString PhonemedTxt = QString::fromStdString(VoxIn.PhonemizeStr(Text.toLower().toStdString()));
 
 
 
