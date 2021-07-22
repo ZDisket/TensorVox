@@ -339,6 +339,11 @@ void MainWindow::OnAudioStateChange(QAudio::State newState)
             CanPlayAudio = true;
 
 
+        if (StdOutput->error() != QAudio::NoError && StdOutput->error() != QAudio::UnderrunError) {
+            QMessageBox::critical(this,"Error","Audio stopped playing due to error ID " + QString::number(StdOutput->error()));
+
+        }
+
     }
 }
 

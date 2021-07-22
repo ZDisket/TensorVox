@@ -98,7 +98,7 @@ void Track::plot()
     for (int i=0; i<x.size(); i++)
         x[i] = i;
     wavePlot->addData(x, samples);
-    yAxis->setRange(QCPRange(-0.6, 0.6));
+    yAxis->setRange(QCPRange(-1.0, 1.0));
 
     xAxis->setRange(QCPRange(0, samples.size()));
     replot();
