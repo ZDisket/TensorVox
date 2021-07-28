@@ -1,7 +1,30 @@
 #include "Voice.h"
 #include "ext/ZCharScanner.h"
 
+std::vector<int32_t> Voice::CharsToID(const std::string & InTxt)
+{
 
+    std::vector<int32_t> VecPhones;
+
+    for (const auto& Char : InTxt)
+    {
+        size_t ArrID = 0;
+        std::string CharAs;
+        CharAs += Char;
+
+        if (VoxUtil::FindInVec<std::string>(CharAs, Phonemes, ArrID))
+            VecPhones.push_back(PhonemeIDs[ArrID]);
+        else
+            std::cout << "Voice::PhonemesToID() WARNING: Unknown phoneme " << Char << std::endl;
+
+
+
+    }
+
+
+    return VecPhones;
+
+}
 
 std::vector<int32_t> Voice::PhonemesToID(const std::string & InTxt)
 {
@@ -139,17 +162,42 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
 
     bool VoxIsTac = VoxInfo.Architecture.Text2Mel == EText2MelModel::Tacotron2;
-    std::string PhoneticTxt = Processor.ProcessTextPhonetic(Prompt + VoxInfo.EndPadding,Phonemes,CurrentDict,
+
+    std::string PromptToFeed = Prompt;
+    if (VoxInfo.Language > 0)
+        PromptToFeed += VoxInfo.EndPadding;
+
+    std::string PhoneticTxt = Processor.ProcessTextPhonetic(PromptToFeed,Phonemes,CurrentDict,
                                                             (ETTSLanguage::Enum)VoxInfo.Language,
                                                            VoxIsTac);
     TFTensor<float> Mel;
     TFTensor<float> Attention;
+
+    std::vector<int32_t> InputIDs;
+
+
+    // Note to self: always check for negative or positive language by checking that it is lower than 0
+    // if we try greater than 0, English is missed.
+    if (VoxInfo.Language < 0){
+        InputIDs = CharsToID(PhoneticTxt);
+        InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
+
+
+    }
+    else
+    {
+        InputIDs = PhonemesToID(PhoneticTxt);
+
+
+    }
+
+
     if (VoxIsTac)
     {
         std::vector<float> FloatArgs;
         std::vector<int32_t> IntArgs;
 
-        Mel = ((Tacotron2*)MelPredictor.get())->DoInference(PhonemesToID(PhoneticTxt),FloatArgs,IntArgs,SpeakerID, EmotionID);
+        Mel = ((Tacotron2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
         Attention = ((Tacotron2*)MelPredictor.get())->Attention;
 
     }
@@ -158,7 +206,7 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
         std::vector<float> FloatArgs = {Speed,Energy,F0};
         std::vector<int32_t> IntArgs;
-        Mel = ((FastSpeech2*)MelPredictor.get())->DoInference(PhonemesToID(PhoneticTxt),FloatArgs,IntArgs,SpeakerID, EmotionID);
+        Mel = ((FastSpeech2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
 
     }
 

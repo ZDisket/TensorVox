@@ -27,6 +27,28 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
     vector<string> Words = Tokenizer.Tokenize(InText,InLanguage,IsTac);
 
 	string Assemble = "";
+
+    // If language is negative, this is char-based model.
+    if (InLanguage < 0)
+    {
+        for (size_t w = 0; w < Words.size();w++)
+        {
+            Assemble.append(Words[w]);
+
+            if (w > 0)
+                Assemble.append(" ");
+
+        }
+
+        if (Assemble[Assemble.size() - 1] == ' ')
+            Assemble.pop_back();
+
+        return Assemble;
+
+
+
+    }
+
     // Make a copy of the dict passed.
     std::vector<DictEntry> CurrentDict = InDict;
 
@@ -83,7 +105,7 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
         std::string Res = Phoner->ProcessWord(Word,0.001f);
 
         // Cache the word in the override dict so next time we don't have to research it
-        CurrentDict.push_back({Word,Res});
+        CurrentDict.push_back({Word,Res,""});
 
         Assemble.append(Res);
         Assemble.append(" ");

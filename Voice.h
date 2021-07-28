@@ -50,6 +50,7 @@ private:
 
     std::string ModelInfo;
 
+    std::vector<int32_t> CharsToID(const std::string &InTxt);
 public:
 	/* Voice constructor, arguments obligatory.
 	 -> VoxPath: Path of folder where models are contained. 

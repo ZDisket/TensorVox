@@ -48,10 +48,16 @@ enum Enum{
 };
 }
 
+// Negative numbers denote character-based language, positive for phoneme based. Standard is char-equivalent language idx = negative(phn-based)
+// In case of English, since -0 doesn't exist, we use -1.
+// For example, German phonetic would be 3, and character based would be -3
 namespace ETTSLanguage{
 enum Enum{
-  English = 0,
-  Spanish
+  GermanChar = -3,
+  SpanishChar, // Unimplemented.
+  EnglishChar,
+  EnglishPhn,
+  SpanishPhn
 };
 
 }
@@ -80,7 +86,7 @@ struct VoiceInfo{
 
   uint32_t SampleRate;
 
-  uint32_t Language;
+  int32_t Language;
   std::string s_Language;
   std::string s_Language_Num;
 

@@ -153,13 +153,25 @@ size_t Phonemizer::GetBucketIndex(size_t InSize)
 
 Phonemizer::Phonemizer()
 {
+    IsMinimal = true;
 
 }
 
-bool Phonemizer::Initialize(const std::string InPath, const std::string &NLangName)
+bool Phonemizer::Initialize(const std::string InPath, const std::string &NLangName,bool Minimal)
 {
-    // Load indices
+    IsMinimal = Minimal;
+
+    NumTxt.load(NLangName,InPath + "/" + NLangName + ".sor");
+    NumTxtLang = NLangName;
+
+    // Load char indices
     CharId = GetDelimitedFile(InPath + "/char2id.txt");
+
+    // If we're doing minimal loading then stop here
+    if (IsMinimal)
+        return true;
+
+
     PhnId = GetDelimitedFile(InPath + "/phn2id.txt");
 
     // Load model
@@ -167,18 +179,22 @@ bool Phonemizer::Initialize(const std::string InPath, const std::string &NLangNa
 
     LoadDictionary(InPath + "/dict.txt");
 
-    NumTxt.load(NLangName,InPath + "/" + NLangName + ".sor");
-    NumTxtLang = NLangName;
 
 
 
+    IsMinimal = false;
     return true;
 
 
 }
 
+
+
 std::string Phonemizer::ProcessWord(const std::string &InWord,float Temperature)
 {
+    if (IsMinimal)
+        return InWord;
+
     // First we try dictionary lookup
     // This is because the g2p model can be unreliable, we only want to use it for novel sentences
 

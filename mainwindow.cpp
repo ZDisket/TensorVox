@@ -1221,6 +1221,13 @@ void MainWindow::on_actionOverrides_triggered()
 
     }
 
+    if (VoMan[CurrentIndex]->GetInfo().Language < 0){
+        QMessageBox::critical(FwParent,"Error","Phonetic overrides dictionary is not available for character-based models. Please use a phoneme-based model.");
+        return;
+
+
+    }
+
     FramelessWindow FDlg(FwParent);
     FDlg.setWindowIcon(QIcon(":/res/phoneticdico.png"));
     FDlg.setWindowTitle("Phonetic Overrides");

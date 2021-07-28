@@ -8,8 +8,8 @@ const std::vector<std::string> Text2MelNames = {"FastSpeech2","Tacotron2"};
 const std::vector<std::string> VocoderNames = {"Multi-Band MelGAN","MelGAN-STFT"};
 const std::vector<std::string> RepoNames = {"TensorflowTTS","Mozilla/TTS"};
 
-const std::vector<std::string> LanguageNames = {"English","Spanish"};
-const std::vector<std::string> LangaugeNamesNumToWords = {"en", "es"};
+const std::vector<std::string> LanguageNames = {"English","Spanish", "German"};
+const std::vector<std::string> LangaugeNamesNumToWords = {"en", "es","de"};
 
 
 void VoxUtil::ExportWAV(const std::string & Filename, const std::vector<float>& Data, unsigned SampleRate) {
@@ -33,6 +33,19 @@ void VoxUtil::ExportWAV(const std::string & Filename, const std::vector<float>& 
 	File.save(Filename, AudioFileFormat::Wave);
 
 
+
+}
+
+// Process language value for vector indexes. Language value must adhere to standard.
+uint32_t ProcessLanguageValue(int32_t LangVal)
+{
+    if (LangVal == -1)
+        return 0;
+
+    if (LangVal < -1)
+        return LangVal * -1;
+
+    return LangVal;
 
 }
 
@@ -66,8 +79,23 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
     CuArch.s_Text2Mel = Text2MelNames[CuArch.Text2Mel];
     CuArch.s_Vocoder = VocoderNames[CuArch.Vocoder];
 
+    // Language value for the info
+    int32_t RawLang = JS["language"].get<int32_t>();
 
-    uint32_t Lang = JS["language"].get<uint32_t>();
+
+    // Language value for the vectors
+    int32_t LanguageValue = ProcessLanguageValue(RawLang);
+
+
+
+    // If the voice is char then the pad value must be a string of the EOS token ID (like "148").
+    std::string EndToken = JS["pad"].get<std::string>();
+
+    // If it's phonetic then it's the token str, like "@EOS"
+    if (RawLang > 0)
+        EndToken =  " " + EndToken; // In this case we add a space for separation since we directly append the value to the prompt
+
+
     VoiceInfo Inf{JS["name"].get<std::string>(),
                  JS["author"].get<std::string>(),
                  JS["version"].get<int>(),
@@ -75,10 +103,10 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
                  CuArch,
                  JS["note"].get<std::string>(),
                  JS["sarate"].get<uint32_t>(),
-                 Lang,
-                LanguageNames[Lang],
-                LangaugeNamesNumToWords[Lang],
-                 " " + JS["pad"].get<std::string>()}; // Add a space for separation since we directly append the value to the prompt
+                 RawLang,
+                LanguageNames[LanguageValue],
+                LangaugeNamesNumToWords[LanguageValue],
+                 EndToken};
 
     if (Inf.Note.size() > MaxNoteSize)
         Inf.Note = Inf.Note.substr(0,MaxNoteSize);
