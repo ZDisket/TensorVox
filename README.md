@@ -10,11 +10,15 @@ Powered by [TensorflowTTS](https://github.com/TensorSpeech/TensorFlowTTS), it is
 ### Try it out
 Grab it from the releases and check [the Google Drive folder](https://drive.google.com/drive/folders/1atUyxBbstKZpMqQEZMdNmRF2AKrlahKy?usp=sharing) for models and installation instructions
 
-TODO: Add instructions for training and exporting models
+If you're interested in using your own model, first you need to train it (see link to TensorflowTTS above) then export it. Here's a Colab notebook demonstrating how to export the LJSpeech pretrained, char-based Tacotron2 model from the TensorflowTTS master found there: 
+[<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1KLqZ1rkD4Enw7zpTgXGL6if7e5s0UeWa?usp=sharing)
+Out-of-the-box support is provided for English and Spanish; that is, you won't have to modify any code. 
+
+Do not hesitate to contact below if you need anything.
 
 ## Supported architectures
 
-Currently, only FastSpeech2, Tacotron2 (phoneme-based) and Multi-Band MelGAN from TensorflowTTS are supported. 
+Currently, FastSpeech2, Tacotron2 (phoneme and character based) and Multi-Band MelGAN from TensorflowTTS are supported. 
 
 
 ## Build instructions
@@ -50,6 +54,8 @@ TODO: Add instructions for compile from scratch.
 
 ## Contact
 You can open an issue here or join the [Discord server](https://discord.gg/yqFDAWH) and discuss/ask anything there
+
+For media/licensing/any other formal stuff inquiries, send to this email: 9yba9c1y@anonaddy.me
 
 ## Note about licensing
 
