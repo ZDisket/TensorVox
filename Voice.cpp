@@ -164,7 +164,7 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     bool VoxIsTac = VoxInfo.Architecture.Text2Mel == EText2MelModel::Tacotron2;
 
     std::string PromptToFeed = Prompt;
-    if (VoxInfo.Language > 0)
+    if (VoxInfo.Language > -1)
         PromptToFeed += VoxInfo.EndPadding;
 
     std::string PhoneticTxt = Processor.ProcessTextPhonetic(PromptToFeed,Phonemes,CurrentDict,

@@ -92,7 +92,7 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
     std::string EndToken = JS["pad"].get<std::string>();
 
     // If it's phonetic then it's the token str, like "@EOS"
-    if (RawLang > 0)
+    if (RawLang > -1)
         EndToken =  " " + EndToken; // In this case we add a space for separation since we directly append the value to the prompt
 
 
