@@ -172,7 +172,13 @@ void Voxer::run()
 
 
     if (ForcedAudio.size())
+    {
         Res.Mel.Shape.push_back(-1);
+        // see MakeInferDetails at batchdenoisedlg.cpp
+        AudRes = Resample(AudRes,CommonSampleRate,SpeakerID);
+
+
+    }
 
 
 
@@ -181,7 +187,7 @@ void Voxer::run()
 
     if (ExportFileName.size())
     {
-        VoxUtil::ExportWAV(ExportFileName.toStdString(),AudRes,CommonSampleRate);
+        VoxUtil::ExportWAV(ExportFileName.toStdString(),AudRes,SpeakerID);
         AudRes.clear();
 
         CurrentID = UINT32_MAX;

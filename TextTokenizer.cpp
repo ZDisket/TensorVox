@@ -13,7 +13,7 @@
 const std::u32string punctuation_f = U",.-;";
 
 // For Tacotron2, including question and other marks
-const std::u32string punctuation_tac = U",.;¡!¿?:";
+const std::u32string punctuation_tac = U",.;¡!¿?:-";
 
 
 const std::u32string digits = U"1234567890";

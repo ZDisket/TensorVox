@@ -21,7 +21,7 @@ BatchDenoiseDlg::BatchDenoiseDlg(QWidget *parent) :
 
 
 // can't define in header because InferDetails belongs to mainwindow.h and including it in this dlg's .h would case circular dependency error
-InferDetails MakeInferDetails(const std::vector<float>& InAudat,const QString& FilePath,unsigned InSampleRate)
+InferDetails MakeInferDetails(const std::vector<float>& InAudat,const QString& FilePath,unsigned InSampleRate,int32_t OutSampleRate)
 {
     InferDetails Dets;
     Dets.F0 = 0.0f;
@@ -29,7 +29,7 @@ InferDetails MakeInferDetails(const std::vector<float>& InAudat,const QString& F
     Dets.Energy = 0.0f;
     Dets.pItem = nullptr; // the mainwindow's function will make an item for us.
     Dets.Prompt = "";
-    Dets.SpeakerID = 0;
+    Dets.SpeakerID = OutSampleRate; // SpeakerID will double as resample when a denoise only job is requested.
     Dets.EmotionID = -1;
     Dets.Denoise = true;
     Dets.Amplification = 1.f;
@@ -83,7 +83,7 @@ void BatchDenoiseDlg::IterateDo()
         try {
             AudFile.load(CurrentFn.toStdString());
 
-            CurrentDets = MakeInferDetails(AudFile.samples[0],CurrentFn,AudFile.getSampleRate());
+            CurrentDets = MakeInferDetails(AudFile.samples[0],CurrentFn,AudFile.getSampleRate(),ui->spbOutSR->value());
 
         }  catch (...) {
 
