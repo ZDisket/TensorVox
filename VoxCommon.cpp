@@ -39,11 +39,14 @@ void VoxUtil::ExportWAV(const std::string & Filename, const std::vector<float>& 
 // Process language value for vector indexes. Language value must adhere to standard.
 uint32_t ProcessLanguageValue(int32_t LangVal)
 {
+    if (LangVal > -1)
+        return LangVal;
+
     if (LangVal == -1)
         return 0;
 
-    if (LangVal < -1)
-        return LangVal * -1;
+    if (LangVal < 0)
+        return (LangVal * -1) - 1;
 
     return LangVal;
 
@@ -94,7 +97,6 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
     // If it's phonetic then it's the token str, like "@EOS"
     if (RawLang > -1)
         EndToken =  " " + EndToken; // In this case we add a space for separation since we directly append the value to the prompt
-
 
     VoiceInfo Inf{JS["name"].get<std::string>(),
                  JS["author"].get<std::string>(),
