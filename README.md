@@ -21,7 +21,7 @@ Do not hesitate to contact below if you need anything.
 
 Currently, FastSpeech2, Tacotron2 (phoneme and character based) and Multi-Band MelGAN from TensorflowTTS are supported. 
 
-Out-of-the-box support is provided for English and Spanish; that is, you won't have to modify any code. 
+Out-of-the-box support is provided for English, German and Spanish; that is, you won't have to modify any code. 
 
 
 ## Build instructions
