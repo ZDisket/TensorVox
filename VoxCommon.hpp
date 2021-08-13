@@ -29,7 +29,7 @@ struct TFTensor {
 namespace ETTSRepo {
 enum Enum{
     TensorflowTTS = 0,
-    MozillaTTS // not implemented yet
+    CoquiTTS
 };
 
 }
@@ -54,10 +54,10 @@ enum Enum{
 namespace ETTSLanguage{
 enum Enum{
   GermanChar = -3,
-  SpanishChar, // Unimplemented.
+  SpanishChar,
   EnglishChar,
   EnglishPhn,
-  SpanishPhn
+  SpanishPhn,
 };
 
 }

@@ -114,7 +114,7 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
         MelPredictor = std::make_unique<FastSpeech2>();
 
 
-    MelPredictor->Initialize(VoxPath + "/melgen");
+    MelPredictor->Initialize(VoxPath + "/melgen",(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
 
 
     Vocoder.Initialize(VoxPath + "/vocoder");
@@ -191,11 +191,12 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
     }
 
+    std::vector<float> FloatArgs;
+    std::vector<int32_t> IntArgs;
+
 
     if (VoxIsTac)
     {
-        std::vector<float> FloatArgs;
-        std::vector<int32_t> IntArgs;
 
         Mel = ((Tacotron2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
         Attention = ((Tacotron2*)MelPredictor.get())->Attention;
@@ -204,37 +205,50 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     else
     {
 
-        std::vector<float> FloatArgs = {Speed,Energy,F0};
-        std::vector<int32_t> IntArgs;
+        FloatArgs = {Speed,Energy,F0};
+
         Mel = ((FastSpeech2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
 
     }
 
 
 	TFTensor<float> AuData = Vocoder.DoInference(Mel);
+    std::vector<float> AudioData;
+
+    if (AuData.Shape.size() > 1)
+    {
+
+        int64_t Width = AuData.Shape[0];
+        int64_t Height = AuData.Shape[1];
+        int64_t Depth = AuData.Shape[2];
+        //int z = 0;
 
 
-	int64_t Width = AuData.Shape[0];
-	int64_t Height = AuData.Shape[1];
-	int64_t Depth = AuData.Shape[2];
-	//int z = 0;
+        AudioData.resize(Height);
 
-	std::vector<float> AudioData;
-	AudioData.resize(Height);
+        // Code to access 1D array as if it were 3D
+        for (int64_t x = 0; x < Width;x++)
+        {
+            for (int64_t z = 0;z < Depth;z++)
+            {
+                for (int64_t y = 0; y < Height;y++) {
+                    int64_t Index = x * Height * Depth + y * Depth + z;
+                    AudioData[(size_t)y] = AuData.Data[(size_t)Index];
 
-	// Code to access 1D array as if it were 3D
-	for (int64_t x = 0; x < Width;x++)
-	{
-		for (int64_t z = 0;z < Depth;z++)
-		{
-			for (int64_t y = 0; y < Height;y++) {
-				int64_t Index = x * Height * Depth + y * Depth + z;
-				AudioData[(size_t)y] = AuData.Data[(size_t)Index];
+                }
 
-			}
+            }
+        }
 
-		}
-	}
+    }
+    else
+    {
+        // Pre-flattened vocoder output
+        AudioData = AuData.Data;
+
+    }
+
+
 
 
     return {AudioData,Attention,Mel};

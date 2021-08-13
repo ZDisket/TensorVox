@@ -6,7 +6,7 @@ using namespace nlohmann;
 
 const std::vector<std::string> Text2MelNames = {"FastSpeech2","Tacotron2"};
 const std::vector<std::string> VocoderNames = {"Multi-Band MelGAN","MelGAN-STFT"};
-const std::vector<std::string> RepoNames = {"TensorflowTTS","Mozilla/TTS"};
+const std::vector<std::string> RepoNames = {"TensorflowTTS","Coqui-TTS"};
 
 const std::vector<std::string> LanguageNames = {"English","Spanish", "German"};
 const std::vector<std::string> LangaugeNamesNumToWords = {"en", "es","de"};

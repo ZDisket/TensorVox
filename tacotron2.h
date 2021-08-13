@@ -7,6 +7,9 @@ class Tacotron2 : public MelGen
 {
 private:
 
+    TFTensor<float> DoInferenceTFTTS(const std::vector<int32_t>& InputIDs,int32_t SpeakerID = 0, int32_t EmotionID = -1);
+    TFTensor<float> DoInferenceCoqui(const std::vector<int32_t>& InputIDs);
+
 
 
 public:

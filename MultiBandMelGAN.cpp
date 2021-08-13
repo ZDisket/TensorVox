@@ -21,17 +21,20 @@ TFTensor<float> MultiBandMelGAN::DoInference(const TFTensor<float>& InMel)
 {
     IF_EXCEPT(!MelGAN, "Tried to infer MB-MelGAN on uninitialized model!!!!")
 
-	// Convenience reference so that we don't have to constantly derefer pointers.
+    // Convenience reference so that we don't have to constantly derefer pointers.
     cppflow::model& Mdl = *MelGAN;
+
 
     cppflow::tensor input_mels{ InMel.Data, InMel.Shape};
 
 
     auto out_audio = Mdl({{"serving_default_mels:0",input_mels}}, {"StatefulPartitionedCall:0"})[0];
+    TFTensor<float> RetTensor = VoxUtil::CopyTensor<float>(out_audio);
 
-	TFTensor<float> RetTensor = VoxUtil::CopyTensor<float>(out_audio);
+    return RetTensor;
 
-	return RetTensor;
+
+
 
 
 }
