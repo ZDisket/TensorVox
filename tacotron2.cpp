@@ -77,7 +77,6 @@ TFTensor<float> Tacotron2::DoInferenceCoqui(const std::vector<int32_t> &InputIDs
     cppflow::tensor input_ids{ InputIDs, InputIDShape };
 
 
-
     TensorVec Inputs = {{"serving_default_characters:0",input_ids}};
 
 
@@ -106,7 +105,7 @@ TFTensor<float> Tacotron2::DoInference(const std::vector<int32_t> &InputIDs, con
 
 
     if (!CurrentMdl)
-        throw std::exception("Tried to do inference on unloaded or invalid model!");
+        throw std::runtime_error("Tried to do inference on unloaded or invalid model!");
 
     if (GetCurrentRepo() == ETTSRepo::TensorflowTTS)
         return DoInferenceTFTTS(InputIDs,SpeakerID,EmotionID);

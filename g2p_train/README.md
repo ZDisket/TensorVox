@@ -17,7 +17,9 @@ The command to run it is as follows:
 
     python3 train_and_export.py --dict-path dict.txt --config-path config/default.yaml --out-path English
 
-Arguments should be self-explanatory.
+Arguments should be self-explanatory. 
+### Important note
+If your phoneme format does not separate phonemes by space (like IPA), pass `--char-tok-phn` as an argument, because the script assumes that all phoneme texts are like ARPA (example: G R IY1 N) and tokenizes separated by spaces. One sign that it may be doing this could be very slow training on a decent GPU.
 
 ## Structure
 

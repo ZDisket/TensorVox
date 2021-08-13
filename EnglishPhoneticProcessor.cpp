@@ -17,7 +17,7 @@ bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn)
 }
 
 
-std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InText, const std::vector<string> &InPhonemes, const std::vector<DictEntry>& InDict, ETTSLanguage::Enum InLanguage, bool IsTac)
+std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InText, const std::vector<u32string> &InPhonemes, const std::vector<DictEntry>& InDict, ETTSLanguage::Enum InLanguage, bool IsTac)
 {
     if (!Phoner)
 		return "ERROR";
@@ -76,11 +76,11 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
         }
 
         if (Word.find("@") != std::string::npos){
-            std::string AddPh = Word.substr(1); // Remove the @
+            std::u32string AddPh = VoxUtil::StrToU32(Word.substr(1)); // Remove the @
             size_t OutId = 0;
             if (VoxUtil::FindInVec(AddPh,InPhonemes,OutId))
             {
-                Assemble.append(InPhonemes[OutId]);
+                Assemble.append(VoxUtil::U32ToStr(InPhonemes[OutId]));
                 Assemble.append(" ");
 
 

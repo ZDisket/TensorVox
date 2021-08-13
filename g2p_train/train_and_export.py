@@ -12,7 +12,7 @@ def safemkdir(dirn):
     os.mkdir(dirn)
 
 
-def preprocess(in_fname):
+def preprocess(in_fname,char_phn_tok):
   words = list()
   phn = list()
   print("Opening file...")
@@ -23,7 +23,10 @@ def preprocess(in_fname):
         words.append(spl[0].lower()) #convert to lowercase for re-exporting later
         phn.append(spl[1])
 
-  phntok = tf.keras.preprocessing.text.Tokenizer(lower=False,filters='"\t\n')
+  if char_phn_tok:
+    print("Tokenizing phoneme strings in char level too")
+    
+  phntok = tf.keras.preprocessing.text.Tokenizer(lower=False,filters='"\t\n',char_level=char_phn_tok)
   txttok = tf.keras.preprocessing.text.Tokenizer(char_level=True)
   
   print("Fitting on texts...")
@@ -130,10 +133,16 @@ def main():
         type=str,
         help="Output path of model",
     )
+    parser.add_argument(
+      "--char-tok-phn",
+      action="store_true",
+      help="Whether to tokenize phoneme strings by char. Turn this on if using IPA or some other phoneme with no spaces inbetween",
+    )
+
 
     args = parser.parse_args()
     
-    txtpadded, phnpadded, txtsize, phnsize, phn_wi, txt_wi, words, phns = preprocess(args.dict_path)
+    txtpadded, phnpadded, txtsize, phnsize, phn_wi, txt_wi, words, phns = preprocess(args.dict_path,args.char_tok_phn)
     
     yf = open(args.config_path,"r")
     config = yaml.load(yf)

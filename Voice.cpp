@@ -1,18 +1,20 @@
 #include "Voice.h"
 #include "ext/ZCharScanner.h"
 
-std::vector<int32_t> Voice::CharsToID(const std::string & InTxt)
+std::vector<int32_t> Voice::CharsToID(const std::string & RawInTxt)
 {
 
     std::vector<int32_t> VecPhones;
 
+    std::u32string InTxt = VoxUtil::StrToU32(RawInTxt);
+
     for (const auto& Char : InTxt)
     {
         size_t ArrID = 0;
-        std::string CharAs;
+        std::u32string CharAs;
         CharAs += Char;
 
-        if (VoxUtil::FindInVec<std::string>(CharAs, Phonemes, ArrID))
+        if (VoxUtil::FindInVec<std::u32string>(CharAs, Phonemes, ArrID))
             VecPhones.push_back(PhonemeIDs[ArrID]);
         else
             std::cout << "Voice::PhonemesToID() WARNING: Unknown phoneme " << Char << std::endl;
@@ -26,19 +28,23 @@ std::vector<int32_t> Voice::CharsToID(const std::string & InTxt)
 
 }
 
-std::vector<int32_t> Voice::PhonemesToID(const std::string & InTxt)
+std::vector<int32_t> Voice::PhonemesToID(const std::string & RawInTxt)
 {
-	ZStringDelimiter Delim(InTxt);
+    ZStringDelimiter Delim(RawInTxt);
 	Delim.AddDelimiter(" ");
+    std::u32string InTxt = VoxUtil::StrToU32(RawInTxt);
+
 
 	std::vector<int32_t> VecPhones;
 	VecPhones.reserve(Delim.szTokens());
 
+
 	for (const auto& Pho : Delim.GetTokens()) 
 	{
 		size_t ArrID = 0;
+        std::u32string PhnU = VoxUtil::StrToU32(Pho);
 
-        if (VoxUtil::FindInVec<std::string>(Pho, Phonemes, ArrID))
+        if (VoxUtil::FindInVec<std::u32string>(PhnU, Phonemes, ArrID))
             VecPhones.push_back(PhonemeIDs[ArrID]);
 		else
             std::cout << "Voice::PhonemesToID() WARNING: Unknown phoneme " << Pho << std::endl;
@@ -66,7 +72,7 @@ void Voice::ReadPhonemes(const std::string &PhonemePath)
         ZStringDelimiter Deline(Line);
         Deline.AddDelimiter("\t");
 
-        Phonemes.push_back(Deline[0]);
+        Phonemes.push_back(VoxUtil::StrToU32(Deline[0]));
         PhonemeIDs.push_back(stoi(Deline[1]));
 
 
@@ -186,7 +192,12 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     }
     else
     {
-        InputIDs = PhonemesToID(PhoneticTxt);
+        if (VoxInfo.s_Language.find("IPA") != std::string::npos)
+            InputIDs = CharsToID(PhoneticTxt);
+        else
+            InputIDs = PhonemesToID(PhoneticTxt);
+
+
 
 
     }
