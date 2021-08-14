@@ -10,9 +10,11 @@
 // MelGen: base virtual class for mel generators
 class MelGen
 {
+private:
+    ETTSRepo::Enum CurrentRepo;
 public:
     MelGen();
-    MelGen(const std::string& SavedModelFolder);
+    MelGen(const std::string& SavedModelFolder,ETTSRepo::Enum InTTSRepo);
 
 
     // Generic inference function
@@ -25,10 +27,12 @@ public:
     -> SavedModelFolder: Folder where the .pb, variables, and other characteristics of the exported SavedModel
     <- Returns: (bool)Success
     */
-    virtual bool Initialize(const std::string& SavedModelFolder);
+    virtual bool Initialize(const std::string& SavedModelFolder, ETTSRepo::Enum InTTSRepo);
 
 
     std::unique_ptr<cppflow::model> CurrentMdl;
+
+    inline ETTSRepo::Enum GetCurrentRepo() {return CurrentRepo;}
 
 };
 

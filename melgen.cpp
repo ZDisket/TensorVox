@@ -5,13 +5,13 @@ MelGen::MelGen()
 
 }
 
-MelGen::MelGen(const std::string &SavedModelFolder)
+MelGen::MelGen(const std::string &SavedModelFolder, ETTSRepo::Enum InTTSRepo)
 {
-   Initialize(SavedModelFolder);
+   Initialize(SavedModelFolder,InTTSRepo);
 
 }
 
-bool MelGen::Initialize(const std::string &SavedModelFolder)
+bool MelGen::Initialize(const std::string &SavedModelFolder,  ETTSRepo::Enum InTTSRepo)
 {
     try {
         CurrentMdl = std::make_unique<cppflow::model>(SavedModelFolder);
@@ -20,6 +20,7 @@ bool MelGen::Initialize(const std::string &SavedModelFolder)
         return false;
 
     }
+    CurrentRepo = InTTSRepo;
     return true;
 
 }

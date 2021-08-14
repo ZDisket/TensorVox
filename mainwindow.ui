@@ -687,6 +687,7 @@
     </property>
     <addaction name="hkInfer"/>
     <addaction name="actPhnSel"/>
+    <addaction name="actStopPlaying"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -801,6 +802,14 @@
   <action name="actBatchDen">
    <property name="text">
     <string>Batch Denoising </string>
+   </property>
+  </action>
+  <action name="actStopPlaying">
+   <property name="text">
+    <string>Stop playing</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
    </property>
   </action>
  </widget>

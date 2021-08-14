@@ -24,12 +24,12 @@ private:
 
 
 
-    std::vector<std::string> Phonemes;
+    std::vector<std::u32string> Phonemes;
     std::vector<int32_t> PhonemeIDs;
 
 
 
-	std::vector<int32_t> PhonemesToID(const std::string& InTxt);
+    std::vector<int32_t> PhonemesToID(const std::string& RawInTxt);
 
     std::vector<std::string> Speakers;
     std::vector<std::string> Emotions;
@@ -50,7 +50,7 @@ private:
 
     std::string ModelInfo;
 
-    std::vector<int32_t> CharsToID(const std::string &InTxt);
+    std::vector<int32_t> CharsToID(const std::string &RawInTxt);
 public:
 	/* Voice constructor, arguments obligatory.
 	 -> VoxPath: Path of folder where models are contained. 

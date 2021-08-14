@@ -2,30 +2,34 @@
 
 TensorVox is an application designed to enable user-friendly and lightweight neural speech synthesis in the desktop, aimed at increasing accessibility to such technology. 
 
-Powered by [TensorflowTTS](https://github.com/TensorSpeech/TensorFlowTTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of pip libraries, just a 100MB DLL.
+Powered mainly by [TensorFlowTTS](https://github.com/TensorSpeech/TensorFlowTTS) and also by [Coqui-TTS](https://github.com/coqui-ai/TTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of Python libraries, just a 100MB DLL.
 
 ![Interface with Tac2 model loaded](https://i.imgur.com/wtPzzNh.png)
 
 
 ### Try it out
-Grab it from the releases and check [the Google Drive folder](https://drive.google.com/drive/folders/1atUyxBbstKZpMqQEZMdNmRF2AKrlahKy?usp=sharing) for models and installation instructions
 
-If you're interested in using your own model, first you need to train it (see link to TensorflowTTS above) then export it. 
+[Detailed guide in Google Docs](https://docs.google.com/document/d/1OS1kfb19bvpPPkF71Vbak_b735mi7epjUanIfPG671M/edit?usp=sharing)
 
-Here's a Colab notebook demonstrating how to export the LJSpeech pretrained, char-based Tacotron2 model from the TensorflowTTS master found there: 
-[<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1KLqZ1rkD4Enw7zpTgXGL6if7e5s0UeWa?usp=sharing)
+Grab a copy from the releases, extract the .zip and check [the Google Drive folder](https://drive.google.com/drive/folders/1atUyxBbstKZpMqQEZMdNmRF2AKrlahKy?usp=sharing) for models and installation instructions
 
-Do not hesitate to contact below if you need anything.
+If you're interested in using your own model, first you need to train then export it. 
+
 
 ## Supported architectures
 
-Currently, FastSpeech2, Tacotron2 (phoneme and character based) and Multi-Band MelGAN from TensorflowTTS are supported. 
+TensorVox supports models from two main repos:
 
-Out-of-the-box support is provided for English, German and Spanish; that is, you won't have to modify any code. 
+ - **TensorFlowTTS**: FastSpeech2, Tacotron2, both char and phoneme based and Multi-Band MelGAN. Here's a Colab notebook demonstrating how to export the LJSpeech pretrained, char-based Tacotron2 model: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1KLqZ1rkD4Enw7zpTgXGL6if7e5s0UeWa?usp=sharing) 
+ - **Coqui-TTS:** Tacotron2 (phoneme-based IPA) and Multi-Band MelGAN, after converting from PyTorch to Tensorflow. Here's a notebook showing how to export the LJSpeech DDC model: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/15CdGEAu_-KezV1XxwzVfQiFSm0tveBkC?usp=sharing)
+
+
+Those two examples should provide you with enough guidance to understand what is needed. If you're looking to train a model specifically for this purpose then I recommend TensorFlowTTS, as it is the one with the best support.
+As for languages, out-of-the-box support is provided for English (both Coqui and TFTTS), German and Spanish (only TensorFlowTTS); that is, you won't have to modify any code. 
 
 
 ## Build instructions
-Currently, only Windows x64 is supported.
+Currently, only Windows 10 x64 (although I've heard reports of it running on 8.1) is supported.
 
 **Requirements:**
  1. Qt Creator
@@ -62,4 +66,4 @@ For media/licensing/any other formal stuff inquiries, send to this email: 9yba9c
 
 ## Note about licensing
 
-This project is MIT licensed almost everywhere except for Vietnam, where, due to using TensorflowTTS models as backend, it cannot be used without permission from the TensorflowTTS authors. See [here](https://github.com/TensorSpeech/TensorflowTTS#license) for details
+This program itself is MIT licensed, but for the models you use, their license terms apply. For example, if you're in Vietnam and using TensorFlowTTS models, you'll have to check [here](https://github.com/TensorSpeech/TensorFlowTTS#license) for some details

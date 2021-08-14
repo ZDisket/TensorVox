@@ -29,7 +29,7 @@ struct TFTensor {
 namespace ETTSRepo {
 enum Enum{
     TensorflowTTS = 0,
-    MozillaTTS // not implemented yet
+    CoquiTTS
 };
 
 }
@@ -51,13 +51,16 @@ enum Enum{
 // Negative numbers denote character-based language, positive for phoneme based. Standard is char-equivalent language idx = negative(phn-based)
 // In case of English, since -0 doesn't exist, we use -1.
 // For example, German phonetic would be 3, and character based would be -3
+// IPA-phn-based are mainly for Coqui
 namespace ETTSLanguage{
 enum Enum{
   GermanChar = -3,
-  SpanishChar, // Unimplemented.
+  SpanishChar,
   EnglishChar,
   EnglishPhn,
-  SpanishPhn
+  SpanishPhn,
+  GermanPhn,
+  EnglishIPA,
 };
 
 }

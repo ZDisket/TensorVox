@@ -1,18 +1,20 @@
 #include "Voice.h"
 #include "ext/ZCharScanner.h"
 
-std::vector<int32_t> Voice::CharsToID(const std::string & InTxt)
+std::vector<int32_t> Voice::CharsToID(const std::string & RawInTxt)
 {
 
     std::vector<int32_t> VecPhones;
 
+    std::u32string InTxt = VoxUtil::StrToU32(RawInTxt);
+
     for (const auto& Char : InTxt)
     {
         size_t ArrID = 0;
-        std::string CharAs;
+        std::u32string CharAs;
         CharAs += Char;
 
-        if (VoxUtil::FindInVec<std::string>(CharAs, Phonemes, ArrID))
+        if (VoxUtil::FindInVec<std::u32string>(CharAs, Phonemes, ArrID))
             VecPhones.push_back(PhonemeIDs[ArrID]);
         else
             std::cout << "Voice::PhonemesToID() WARNING: Unknown phoneme " << Char << std::endl;
@@ -26,19 +28,23 @@ std::vector<int32_t> Voice::CharsToID(const std::string & InTxt)
 
 }
 
-std::vector<int32_t> Voice::PhonemesToID(const std::string & InTxt)
+std::vector<int32_t> Voice::PhonemesToID(const std::string & RawInTxt)
 {
-	ZStringDelimiter Delim(InTxt);
+    ZStringDelimiter Delim(RawInTxt);
 	Delim.AddDelimiter(" ");
+    std::u32string InTxt = VoxUtil::StrToU32(RawInTxt);
+
 
 	std::vector<int32_t> VecPhones;
 	VecPhones.reserve(Delim.szTokens());
 
+
 	for (const auto& Pho : Delim.GetTokens()) 
 	{
 		size_t ArrID = 0;
+        std::u32string PhnU = VoxUtil::StrToU32(Pho);
 
-        if (VoxUtil::FindInVec<std::string>(Pho, Phonemes, ArrID))
+        if (VoxUtil::FindInVec<std::u32string>(PhnU, Phonemes, ArrID))
             VecPhones.push_back(PhonemeIDs[ArrID]);
 		else
             std::cout << "Voice::PhonemesToID() WARNING: Unknown phoneme " << Pho << std::endl;
@@ -66,7 +72,7 @@ void Voice::ReadPhonemes(const std::string &PhonemePath)
         ZStringDelimiter Deline(Line);
         Deline.AddDelimiter("\t");
 
-        Phonemes.push_back(Deline[0]);
+        Phonemes.push_back(VoxUtil::StrToU32(Deline[0]));
         PhonemeIDs.push_back(stoi(Deline[1]));
 
 
@@ -114,7 +120,7 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
         MelPredictor = std::make_unique<FastSpeech2>();
 
 
-    MelPredictor->Initialize(VoxPath + "/melgen");
+    MelPredictor->Initialize(VoxPath + "/melgen",(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
 
 
     Vocoder.Initialize(VoxPath + "/vocoder");
@@ -186,16 +192,22 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     }
     else
     {
-        InputIDs = PhonemesToID(PhoneticTxt);
+        if (VoxInfo.s_Language.find("IPA") != std::string::npos)
+            InputIDs = CharsToID(PhoneticTxt);
+        else
+            InputIDs = PhonemesToID(PhoneticTxt);
+
+
 
 
     }
 
+    std::vector<float> FloatArgs;
+    std::vector<int32_t> IntArgs;
+
 
     if (VoxIsTac)
     {
-        std::vector<float> FloatArgs;
-        std::vector<int32_t> IntArgs;
 
         Mel = ((Tacotron2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
         Attention = ((Tacotron2*)MelPredictor.get())->Attention;
@@ -204,37 +216,50 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     else
     {
 
-        std::vector<float> FloatArgs = {Speed,Energy,F0};
-        std::vector<int32_t> IntArgs;
+        FloatArgs = {Speed,Energy,F0};
+
         Mel = ((FastSpeech2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
 
     }
 
 
 	TFTensor<float> AuData = Vocoder.DoInference(Mel);
+    std::vector<float> AudioData;
+
+    if (AuData.Shape.size() > 1)
+    {
+
+        int64_t Width = AuData.Shape[0];
+        int64_t Height = AuData.Shape[1];
+        int64_t Depth = AuData.Shape[2];
+        //int z = 0;
 
 
-	int64_t Width = AuData.Shape[0];
-	int64_t Height = AuData.Shape[1];
-	int64_t Depth = AuData.Shape[2];
-	//int z = 0;
+        AudioData.resize(Height);
 
-	std::vector<float> AudioData;
-	AudioData.resize(Height);
+        // Code to access 1D array as if it were 3D
+        for (int64_t x = 0; x < Width;x++)
+        {
+            for (int64_t z = 0;z < Depth;z++)
+            {
+                for (int64_t y = 0; y < Height;y++) {
+                    int64_t Index = x * Height * Depth + y * Depth + z;
+                    AudioData[(size_t)y] = AuData.Data[(size_t)Index];
 
-	// Code to access 1D array as if it were 3D
-	for (int64_t x = 0; x < Width;x++)
-	{
-		for (int64_t z = 0;z < Depth;z++)
-		{
-			for (int64_t y = 0; y < Height;y++) {
-				int64_t Index = x * Height * Depth + y * Depth + z;
-				AudioData[(size_t)y] = AuData.Data[(size_t)Index];
+                }
 
-			}
+            }
+        }
 
-		}
-	}
+    }
+    else
+    {
+        // Pre-flattened vocoder output
+        AudioData = AuData.Data;
+
+    }
+
+
 
 
     return {AudioData,Attention,Mel};
