@@ -734,16 +734,27 @@ QStringList MainWindow::SuperWordSplit(const QString &InStr, int MaxLen)
 
 void MainWindow::ProcessCurlies(QString &ModTxt)
 {
+
+
     QRegularExpression& PhonemeExp = pHigh->PhonemeExp;
     QRegularExpressionMatchIterator MatchIter = PhonemeExp.globalMatch(ModTxt);
 
     while (MatchIter.hasNext()) {
         QRegularExpressionMatch match = MatchIter.next();
         QString ToProcess = ModTxt.mid(match.capturedStart(),match.capturedLength());
-        QString SepStr = " ";
 
+
+        // Curlie processing not supported in IPA
         if (GetCurrentVoice()->GetInfo().s_Language.find("IPA") != std::string::npos)
-            SepStr = "";
+        {
+            QMessageBox::critical((QWidget*)pDarkFw,"Warning","Curly brace phonetic text input processing not supported in IPA");
+
+            return;
+
+
+        }
+
+        QString SepStr = " ";
 
         QStringList Toks = ToProcess.split(SepStr,QString::SplitBehavior::SkipEmptyParts,Qt::CaseInsensitive);
 
