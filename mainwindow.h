@@ -183,7 +183,11 @@ private slots:
 
     void on_actBatchDen_triggered();
 
+    void on_actStopPlaying_triggered();
+
 private:
+
+    bool AllowedToPlayAudio();
 
 
     Voice* GetCurrentVoice();

@@ -248,7 +248,7 @@ void MainWindow::OnAudioRecv(std::vector<float> InDat, TFTensor<float> InMel, st
     AudBuffs.push_back(Buf);
 
     IdVec.push_back(InferIDTrueID{inID,AudBuffs.size() - 1,-1});
-    if (CanPlayAudio)
+    if (AllowedToPlayAudio())
     {
         PlayBuffer(Buf,false,inID);
 
@@ -325,9 +325,15 @@ void MainWindow::OnAudioStateChange(QAudio::State newState)
 
     if (newState == QAudio::IdleState || newState == QAudio::StoppedState)
     {
+        InferIDTrueID* FoundItm = FindBySecond(CurrentBuffIndex);
 
+        if (!FoundItm)
+            return;
 
-        ui->lstUtts->item(FindBySecond(CurrentBuffIndex)->first)->setBackgroundColor(DoneColor);
+        if ((int32_t)FoundItm->first > ui->lstUtts->count() - 1)
+            return;
+
+        ui->lstUtts->item(FoundItm->first)->setBackgroundColor(DoneColor);
 
 
         // If the user queues up multiple utterances then due to the fast inference speed we can't play them all at once
@@ -734,7 +740,12 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
     while (MatchIter.hasNext()) {
         QRegularExpressionMatch match = MatchIter.next();
         QString ToProcess = ModTxt.mid(match.capturedStart(),match.capturedLength());
-        QStringList Toks = ToProcess.split(" ",QString::SplitBehavior::SkipEmptyParts,Qt::CaseInsensitive);
+        QString SepStr = " ";
+
+        if (GetCurrentVoice()->GetInfo().s_Language.find("IPA") != std::string::npos)
+            SepStr = "";
+
+        QStringList Toks = ToProcess.split(SepStr,QString::SplitBehavior::SkipEmptyParts,Qt::CaseInsensitive);
 
         QStringList NewTokens;
         for (QString& Tk : Toks){
@@ -1480,9 +1491,9 @@ void MainWindow::UpdateIfDoSlides()
     // Because due to constant replotting this operation is quite expensive and can cause a noticeable performance drop
     // if we let two of them go around at the same time
 
-    ui->widSpec->DoSlide = ui->tabMetrics->currentIndex() == 1;
+    ui->widSpec->DoSlide = ui->tabMetrics->currentIndex() == 1 && StdOutput->state() == QAudio::State::ActiveState;
 
-    ui->widAudioPlot->DoSlide = ui->tabMetrics->currentIndex() == 0;
+    ui->widAudioPlot->DoSlide = ui->tabMetrics->currentIndex() == 0 && StdOutput->state() == QAudio::State::ActiveState;
 
 }
 
@@ -1764,5 +1775,18 @@ void MainWindow::on_actBatchDen_triggered()
     Dlg.setModal(true);
 
     Dlg.exec();
+
+}
+
+void MainWindow::on_actStopPlaying_triggered()
+{
+    StdOutput->stop();
+    UpdateIfDoSlides();
+
+}
+
+bool MainWindow::AllowedToPlayAudio()
+{
+    return CanPlayAudio && (StdOutput->state() == QAudio::State::IdleState || StdOutput->state() == QAudio::State::StoppedState);
 
 }
