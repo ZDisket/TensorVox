@@ -2,7 +2,7 @@
 
 TensorVox is an application designed to enable user-friendly and lightweight neural speech synthesis in the desktop, aimed at increasing accessibility to such technology. 
 
-Powered mainly by [TensorFlowTTS](https://github.com/TensorSpeech/TensorFlowTTS) and now by [Coqui-TTS](https://github.com/coqui-ai/TTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of pip libraries, just a 100MB DLL.
+Powered mainly by [TensorFlowTTS](https://github.com/TensorSpeech/TensorFlowTTS) and also by [Coqui-TTS](https://github.com/coqui-ai/TTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of Python libraries, just a 100MB DLL.
 
 ![Interface with Tac2 model loaded](https://i.imgur.com/wtPzzNh.png)
 
