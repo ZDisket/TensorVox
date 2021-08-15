@@ -1,5 +1,7 @@
 ﻿# TensorVox
 
+[![Join the chat at https://gitter.im/TensorVox/community](https://badges.gitter.im/TensorVox/community.svg)](https://gitter.im/TensorVox/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 TensorVox is an application designed to enable user-friendly and lightweight neural speech synthesis in the desktop, aimed at increasing accessibility to such technology. 
 
 Powered mainly by [TensorFlowTTS](https://github.com/TensorSpeech/TensorFlowTTS) and also by [Coqui-TTS](https://github.com/coqui-ai/TTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of Python libraries, just a 100MB DLL.
