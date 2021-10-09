@@ -680,6 +680,7 @@
     </widget>
     <addaction name="actionExport_performance_report"/>
     <addaction name="menuExport_metric"/>
+    <addaction name="actOpenLastExDir"/>
    </widget>
    <widget class="QMenu" name="menuTriggers">
     <property name="title">
@@ -810,6 +811,11 @@
    </property>
    <property name="shortcut">
     <string>Esc</string>
+   </property>
+  </action>
+  <action name="actOpenLastExDir">
+   <property name="text">
+    <string>Open last export directory</string>
    </property>
   </action>
  </widget>

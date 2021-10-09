@@ -1801,3 +1801,9 @@ bool MainWindow::AllowedToPlayAudio()
     return CanPlayAudio && (StdOutput->state() == QAudio::State::IdleState || StdOutput->state() == QAudio::State::StoppedState);
 
 }
+
+void MainWindow::on_actOpenLastExDir_triggered()
+{
+    QProcess::startDetached(QString("explorer /select, \"%1\"").arg(QDir::toNativeSeparators(LastExportDir)));
+
+}

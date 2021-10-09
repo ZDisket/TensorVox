@@ -185,6 +185,8 @@ private slots:
 
     void on_actStopPlaying_triggered();
 
+    void on_actOpenLastExDir_triggered();
+
 private:
 
     bool AllowedToPlayAudio();

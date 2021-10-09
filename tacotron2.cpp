@@ -41,7 +41,7 @@ TFTensor<float> Tacotron2::DoInferenceTFTTS(const std::vector<int32_t> &InputIDs
 
       // Define output tensor
       if (EmotionID != -1)
-          Inputs.push_back({"serving_default_emotion_ids:0",emotion_ids});
+          Inputs.push_back({"serving_default_emotion_ids:0",*emotion_ids});
 
 
       // Do inference

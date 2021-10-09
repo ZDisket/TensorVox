@@ -43,7 +43,7 @@ TFTensor<float> FastSpeech2::DoInference(const std::vector<int32_t>& InputIDs,co
     if (EmotionID != -1)
     {
         emotion_ids = new cppflow::tensor{EmotionID};
-        Inputs.push_back({"serving_default_emotion_ids:0",emotion_ids});
+        Inputs.push_back({"serving_default_emotion_ids:0",*emotion_ids});
 
 
     }
