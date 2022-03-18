@@ -42,7 +42,22 @@ vector<string> TextTokenizer::ExpandNumbers(const std::vector<std::string>& Spac
 
             std::replace(ModTk.begin(),ModTk.end(),'-',' ');
 
-            RetVec.push_back(ModTk);
+            // If the number has spaces we must sep again and add one by one otherwise all the words are merged together due to the
+            // nature of it
+            ZStringDelimiter DelSp(ModTk);
+            DelSp.AddDelimiter(" ");
+
+            if (DelSp.szTokens())
+            {
+                for (const auto& Ttk : DelSp.GetTokens())
+                    RetVec.push_back(Ttk);
+
+            }else{
+                RetVec.push_back(ModTk);
+            }
+
+
+
 
 
 		}

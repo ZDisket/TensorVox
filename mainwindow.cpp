@@ -19,7 +19,33 @@
 #include "track.h"
 #define FwParent ((FramelessWindow*)pDarkFw)
 #include <psapi.h>
+#include <QTextStream>
+#include <random>
 
+
+// maybe hardcoding the sample sentences is a bad idea?
+static const QString RandomTexts[] = {"Drink the water fishy",
+                                      "She turned herself into a thorn. It was the funniest shit I've ever seen",
+                                      "That was an order! Steiner's attack was an order!",
+                                      "There is no attitude that could not find its ultimate justification in the benefits it gives to the whole",
+                                      "President Trump met with other leaders at the Group of twenty conference",
+                                      "There’s a way to measure the acute emotional intelligence that has never gone out of style",
+                                      "Peter Piper picked a peck of pickled peppers. How many pickled peppers did Peter Piper pick?",
+                                      "It needs to be about 20 percent cooler",
+                                      "Sneed's feed and seed",
+                                      "The right to repair electronics refers to proposed government legislation that would allow consumers the ability to repair and modify their own consumer electronic devices",
+                                      "Eternal chaos come with chocolate rain, you guys!",
+                                      "What fun is there in making sense?",
+                                      "And then what she said was scandalous",
+                                      "Think of tuna fish as a very fishy fish",
+                                      "Still don't trust me",
+                                      "Do not compare yourself to others. If you do so, you are insulting yourself",
+                                      "Let that child alone",
+                                      "If I don't eat rice, the power won't come!",
+                                      "Their power is really extraordinary. One thing is sure, they're from another world",
+                                      "Now I see. Black human beings dislike the sound of rubbing glass probably the soundwave of the whistle",
+                                      "Cats and tomatoes don't mix",
+                                      "Six years were enough to fulfill the dreams of centuries. A year to bring our people into the enjoyment of that unity that was the futile aspiration of many generations"};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -138,6 +164,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->widSpec->Map = SpecMap;
     SpecMap->setGradient(Viridis);
 
+
+    ui->lstUtts->addActions({ui->actExWAVSe, ui->actCopySel});
+
     DenBatchSize = 0;
     DenDone = 0;
     LastExportDir = QCoreApplication::applicationDirPath() + "/Utt.wav";
@@ -203,6 +232,7 @@ void MainWindow::showEvent(QShowEvent *e)
 MainWindow::~MainWindow()
 {
     on_btnClear_clicked();
+    LogiLedShutdown();
     delete ui;
 }
 
@@ -1291,6 +1321,28 @@ void MainWindow::SetDict()
 
 }
 
+unsigned MainWindow::OptCountWords(const QString &InText)
+{
+    unsigned RetNum = 0;
+    bool InSpaceChain = false;
+    for (const QChar& ch : InText){
+        if (ch == ' '){
+            if (!InSpaceChain)
+                RetNum++;
+
+            InSpaceChain = true;
+
+        }else{
+            InSpaceChain = false;
+        }
+
+
+    }
+
+    return RetNum;
+
+}
+
 void MainWindow::on_actionRefresh_model_listing_triggered()
 {
     PopulateComboBox();
@@ -1607,10 +1659,16 @@ void MainWindow::on_actionPhonemize_filelist_triggered()
 
     OutputFile.open(QIODevice::WriteOnly | QIODevice::Text);
 
+    QTextCodec *codec = QTextCodec::codecForName("UTF-8");
+
     if (InputFile.open(QIODevice::ReadOnly))
     {
        QTextStream InStream(&InputFile);
        QTextStream OutStream(&OutputFile);
+       InStream.setCodec(codec);
+       OutStream.setCodec(codec);
+
+
 
        while (!InStream.atEnd())
        {
@@ -1805,5 +1863,52 @@ bool MainWindow::AllowedToPlayAudio()
 void MainWindow::on_actOpenLastExDir_triggered()
 {
     QProcess::startDetached(QString("explorer /select, \"%1\"").arg(QDir::toNativeSeparators(LastExportDir)));
+
+}
+
+void MainWindow::on_edtInput_textChanged()
+{
+    const QString Plain = ui->edtInput->toPlainText();
+
+    const int NumSplits = Plain.length() / ui->spbSeqLen->value();
+
+    ui->lblCharCount->setText(QString::number(Plain.length()) + " C " +
+                              QString::number(OptCountWords(Plain + " "))  + " W " +
+                              QString::number(NumSplits) + " S ");
+
+}
+
+void MainWindow::on_actCopySel_triggered()
+{
+    QClipboard* Clip = QGuiApplication::clipboard();
+
+    Clip->setText(ui->lstUtts->currentItem()->text());
+
+
+
+}
+
+void MainWindow::on_actExWAVSe_triggered()
+{
+    on_btnExportSel_clicked();
+
+
+}
+
+void MainWindow::on_btnClearTxt_clicked()
+{
+    ui->edtInput->clear();
+}
+
+void MainWindow::on_btnRandom_clicked()
+{
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> dist6(0,21);
+
+    ui->edtInput->setText(RandomTexts[dist6(rng)]);
+
+
+
 
 }

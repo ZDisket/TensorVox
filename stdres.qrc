@@ -5,5 +5,10 @@
         <file>res/infico.png</file>
         <file>res/refresh.png</file>
         <file>res/noim.png</file>
+        <file>res/clear64.png</file>
+        <file>res/multiwav.png</file>
+        <file>res/random64.png</file>
+        <file>res/wav.png</file>
+        <file>res/speak64.png</file>
     </qresource>
 </RCC>

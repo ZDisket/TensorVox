@@ -351,15 +351,80 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <layout class="QHBoxLayout" name="horizontalLayout_14">
             <item>
              <widget class="QPushButton" name="btnInfer">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>2</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>Infer (CTRL + Enter)</string>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnClearTxt">
+              <property name="toolTip">
+               <string>Clear current text</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="stdres.qrc">
+                <normaloff>:/res/clear64.png</normaloff>:/res/clear64.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>16</width>
+                <height>16</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnRandom">
+              <property name="toolTip">
+               <string>Random text</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="stdres.qrc">
+                <normaloff>:/res/random64.png</normaloff>:/res/random64.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="lblCharCount">
+              <property name="text">
+               <string>0 C 0 W 0 S</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_11"/>
           </item>
          </layout>
         </item>
@@ -607,6 +672,9 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::ActionsContextMenu</enum>
+          </property>
           <property name="editTriggers">
            <set>QAbstractItemView::NoEditTriggers</set>
           </property>
@@ -816,6 +884,20 @@
   <action name="actOpenLastExDir">
    <property name="text">
     <string>Open last export directory</string>
+   </property>
+  </action>
+  <action name="actCopySel">
+   <property name="text">
+    <string>Copy text</string>
+   </property>
+  </action>
+  <action name="actExWAVSe">
+   <property name="icon">
+    <iconset resource="stdres.qrc">
+     <normaloff>:/res/wav.png</normaloff>:/res/wav.png</iconset>
+   </property>
+   <property name="text">
+    <string>Export to WAV</string>
    </property>
   </action>
  </widget>

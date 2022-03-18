@@ -187,6 +187,16 @@ private slots:
 
     void on_actOpenLastExDir_triggered();
 
+    void on_edtInput_textChanged();
+
+    void on_actCopySel_triggered();
+
+    void on_actExWAVSe_triggered();
+
+    void on_btnClearTxt_clicked();
+
+    void on_btnRandom_clicked();
+
 private:
 
     bool AllowedToPlayAudio();
@@ -216,6 +226,8 @@ private:
     int32_t GetID(int32_t InID);
     void UpdateLogiLed();
     void SetDict();
+
+    unsigned OptCountWords(const QString& InText);
     void HandleIsMultiSpeaker(size_t inVid);
     void HandleIsMultiEmotion(size_t inVid);
     bool CanPlayAudio;
