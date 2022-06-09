@@ -76,3 +76,4 @@ release/*
 *.dll
 *.exe
 
+deps.zip

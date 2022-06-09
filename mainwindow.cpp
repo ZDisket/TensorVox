@@ -24,6 +24,7 @@
 
 
 // maybe hardcoding the sample sentences is a bad idea?
+// ZDisket: I'm lazy
 static const QString RandomTexts[] = {"Drink the water fishy",
                                       "She turned herself into a thorn. It was the funniest shit I've ever seen",
                                       "That was an order! Steiner's attack was an order!",
@@ -1902,6 +1903,9 @@ void MainWindow::on_btnClearTxt_clicked()
 
 void MainWindow::on_btnRandom_clicked()
 {
+    if (GetCurrentVoice()->GetInfo().s_Language.find("English") == std::string::npos)
+        return; // No random sent for other langs
+
     std::random_device dev;
     std::mt19937 rng(dev());
     std::uniform_int_distribution<std::mt19937::result_type> dist6(0,21);
