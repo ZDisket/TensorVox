@@ -1,5 +1,6 @@
 #include "vits.h"
 
+
 std::vector<int64_t> VITS::ZeroPadVec(const std::vector<int32_t> &InIDs)
 {
     std::vector<int64_t> NewIDs;
@@ -36,6 +37,7 @@ bool VITS::Initialize(const std::string &SavedModelFolder, ETTSRepo::Enum InTTSR
 
     }
 
+    CurrentRepo = InTTSRepo;
     return true;
 }
 
@@ -64,7 +66,14 @@ TFTensor<float> VITS::DoInference(const std::vector<int32_t> &InputIDs, const st
     auto OutputT = Output.toTuple();
 
     // Grab audio
+    // [1, frames] -> [frames]
     auto AuTens = OutputT.get()->elements()[0].toTensor().squeeze();
+
+    // Grab Attention
+    // [1, 1, x, y] -> [x, y]
+    auto AttTens = OutputT.get()->elements()[1].toTensor().squeeze();
+
+    Attention = VoxUtil::CopyTensor<float>(AttTens);
 
     return VoxUtil::CopyTensor<float>(AuTens);
 

@@ -3,16 +3,26 @@
  VoxCommon.hpp : Defines common data structures and constants to be used with TensorVox 
 */
 #include <iostream>
-#include <vector>
-#include "ext/AudioFile.hpp"
-#include "ext/CppFlow/ops.h"
-#include "ext/CppFlow/model.h"
+
+#undef slots // https://github.com/pytorch/pytorch/issues/19405
+
 
 #pragma warning(push, 0) // LibTorch spams us with warnings
 #include <torch/script.h> // One-stop header.
 #pragma warning(pop)
 
+#define slots Q_SLOTS
+
+#include <vector>
+#include "ext/AudioFile.hpp"
+#include "ext/CppFlow/ops.h"
+#include "ext/CppFlow/model.h"
+
+
+
 #include <QMessageBox>
+
+
 
 #define IF_RETURN(cond,ret) if (cond){return ret;}
 
@@ -118,6 +128,7 @@ namespace VoxUtil {
 
 
     // Copy PyTorch tensor
+
     template<typename D>
     TFTensor<D> CopyTensor(at::Tensor& InTens){
         D* Data = InTens.data<D>();
@@ -135,6 +146,7 @@ namespace VoxUtil {
 
     }
 
+
     // Copy CppFlow (TF) tensor
 	template<typename F>
     TFTensor<F> CopyTensor(cppflow::tensor& InTens)
@@ -150,8 +162,8 @@ namespace VoxUtil {
 
 	}
 
-	template<typename V>
-	bool FindInVec(V In, const std::vector<V>& Vec, size_t& OutIdx, size_t start = 0) {
+    template<typename VXVec1>
+    bool FindInVec(VXVec1 In, const std::vector<VXVec1>& Vec, size_t& OutIdx, size_t start = 0) {
 		for (size_t xx = start;xx < Vec.size();xx++)
 		{
 			if (Vec[xx] == In) {
@@ -166,8 +178,8 @@ namespace VoxUtil {
 		return false;
 
 	}
-    template<typename V, typename X>
-    bool FindInVec2(V In, const std::vector<X>& Vec, size_t& OutIdx, size_t start = 0) {
+    template<typename VXVec1, typename X>
+    bool FindInVec2(VXVec1 In, const std::vector<X>& Vec, size_t& OutIdx, size_t start = 0) {
         for (size_t xx = start;xx < Vec.size();xx++)
         {
             if (Vec[xx] == In) {

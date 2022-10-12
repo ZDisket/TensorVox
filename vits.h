@@ -2,18 +2,20 @@
 #define VITS_H
 
 
-#pragma warning(push, 0) // LibTorch spams us with warnings
-#include <torch/script.h> // One-stop header.
-#pragma warning(pop)
-
-
 #include "melgen.h"
+
+
+
+
 
 // VITS is a fully E2E model; no separate vocoder needed
 class VITS : public MelGen
 {
 private:
     torch::jit::script::Module Model;
+
+    // Most VITS model require zero-interspersed input IDs
+    std::vector<int64_t> ZeroPadVec(const std::vector<int32_t>& InIDs);
 
 public:
     TFTensor<float> Attention;

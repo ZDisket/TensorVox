@@ -116,11 +116,11 @@
           <item>
            <widget class="QGroupBox" name="grpFs2Params">
             <property name="title">
-             <string>FastSpeech2 Parameters</string>
+             <string>Control Parameters</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout">
+              <layout class="QHBoxLayout" name="SubEnergy">
                <item>
                 <widget class="QLabel" name="label">
                  <property name="text">
@@ -182,7 +182,7 @@
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <layout class="QHBoxLayout" name="SubF0">
                <item>
                 <widget class="QLabel" name="label_6">
                  <property name="sizePolicy">

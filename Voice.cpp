@@ -114,16 +114,28 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
     VoxInfo = VoxUtil::ReadModelJSON(VoxPath + "/info.json");
 
-    if (VoxInfo.Architecture.Text2Mel == EText2MelModel::Tacotron2)
+    const int32_t Tex2MelArch = VoxInfo.Architecture.Text2Mel;
+
+    if (Tex2MelArch == EText2MelModel::Tacotron2)
         MelPredictor = std::make_unique<Tacotron2>();
-    else
+    else if (Tex2MelArch == EText2MelModel::FastSpeech2)
         MelPredictor = std::make_unique<FastSpeech2>();
+    else
+        MelPredictor = std::make_unique<VITS>();
 
 
-    MelPredictor->Initialize(VoxPath + "/melgen",(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
+    std::string MelPredInit = VoxPath + "/melgen";
+
+    if (Tex2MelArch == EText2MelModel::VITS)
+        MelPredInit = VoxPath + "/vits.pt";
+
+    MelPredictor->Initialize(MelPredInit,(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
 
 
-    Vocoder.Initialize(VoxPath + "/vocoder");
+
+    if (Tex2MelArch != EText2MelModel::VITS) // No vocoder necessary for fully E2E TTS
+        Vocoder.Initialize(VoxPath + "/vocoder");
+
 
     if (InPhn)
         Processor.Initialize(InPhn);
@@ -167,7 +179,9 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
 
 
-    bool VoxIsTac = VoxInfo.Architecture.Text2Mel == EText2MelModel::Tacotron2;
+    const int32_t Text2MelN = VoxInfo.Architecture.Text2Mel;
+
+    bool VoxIsTac = Text2MelN != EText2MelModel::FastSpeech2;
 
     std::string PromptToFeed = Prompt;
     if (VoxInfo.Language > -1)
@@ -206,21 +220,38 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     std::vector<int32_t> IntArgs;
 
 
-    if (VoxIsTac)
+
+    if (Text2MelN == EText2MelModel::Tacotron2)
     {
 
         Mel = ((Tacotron2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
         Attention = ((Tacotron2*)MelPredictor.get())->Attention;
 
     }
-    else
+    else if (Text2MelN == EText2MelModel::FastSpeech2)
     {
 
         FloatArgs = {Speed,Energy,F0};
 
         Mel = ((FastSpeech2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
 
+    }else
+    {
+        FloatArgs = {Speed};
+        TFTensor<float> Audio = MelPredictor.get()->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID,EmotionID);
+        Attention = ((VITS*)MelPredictor.get())->Attention;
+
+        std::vector<float> AudioData = Audio.Data;
+
+        Mel.Shape.push_back(-1); // Tell the plotter that we have no mel to plot
+
+        // As VITS is fully E2E, we return here
+
+        return {AudioData,Attention,Mel};
+
     }
+
+    // Vocoder inference
 
 
 	TFTensor<float> AuData = Vocoder.DoInference(Mel);

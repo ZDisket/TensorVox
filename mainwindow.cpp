@@ -920,8 +920,12 @@ void MainWindow::on_btnLoad_clicked()
     LogiLedFlashLighting(0,100,100,5000,500);
 
 
-    if (VoMan[VoID]->GetInfo().Architecture.Text2Mel != EText2MelModel::Tacotron2)
-        ui->tabMetrics->setTabEnabled(2,false);
+    if (VoMan[VoID]->GetInfo().Architecture.Text2Mel == EText2MelModel::FastSpeech2)
+        ui->tabMetrics->setTabEnabled(2,false); // FS2 has no attention
+
+    if (VoMan[VoID]->GetInfo().Architecture.Text2Mel == EText2MelModel::VITS)
+        ui->tabMetrics->setTabEnabled(1,false); // VITS has no mel
+
 
 
 
@@ -1187,10 +1191,12 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 
 
     ArchitectureInfo Inf = CurrentVoice.GetInfo().Architecture;
-    if (Inf.Text2Mel == EText2MelModel::FastSpeech2)
+    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS)
     {
         ui->grpFs2Params->show();
         ui->chkBiPad->setEnabled(true);
+
+
     }
     else
     {

@@ -4,6 +4,8 @@
 #include "tacotron2.h"
 #include "MultiBandMelGAN.h"
 #include "EnglishPhoneticProcessor.h"
+#include "vits.h"
+
 
 #include "phoneticdict.h"
 
