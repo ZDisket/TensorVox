@@ -70,8 +70,8 @@ TFTensor<float> VITS::DoInference(const std::vector<int32_t> &InputIDs, const st
     auto AuTens = OutputT.get()->elements()[0].toTensor().squeeze();
 
     // Grab Attention
-    // [1, 1, x, y] -> [x, y]
-    auto AttTens = OutputT.get()->elements()[1].toTensor().squeeze();
+    // [1, 1, x, y] -> [x, y] -> [y,x] -> [1, y, x]
+    auto AttTens = OutputT.get()->elements()[1].toTensor().squeeze().transpose(0,1).unsqueeze(0);
 
     Attention = VoxUtil::CopyTensor<float>(AttTens);
 

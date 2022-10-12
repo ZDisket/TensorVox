@@ -1194,7 +1194,14 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
     if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS)
     {
         ui->grpFs2Params->show();
-        ui->chkBiPad->setEnabled(true);
+
+
+        bool IsFs2 = Inf.Text2Mel == EText2MelModel::FastSpeech2;
+
+        ui->SubEnergy->setEnabled(IsFs2);
+        ui->SubF0->setEnabled(IsFs2);
+
+        ui->chkBiPad->setEnabled(IsFs2);
 
 
     }
