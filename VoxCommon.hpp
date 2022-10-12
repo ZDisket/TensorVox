@@ -7,6 +7,11 @@
 #include "ext/AudioFile.hpp"
 #include "ext/CppFlow/ops.h"
 #include "ext/CppFlow/model.h"
+
+#pragma warning(push, 0) // LibTorch spams us with warnings
+#include <torch/script.h> // One-stop header.
+#pragma warning(pop)
+
 #include <QMessageBox>
 
 #define IF_RETURN(cond,ret) if (cond){return ret;}
@@ -29,14 +34,16 @@ struct TFTensor {
 namespace ETTSRepo {
 enum Enum{
     TensorflowTTS = 0,
-    CoquiTTS
+    CoquiTTS,
+    jaywalnut310 // OG VITS repo
 };
 
 }
 namespace EText2MelModel {
 enum Enum{
     FastSpeech2 = 0,
-    Tacotron2
+    Tacotron2,
+    VITS
 };
 
 }
@@ -109,6 +116,26 @@ namespace VoxUtil {
     VoiceInfo ReadModelJSON(const std::string& InfoFilename);
 
 
+
+    // Copy PyTorch tensor
+    template<typename D>
+    TFTensor<D> CopyTensor(at::Tensor& InTens){
+        D* Data = InTens.data<D>();
+        std::vector<int64_t> Shape = InTens.sizes().vec();
+
+        size_t TotalSize = 1;
+
+        for (const int64_t& Dim : Shape)
+            TotalSize *= Dim;
+
+        std::vector<D> DataVec = std::vector<D>(Data,Data + TotalSize);
+
+        return TFTensor<D>{DataVec,Shape,TotalSize};
+
+
+    }
+
+    // Copy CppFlow (TF) tensor
 	template<typename F>
     TFTensor<F> CopyTensor(cppflow::tensor& InTens)
 	{
