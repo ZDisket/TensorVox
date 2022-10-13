@@ -23,7 +23,12 @@ void ModelInfoDlg::SetInfo(const QString &ModelName, const QString &Info, int32_
 
     ui->lblModelTitle->setText(ModelName);
 
-    ui->lblModelArchitecture->setText("Architecture: " + Repo + " " + MelGen + " & " + Vocoder);
+    QString ArchShow = "Architecture: " + Repo + " " + MelGen;
+
+    if (Vocoder.size())
+        ArchShow += " & " + Vocoder;
+
+    ui->lblModelArchitecture->setText(ArchShow);
     ui->lblSampleRate->setText("Sampling rate: " + QString::number(SampleRate / 1000) + "KHz");
 
     QString ImgPath = QApplication::applicationDirPath() + "/models/" + ModelName + "/image.png";

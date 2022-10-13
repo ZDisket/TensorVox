@@ -589,6 +589,8 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser, int32_t RowID)
 
     if (MelSpec.Shape[0] != -1)
         PlotSpec(MelSpec,( ((float)NumSamples) / ((float)CommonSampleRate)));
+    else
+        ui->tabMetrics->setTabEnabled(1,false);
 
 
 
@@ -1578,6 +1580,7 @@ void MainWindow::PlotSpec(const TFTensor<float> &InMel,float TimeInSecs)
 {
     UpdateIfDoSlides();
     ui->widSpec->DoPlot(InMel,TimeInSecs);
+    ui->tabMetrics->setTabEnabled(1,true);
 
 }
 
