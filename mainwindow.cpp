@@ -1198,8 +1198,8 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 
         bool IsFs2 = Inf.Text2Mel == EText2MelModel::FastSpeech2;
 
-        ui->SubEnergy->setEnabled(IsFs2);
-        ui->SubF0->setEnabled(IsFs2);
+        ui->SubEnergy_2->setVisible(IsFs2);
+        ui->SubF0_2->setVisible(IsFs2);
 
         ui->chkBiPad->setEnabled(IsFs2);
 
