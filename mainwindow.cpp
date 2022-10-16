@@ -1607,7 +1607,7 @@ void MainWindow::on_actExAtt_triggered()
 {
     if (!ui->tabMetrics->isTabEnabled(2))
     {
-        QMessageBox::critical(FwParent,"Error","There is no attention map to export. Only Tacotron 2 models generate alignment.");
+        QMessageBox::critical(FwParent,"Error","There is no attention map to export. Only Tacotron 2 or VITS models generate alignment.");
         return;
 
 
@@ -1625,6 +1625,13 @@ void MainWindow::on_actExAtt_triggered()
 
 void MainWindow::on_actExSpec_triggered()
 {
+    if (!ui->tabMetrics->isTabEnabled(1))
+    {
+        QMessageBox::critical(FwParent,"Error","There is no spectrogram to export.");
+        return;
+
+
+    }
 
     QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export PNG file"), "Spect", tr("PNG image (*.png)"));
     if (!ofname.size())

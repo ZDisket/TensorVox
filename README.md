@@ -43,7 +43,7 @@ Currently, only Windows 10 x64 (although I've heard reports of it running on 8.1
  2. Unzip it so that the `deps` folder is in the same place as the .pro and main source files.
  3. Open the project with Qt Creator, add your compiler and compile
 
-Note that to try your shiny new executable you'll need to download the program as described above and insert the `models` folder where your new build is output.
+Note that to try your shiny new executable you'll need to download a release of program as described above and replace the executable in that release with your new one, so you have all the DLLs in place.
 
 TODO: Add instructions for compile from scratch.
 
