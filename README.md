@@ -26,8 +26,8 @@ TensorVox supports models from three repos:
  - **Coqui-TTS:** Tacotron2 (phoneme-based IPA) and Multi-Band MelGAN, after converting from PyTorch to Tensorflow. Here's a notebook showing how to export the LJSpeech DDC model: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/15CdGEAu_-KezV1XxwzVfQiFSm0tveBkC?usp=sharing)
  - **jaywalnut310/VITS:** VITS, which is a fully E2E model. (Stressed IPA as phonemes) Export notebook: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1BSGE5DQYweXBWrwPOmb6CRPUU8H5mBvb?usp=sharing)
 
-Those two examples should provide you with enough guidance to understand what is needed. If you're looking to train a model specifically for this purpose then I recommend TensorFlowTTS, as it is the one with the best support.
-As for languages, out-of-the-box support is provided for English (both Coqui and TFTTS), German and Spanish (only TensorFlowTTS); that is, you won't have to modify any code. 
+Those two examples should provide you with enough guidance to understand what is needed. If you're looking to train a model specifically for this purpose then I recommend TensorFlowTTS, as it is the one with the best support, and VITS, as it's the closest thing to perfect
+As for languages, out-of-the-box support is provided for English (Coqui and TFTTS, VITS), German and Spanish (only TensorFlowTTS); that is, you won't have to do anything. You can add languages without modifying code, as long as the phoneme set are IPA (stressed or nonstressed), ARPA, or GlobalPhone, (open an issue and I'll explain it to you)
 
 
 ## Build instructions
@@ -39,7 +39,7 @@ Currently, only Windows 10 x64 (although I've heard reports of it running on 8.1
 
 **Primed build (with all provided libraries):**
 
- 1. Download [precompiled binary dependencies and includes](https://drive.google.com/file/d/1ufLQvH-Me2NLmzNBkjcyD13WTyHb35aB/view?usp=sharing)
+ 1. Download [precompiled binary dependencies and includes](https://drive.google.com/file/d/1N6IxSpsgemS94z_v82toXhiNs2tLXkz6/view?usp=sharing)
  2. Unzip it so that the `deps` folder is in the same place as the .pro and main source files.
  3. Open the project with Qt Creator, add your compiler and compile
 
