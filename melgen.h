@@ -1,18 +1,21 @@
 #ifndef MELGEN_H
 #define MELGEN_H
 
+
+
 #include "ext/CppFlow/ops.h"
 #include "ext/CppFlow/model.h"
-
 #include "VoxCommon.hpp"
+
 #include <memory>
 
 // MelGen: base virtual class for mel generators
 class MelGen
 {
 private:
-    ETTSRepo::Enum CurrentRepo;
+
 public:
+    ETTSRepo::Enum CurrentRepo;
     MelGen();
     MelGen(const std::string& SavedModelFolder,ETTSRepo::Enum InTTSRepo);
 

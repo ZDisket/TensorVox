@@ -2,12 +2,12 @@
 #define SAFE_DELETE(pdel)if (pdel){delete pdel;}
 #include <QCoreApplication>
 
-Phonemizer* VoiceManager::LoadPhonemizer(const QString& InPhnLang,const QString& InNumberLang,int32_t InLangNum)
+Phonemizer* VoiceManager::LoadPhonemizer(const QString& InPhnLang,int32_t InLangNum)
 {
 
     for (Phonemizer*& Phn : Phonemizers)
     {
-       if (Phn->PhnLangID == InLangNum)
+       if (Phn->GetPhnLanguage() == InPhnLang.toStdString())
            return Phn;
 
 
@@ -18,10 +18,10 @@ Phonemizer* VoiceManager::LoadPhonemizer(const QString& InPhnLang,const QString&
 
     // Initialize regularly or minimally
     CreatePhn->Initialize(QString(QCoreApplication::applicationDirPath() + "/g2p/" + InPhnLang).toStdString(),
-                          InNumberLang.toStdString(), InLangNum < 0);
+                          InLangNum == ETTSLanguageType::Char);
 
     CreatePhn->SetPhnLanguage(InPhnLang.toStdString());
-    CreatePhn->PhnLangID = InLangNum;
+
 
     Phonemizers.push_back(CreatePhn);
 
@@ -34,9 +34,13 @@ size_t VoiceManager::LoadVoice(const QString &Voname)
 {
     Voice* NuVoice = new Voice(QString(QCoreApplication::applicationDirPath() + "/models/" + Voname).toStdString(),Voname.toStdString(),nullptr);
 
-    QString PLang = QString::fromStdString(NuVoice->GetInfo().s_Language);
-    QString NLang = QString::fromStdString(NuVoice->GetInfo().s_Language_Num);
-    NuVoice->AddPhonemizer(LoadPhonemizer(PLang,NLang,NuVoice->GetInfo().Language));
+    QString PLang = QString::fromStdString(NuVoice->GetInfo().s_Language_Fullname);
+    NuVoice->AddPhonemizer(LoadPhonemizer(PLang,NuVoice->GetInfo().LangType));
+
+    std::string NumTxtPath = QString(QCoreApplication::applicationDirPath() + "/num2txt/" +
+                                     QString::fromStdString(NuVoice->GetInfo().s_Language) + ".sor").toStdString();
+
+    NuVoice->LoadNumberText(NumTxtPath);
 
     Voices.push_back(NuVoice);
     Voices[Voices.size() - 1]->SetDictEntries(ManDict);

@@ -4,6 +4,8 @@
 #include "tacotron2.h"
 #include "MultiBandMelGAN.h"
 #include "EnglishPhoneticProcessor.h"
+#include "vits.h"
+#include "Numbertext.hxx"
 
 #include "phoneticdict.h"
 
@@ -51,6 +53,8 @@ private:
     std::string ModelInfo;
 
     std::vector<int32_t> CharsToID(const std::string &RawInTxt);
+
+    Numbertext NumTxt;
 public:
 	/* Voice constructor, arguments obligatory.
 	 -> VoxPath: Path of folder where models are contained. 
@@ -70,6 +74,7 @@ public:
     Voice(const std::string& VoxPath, const std::string& inName,Phonemizer* InPhn);
 
     void AddPhonemizer(Phonemizer* InPhn);
+    void LoadNumberText(const std::string& NumTxtPath);
 
 
     std::string PhonemizeStr(const std::string& Prompt);

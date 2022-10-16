@@ -9,7 +9,7 @@ bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn)
 
     Phoner = InPhn;
     Tokenizer.SetAllowedChars(Phoner->GetGraphemeChars());
-    Tokenizer.SetNumberText(Phoner->GetNumTxt(),Phoner->GetNumTxtLang());
+
 
 
 
@@ -17,19 +17,19 @@ bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn)
 }
 
 
-std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InText, const std::vector<u32string> &InPhonemes, const std::vector<DictEntry>& InDict, ETTSLanguage::Enum InLanguage, bool IsTac)
+std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InText, const std::vector<u32string> &InPhonemes, const std::vector<DictEntry>& InDict, ETTSLanguageType::Enum InLanguageType, bool IsTac)
 {
     if (!Phoner)
 		return "ERROR";
 
 
 
-    vector<string> Words = Tokenizer.Tokenize(InText,InLanguage,IsTac);
+    vector<string> Words = Tokenizer.Tokenize(InText,IsTac);
 
 	string Assemble = "";
 
-    // If language is negative, this is char-based model.
-    if (InLanguage < 0)
+
+    if (InLanguageType == ETTSLanguageType::Char)
     {
         for (size_t w = 0; w < Words.size();w++)
         {

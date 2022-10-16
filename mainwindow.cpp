@@ -589,6 +589,8 @@ void MainWindow::PlayBuffer(QBuffer *pBuff,bool ByUser, int32_t RowID)
 
     if (MelSpec.Shape[0] != -1)
         PlotSpec(MelSpec,( ((float)NumSamples) / ((float)CommonSampleRate)));
+    else
+        ui->tabMetrics->setTabEnabled(1,false);
 
 
 
@@ -776,7 +778,7 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
 
 
         // Curlie processing not supported in IPA
-        if (GetCurrentVoice()->GetInfo().s_Language.find("IPA") != std::string::npos)
+        if (GetCurrentVoice()->GetInfo().LangType == ETTSLanguageType::IPA)
         {
             QMessageBox::critical((QWidget*)pDarkFw,"Warning","Curly brace phonetic text input processing not supported in IPA");
 
@@ -798,9 +800,9 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
 
 
 
-            // Only English requires all phn input to be uppercase
+            // Only ARPA requires all phn input to be uppercase
 
-            if (GetCurrentVoice()->GetInfo().Language == 0)
+            if (GetCurrentVoice()->GetInfo().LangType == ETTSLanguageType::ARPA)
                 Tk = Tk.toUpper();
 
             NewTokens.push_back("@" + Tk);
@@ -920,8 +922,12 @@ void MainWindow::on_btnLoad_clicked()
     LogiLedFlashLighting(0,100,100,5000,500);
 
 
-    if (VoMan[VoID]->GetInfo().Architecture.Text2Mel != EText2MelModel::Tacotron2)
-        ui->tabMetrics->setTabEnabled(2,false);
+    if (VoMan[VoID]->GetInfo().Architecture.Text2Mel == EText2MelModel::FastSpeech2)
+        ui->tabMetrics->setTabEnabled(2,false); // FS2 has no attention
+
+    if (VoMan[VoID]->GetInfo().Architecture.Text2Mel == EText2MelModel::VITS)
+        ui->tabMetrics->setTabEnabled(1,false); // VITS has no mel
+
 
 
 
@@ -1187,10 +1193,19 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 
 
     ArchitectureInfo Inf = CurrentVoice.GetInfo().Architecture;
-    if (Inf.Text2Mel == EText2MelModel::FastSpeech2)
+    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS)
     {
         ui->grpFs2Params->show();
-        ui->chkBiPad->setEnabled(true);
+
+
+        bool IsFs2 = Inf.Text2Mel == EText2MelModel::FastSpeech2;
+
+        ui->SubEnergy_2->setVisible(IsFs2);
+        ui->SubF0_2->setVisible(IsFs2);
+
+        ui->chkBiPad->setEnabled(IsFs2);
+
+
     }
     else
     {
@@ -1274,7 +1289,7 @@ void MainWindow::on_actionOverrides_triggered()
 
     }
 
-    if (VoMan[CurrentIndex]->GetInfo().Language < 0){
+    if (VoMan[CurrentIndex]->GetInfo().LangType == ETTSLanguageType::Char){
         QMessageBox::critical(FwParent,"Error","Phonetic overrides dictionary is not available for character-based models. Please use a phoneme-based model.");
         return;
 
@@ -1289,7 +1304,7 @@ void MainWindow::on_actionOverrides_triggered()
 
     PhdDialog Dlg(FwParent);
     Dlg.Entrs = PhonDict.Entries;
-    Dlg.CurrentLang = VoMan[CurrentIndex]->GetInfo().s_Language;
+    Dlg.CurrentLang = VoMan[CurrentIndex]->GetInfo().s_Language_Fullname;
 
     FDlg.setContent(&Dlg);
     FDlg.ContentDlg(&Dlg);
@@ -1316,6 +1331,7 @@ void MainWindow::SetDict()
     VoMan.SetDict(PhonDict.Entries);
     for (Voice*& Vo : VoMan.GetVoices())
     {
+
         Vo->SetDictEntries(PhonDict.Entries);
 
     }
@@ -1529,6 +1545,12 @@ void MainWindow::on_tabMetrics_currentChanged(int index)
 
 
     }
+    if (index == 2)
+    {
+        ui->tabMetrics->setSizePolicy(QSizePolicy::Policy::Expanding,QSizePolicy::Policy::Expanding);
+        ui->tabMetrics->setMinimumHeight(225);
+
+    }
 
     update();
 
@@ -1565,6 +1587,7 @@ void MainWindow::PlotSpec(const TFTensor<float> &InMel,float TimeInSecs)
 {
     UpdateIfDoSlides();
     ui->widSpec->DoPlot(InMel,TimeInSecs);
+    ui->tabMetrics->setTabEnabled(1,true);
 
 }
 
@@ -1584,7 +1607,7 @@ void MainWindow::on_actExAtt_triggered()
 {
     if (!ui->tabMetrics->isTabEnabled(2))
     {
-        QMessageBox::critical(FwParent,"Error","There is no attention map to export. Only Tacotron 2 models generate alignment.");
+        QMessageBox::critical(FwParent,"Error","There is no attention map to export. Only Tacotron 2 or VITS models generate alignment.");
         return;
 
 
@@ -1602,6 +1625,13 @@ void MainWindow::on_actExAtt_triggered()
 
 void MainWindow::on_actExSpec_triggered()
 {
+    if (!ui->tabMetrics->isTabEnabled(1))
+    {
+        QMessageBox::critical(FwParent,"Error","There is no spectrogram to export.");
+        return;
+
+
+    }
 
     QString ofname = QFileDialog::getSaveFileName(FwParent, tr("Export PNG file"), "Spect", tr("PNG image (*.png)"));
     if (!ofname.size())

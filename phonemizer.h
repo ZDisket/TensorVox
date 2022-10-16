@@ -4,7 +4,6 @@
 #include <tuple>
 #include <set>
 #include <algorithm>
-#include <Numbertext.hxx>
 
 struct IdStr{
     int32_t ID;
@@ -30,7 +29,6 @@ private:
 
     std::vector<VBucket> DictBuckets;
 
-    Numbertext NumTxt;
     std::string NumTxtLang;
 
     bool IsMinimal;
@@ -54,7 +52,7 @@ private:
 
     std::string PhnLanguage;
 public:
-    int32_t PhnLangID;
+    std::string PhnLangID;
 public:
     Phonemizer();
     /*
@@ -65,14 +63,14 @@ public:
      * -- phn2id.txt: Translation from output ID from the model to phoneme
      * - A model/ folder where a G2P-Tensorflow model was saved as SavedModel
      * - dict.txt: Phonetic dictionary. First it searches the word there and if it can't be found then it uses the model.
-     * - (two-char name).sor: Name of num2text.
+     *
      *
      * If Minimal == true, it only requires the .sor and char2id (for determining allowed graphemes only,
      * the IDs can be arbitrary in this case)
      * A Minimal phonemizer only serves to hold values useful to the processor and tokenizer, for char-based models.
 
     */
-    bool Initialize(const std::string InPath, const std::string& NLangName, bool Minimal);
+    bool Initialize(const std::string InPath, bool Minimal);
 
 
     std::string ProcessWord(const std::string& InWord, float Temperature = 0.1f);
@@ -80,8 +78,6 @@ public:
     void SetPhnLanguage(const std::string &value);
 
     std::string GetGraphemeChars();
-
-    inline Numbertext& GetNumTxt() {return NumTxt;}
 
     ~Phonemizer();
 

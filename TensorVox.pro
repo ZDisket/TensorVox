@@ -44,6 +44,7 @@ SOURCES += \
     tacotron2.cpp \
     tfg2p.cpp \
     track.cpp \
+    vits.cpp \
     voicemanager.cpp \
     voxer.cpp
 
@@ -84,6 +85,7 @@ HEADERS += \
     tacotron2.h \
     tfg2p.h \
     track.h \
+    vits.h \
     voicemanager.h \
     voxer.h
 
@@ -103,8 +105,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DEFINES += _CRT_SECURE_NO_WARNINGS
 
 INCLUDEPATH += $$PWD/deps/include
+INCLUDEPATH += $$PWD/deps/include/libtorch
 INCLUDEPATH += $$PWD/ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow
-win32: LIBS += -L$$PWD/deps/lib/ tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib LibNumberText64.lib
+win32: LIBS += -L$$PWD/deps/lib/ tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib LibNumberText64.lib c10.lib torch.lib torch_cpu.lib
 win32: LIBS += Advapi32.lib User32.lib Psapi.lib
 
 
@@ -115,7 +118,7 @@ RESOURCES += \
 
 win32:RC_ICONS += winicon.ico
 
-VERSION = 0.9.0.0
+VERSION = 1.0.0.0
 CONFIG += force_debug_info
 
 QMAKE_CXXFLAGS += /std:c++17 /utf-8 -DPSAPI_VERSION=1
