@@ -1,10 +1,10 @@
-﻿# TensorVox
+# TensorVox
 
-[![Join the chat at https://gitter.im/TensorVox/community](https://badges.gitter.im/TensorVox/community.svg)](https://gitter.im/TensorVox/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![](https://dcbadge.vercel.app/api/server/yqFDAWH)](https://discord.gg/yqFDAWH)
 
 TensorVox is an application designed to enable user-friendly and lightweight neural speech synthesis in the desktop, aimed at increasing accessibility to such technology. 
 
-Powered mainly by [TensorFlowTTS](https://github.com/TensorSpeech/TensorFlowTTS) and also by [Coqui-TTS](https://github.com/coqui-ai/TTS), it is written in pure C++/Qt, using the Tensorflow C API for interacting with the models. This way, we can perform inference without having to install gigabytes worth of Python libraries, just a 100MB DLL.
+Powered mainly by [TensorFlowTTS](https://github.com/TensorSpeech/TensorFlowTTS) and also by [Coqui-TTS](https://github.com/coqui-ai/TTS) and [VITS](https://github.com/jaywalnut310/vits), it is written in pure C++/Qt, using the Tensorflow C API for interacting with Tensorflow models (first two), and LibTorch for PyTorch ones. This way, we can perform inference without having to install gigabytes worth of Python libraries, just a few DLLs.
 
 ![Interface with Tac2 model loaded](https://i.imgur.com/wtPzzNh.png)
 
@@ -20,11 +20,11 @@ If you're interested in using your own model, first you need to train then expor
 
 ## Supported architectures
 
-TensorVox supports models from two main repos:
+TensorVox supports models from three repos:
 
  - **TensorFlowTTS**: FastSpeech2, Tacotron2, both char and phoneme based and Multi-Band MelGAN. Here's a Colab notebook demonstrating how to export the LJSpeech pretrained, char-based Tacotron2 model: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1KLqZ1rkD4Enw7zpTgXGL6if7e5s0UeWa?usp=sharing) 
  - **Coqui-TTS:** Tacotron2 (phoneme-based IPA) and Multi-Band MelGAN, after converting from PyTorch to Tensorflow. Here's a notebook showing how to export the LJSpeech DDC model: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/15CdGEAu_-KezV1XxwzVfQiFSm0tveBkC?usp=sharing)
-
+ - **jaywalnut310/VITS:** VITS, which is a fully E2E model. (Stressed IPA as phonemes) Export notebook: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1BSGE5DQYweXBWrwPOmb6CRPUU8H5mBvb?usp=sharing)
 
 Those two examples should provide you with enough guidance to understand what is needed. If you're looking to train a model specifically for this purpose then I recommend TensorFlowTTS, as it is the one with the best support.
 As for languages, out-of-the-box support is provided for English (both Coqui and TFTTS), German and Spanish (only TensorFlowTTS); that is, you won't have to modify any code. 
@@ -48,6 +48,8 @@ Note that to try your shiny new executable you'll need to download the program a
 TODO: Add instructions for compile from scratch.
 
 ## Externals (and thanks)
+
+ - **LibTorch**: https://pytorch.org/cppdocs/installing.html
 
  - **Tensorflow C API**: [https://www.tensorflow.org/install/lang_c](https://www.tensorflow.org/install/lang_c)
  - **CppFlow** (TF C API -> C++ wrapper): [https://github.com/serizba/cppflow](https://github.com/serizba/cppflow) 

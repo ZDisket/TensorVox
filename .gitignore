@@ -77,3 +77,4 @@ release/*
 *.exe
 
 deps.zip
+README.md.backup

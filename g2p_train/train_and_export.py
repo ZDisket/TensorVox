@@ -145,7 +145,7 @@ def main():
     txtpadded, phnpadded, txtsize, phnsize, phn_wi, txt_wi, words, phns = preprocess(args.dict_path,args.char_tok_phn)
     
     yf = open(args.config_path,"r")
-    config = yaml.load(yf)
+    config = yaml.load(yf,Loader=yaml.FullLoader)
     yf.close()
 
     print("Finished preprocessing. Getting model")
