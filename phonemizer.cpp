@@ -157,12 +157,11 @@ Phonemizer::Phonemizer()
 
 }
 
-bool Phonemizer::Initialize(const std::string InPath, const std::string &NLangName,bool Minimal)
+bool Phonemizer::Initialize(const std::string InPath, bool Minimal)
 {
     IsMinimal = Minimal;
 
-    NumTxt.load(NLangName,InPath + "/" + NLangName + ".sor");
-    NumTxtLang = NLangName;
+
 
     // Load char indices
     CharId = GetDelimitedFile(InPath + "/char2id.txt");

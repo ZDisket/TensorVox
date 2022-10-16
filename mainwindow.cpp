@@ -778,7 +778,7 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
 
 
         // Curlie processing not supported in IPA
-        if (GetCurrentVoice()->GetInfo().s_Language.find("IPA") != std::string::npos)
+        if (GetCurrentVoice()->GetInfo().LangType == ETTSLanguageType::IPA)
         {
             QMessageBox::critical((QWidget*)pDarkFw,"Warning","Curly brace phonetic text input processing not supported in IPA");
 
@@ -800,9 +800,9 @@ void MainWindow::ProcessCurlies(QString &ModTxt)
 
 
 
-            // Only English requires all phn input to be uppercase
+            // Only ARPA requires all phn input to be uppercase
 
-            if (GetCurrentVoice()->GetInfo().Language == 0)
+            if (GetCurrentVoice()->GetInfo().LangType == ETTSLanguageType::ARPA)
                 Tk = Tk.toUpper();
 
             NewTokens.push_back("@" + Tk);
@@ -1289,7 +1289,7 @@ void MainWindow::on_actionOverrides_triggered()
 
     }
 
-    if (VoMan[CurrentIndex]->GetInfo().Language < 0){
+    if (VoMan[CurrentIndex]->GetInfo().LangType == ETTSLanguageType::Char){
         QMessageBox::critical(FwParent,"Error","Phonetic overrides dictionary is not available for character-based models. Please use a phoneme-based model.");
         return;
 
@@ -1304,7 +1304,7 @@ void MainWindow::on_actionOverrides_triggered()
 
     PhdDialog Dlg(FwParent);
     Dlg.Entrs = PhonDict.Entries;
-    Dlg.CurrentLang = VoMan[CurrentIndex]->GetInfo().s_Language;
+    Dlg.CurrentLang = VoMan[CurrentIndex]->GetInfo().s_Language_Fullname;
 
     FDlg.setContent(&Dlg);
     FDlg.ContentDlg(&Dlg);
@@ -1331,6 +1331,7 @@ void MainWindow::SetDict()
     VoMan.SetDict(PhonDict.Entries);
     for (Voice*& Vo : VoMan.GetVoices())
     {
+
         Vo->SetDictEntries(PhonDict.Entries);
 
     }

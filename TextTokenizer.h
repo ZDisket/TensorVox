@@ -28,7 +28,7 @@ public:
 
     void SetNumberText(Numbertext& INum,const std::string& Lang);
 
-    std::vector<std::string> Tokenize(const std::string& InTxt, ETTSLanguage::Enum Language = ETTSLanguage::EnglishPhn, bool IsTacotron = false);
+    std::vector<std::string> Tokenize(const std::string& InTxt, bool IsTacotron = false);
     void SetAllowedChars(const std::string &value);
 };
 

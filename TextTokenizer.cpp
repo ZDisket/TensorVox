@@ -140,7 +140,7 @@ void TextTokenizer::SetNumberText(Numbertext &INum, const string &Lang)
 
 
 
-vector<string> TextTokenizer::Tokenize(const std::string & InTxt,ETTSLanguage::Enum Language,bool IsTacotron)
+vector<string> TextTokenizer::Tokenize(const std::string & InTxt,bool IsTacotron)
 {
 	vector<string> ProcessedTokens;
 

@@ -28,6 +28,12 @@
 
 const uint32_t CommonSampleRate = 48000;
 
+namespace VoxCommon{
+const std::string CommonLangConst = "_std";
+
+
+}
+
 // https://github.com/almogh52/rnnoise-cmake/blob/d981adb2e797216f456cfcf158f73761a29981f8/examples/rnnoise_demo.c#L31
 const uint32_t RNNoiseFrameSize = 480;
 typedef std::vector<std::tuple<std::string,cppflow::tensor>> TensorVec;
@@ -66,10 +72,12 @@ enum Enum{
 };
 }
 
+// ===========DEPRECATED===============
 // Negative numbers denote character-based language, positive for phoneme based. Standard is char-equivalent language idx = negative(phn-based)
 // In case of English, since -0 doesn't exist, we use -1.
 // For example, German phonetic would be 3, and character based would be -3
 // IPA-phn-based are mainly for Coqui
+// ===========DEPRECATED===============
 namespace ETTSLanguage{
 enum Enum{
   GermanChar = -3,
@@ -83,6 +91,23 @@ enum Enum{
 
 }
 
+/* Language Spec Standard V1:
+- Language is specified with a string from the JSON and the type is saved instead of relying
+on ETTSLanguage enum.
+-- The string is LanguageName-Method; for example English-StressedIPA, English-ARPA, German-Char
+- Both pre-V1 standard and current are supported
+- V1 Standard does not require changes in code to add new languages
+
+*/
+
+namespace ETTSLanguageType{
+enum Enum{
+    ARPA = 0,
+    Char,
+    IPA,
+    GlobalPhone
+};
+}
 
 
 struct ArchitectureInfo{
@@ -107,17 +132,18 @@ struct VoiceInfo{
 
   uint32_t SampleRate;
 
-  int32_t Language;
-  std::string s_Language;
-  std::string s_Language_Num;
+  std::string s_Language; // Language name = English-ARPA -> "English"
+  std::string s_Language_Fullname; // Full language name = "English-ARPA"
 
   std::string EndPadding;
+  int32_t LangType;
 
 
 
 };
 
 namespace VoxUtil {
+
 
     std::string U32ToStr(const std::u32string& InU32);
     std::u32string StrToU32(const std::string& InStr);

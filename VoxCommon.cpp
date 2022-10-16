@@ -12,6 +12,26 @@ const std::vector<std::string> LanguageNames = {"English","Spanish", "German", "
 const std::vector<std::string> LangaugeNamesNumToWords = {"en", "es","de","en"};
 
 
+
+
+#include "ext/ZCharScanner.h"
+
+const std::map<int32_t,std::string> LegacyToV1Lang = {
+    {-3,"German-Char"},
+    {0,"English-ARPA"},
+    {-1,"English-Char"},
+    {3,"English-IPA"},
+    {1,"Spanish-GlobalPhone"}
+                                                           };
+
+const std::map<std::string,int32_t> V1LangTypes ={
+  {"IPA",ETTSLanguageType::IPA},
+  {"IPAStressed",ETTSLanguageType::IPA},
+  {"ARPA",ETTSLanguageType::ARPA},
+  {"Char",ETTSLanguageType::Char},
+  {"GlobalPhone",ETTSLanguageType::GlobalPhone}
+};
+
 void VoxUtil::ExportWAV(const std::string & Filename, const std::vector<float>& Data, unsigned SampleRate) {
 	AudioFile<float>::AudioBuffer Buffer;
 	Buffer.resize(1);
@@ -83,11 +103,30 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
     CuArch.s_Vocoder = VocoderNames[CuArch.Vocoder];
 
     // Language value for the info
-    int32_t RawLang = JS["language"].get<int32_t>();
+
+    auto LangVal = JS["language"];
+
+    
+    std::string LanguageFullName;
+
+    if (LangVal.is_string()){  // V1 Language type standard model; see ETTSLanguageType enum desc on header
+        LanguageFullName = LangVal.get<std::string>();
+
+    }else{
+        // Convert legacy language to V1
+       int32_t LegacyLang = JS["language"].get<int32_t>();
+       LanguageFullName = LegacyToV1Lang.find(LegacyLang)->second;
 
 
-    // Language value for the vectors
-    int32_t LanguageValue = ProcessLanguageValue(RawLang);
+    }
+
+     ZStringDelimiter LangDel(LanguageFullName);
+     LangDel.AddDelimiter("-");
+
+     std::string LangName = LangDel[0];
+     std::string LangTypeStr = LangDel[1];
+
+     int32_t LangType = V1LangTypes.find(LangTypeStr)->second;
 
 
 
@@ -95,7 +134,7 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
     std::string EndToken = JS["pad"].get<std::string>();
 
     // If it's phonetic then it's the token str, like "@EOS"
-    if (RawLang > -1 && EndToken.size())
+    if (LangType != ETTSLanguageType::Char && EndToken.size())
         EndToken =  " " + EndToken; // In this case we add a space for separation since we directly append the value to the prompt
 
 
@@ -107,10 +146,11 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
                  CuArch,
                  JS["note"].get<std::string>(),
                  JS["sarate"].get<uint32_t>(),
-                 RawLang,
-                LanguageNames[LanguageValue],
-                LangaugeNamesNumToWords[LanguageValue],
-                 EndToken};
+                LangName,
+                LanguageFullName,
+                 EndToken,
+                LangType
+                 };
 
     if (Inf.Note.size() > MaxNoteSize)
         Inf.Note = Inf.Note.substr(0,MaxNoteSize);

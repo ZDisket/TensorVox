@@ -1,5 +1,18 @@
 #include "phoneticdict.h"
 #include "ext/ZFile.h"
+#include <map>
+
+const std::map<std::string,std::string> LegToV1{
+  {"English","English-ARPA"},
+  {"Spanish","Spanish-GlobalPhone"}
+};
+
+void AutoConvertToV1(std::string& LangStr){
+   auto It = LegToV1.find(LangStr);
+   if (It != LegToV1.end())
+       LangStr = It->second;
+
+}
 
 ZFILE_IOVR(DictEntry,inentr){
     right << inentr.Word;
@@ -12,6 +25,9 @@ ZFILE_OOVR(DictEntry,entr){
     right >> entr.Word;
     right >> entr.PhSpelling;
     right >> entr.Language;
+
+    AutoConvertToV1(entr.Language);
+
     return right;
 
 }

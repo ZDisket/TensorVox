@@ -4,6 +4,7 @@
 std::vector<int32_t> Voice::CharsToID(const std::string & RawInTxt)
 {
 
+    std::cout << "CharsToID: " << RawInTxt << "\n";
     std::vector<int32_t> VecPhones;
 
     std::u32string InTxt = VoxUtil::StrToU32(RawInTxt);
@@ -30,6 +31,7 @@ std::vector<int32_t> Voice::CharsToID(const std::string & RawInTxt)
 
 std::vector<int32_t> Voice::PhonemesToID(const std::string & RawInTxt)
 {
+    std::cout << "PhonemesToID: " << RawInTxt << "\n";
     ZStringDelimiter Delim(RawInTxt);
 	Delim.AddDelimiter(" ");
     std::u32string InTxt = VoxUtil::StrToU32(RawInTxt);
@@ -159,8 +161,14 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 void Voice::AddPhonemizer(Phonemizer *InPhn)
 {
     Processor.Initialize(InPhn);
+    Processor.GetTokenizer().SetNumberText(NumTxt,VoxCommon::CommonLangConst);
 
 
+}
+
+void Voice::LoadNumberText(const std::string &NumTxtPath)
+{
+    NumTxt.load(VoxCommon::CommonLangConst,NumTxtPath);
 }
 
 std::string Voice::PhonemizeStr(const std::string &Prompt)
@@ -168,7 +176,7 @@ std::string Voice::PhonemizeStr(const std::string &Prompt)
 
 
     return Processor.ProcessTextPhonetic(Prompt,Phonemes,CurrentDict,
-                                                            (ETTSLanguage::Enum)VoxInfo.Language,
+                                                           (ETTSLanguageType::Enum)VoxInfo.LangType,
                                                            true); // default voxistac to true to preserve punctuation.
 
 }
@@ -184,11 +192,11 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     bool VoxIsTac = Text2MelN != EText2MelModel::FastSpeech2;
 
     std::string PromptToFeed = Prompt;
-    if (VoxInfo.Language > -1)
+    if (VoxInfo.LangType != ETTSLanguageType::Char)
         PromptToFeed += VoxInfo.EndPadding;
 
     std::string PhoneticTxt = Processor.ProcessTextPhonetic(PromptToFeed,Phonemes,CurrentDict,
-                                                            (ETTSLanguage::Enum)VoxInfo.Language,
+                                                            (ETTSLanguageType::Enum)VoxInfo.LangType,
                                                            VoxIsTac);
     TFTensor<float> Mel;
     TFTensor<float> Attention;
@@ -198,7 +206,7 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
     // Note to self: always check for negative or positive language by checking that it is lower than 0
     // if we try greater than 0, English is missed.
-    if (VoxInfo.Language < 0){
+    if (VoxInfo.LangType == ETTSLanguageType::Char){
         InputIDs = CharsToID(PhoneticTxt);
         InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
 
@@ -206,7 +214,7 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     }
     else
     {
-        if (VoxInfo.s_Language.find("IPA") != std::string::npos)
+        if (VoxInfo.LangType == ETTSLanguageType::IPA)
             InputIDs = CharsToID(PhoneticTxt);
         else
             InputIDs = PhonemesToID(PhoneticTxt);
@@ -300,7 +308,7 @@ void Voice::SetDictEntries(const std::vector<DictEntry> &InEntries)
 {
     for (const DictEntry& Entr : InEntries)
     {
-        if (Entr.Language != VoxInfo.s_Language)
+        if (Entr.Language != VoxInfo.s_Language_Fullname)
             continue;
 
         CurrentDict.push_back(Entr);
