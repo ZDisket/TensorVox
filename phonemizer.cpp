@@ -61,18 +61,14 @@ std::vector<IdStr> Phonemizer::GetDelimitedFile(const std::string &InFname)
 void Phonemizer::LoadDictionary(const std::string &InDictFn)
 {
 
-
-
     std::ifstream InFile (InDictFn);
 
     std::string Word;
     std::string Phn;
 
 
-    if (Dictionary.size())
-        Dictionary.clear();
-
-
+    if (MapDict.size())
+        MapDict.clear();
 
 
     std::string Line;
@@ -88,28 +84,7 @@ void Phonemizer::LoadDictionary(const std::string &InDictFn)
         Word = Deline[0];
         Phn = Deline[1];
 
-
-        Dictionary.push_back(StrStr{Word,Phn});
-
-    }
-    // Sort so lookup can be a bit optimized
-    std::sort(Dictionary.begin(),Dictionary.end());
-
-
-    if (DictBuckets.size())
-        DictBuckets.clear();
-
-    size_t LastSize = 0;
-    for (size_t i = 0; i < Dictionary.size();i++)
-    {
-        const StrStr& Entr = Dictionary[i];
-
-        if (Entr.Word.length() > LastSize)
-        {
-            LastSize = Entr.Word.length();
-            DictBuckets.push_back(VBucket{LastSize,i});
-
-        }
+        MapDict.insert({Word,Phn});
 
 
     }
@@ -119,35 +94,34 @@ void Phonemizer::LoadDictionary(const std::string &InDictFn)
 
 std::string Phonemizer::DictLookup(const std::string &InWord)
 {
+    auto It = MapDict.find(InWord);
 
-    for (size_t w = 0 ; w < Dictionary.size();w++)
-    {
-        const StrStr& Entr = Dictionary[w];
+    if (It == MapDict.end())
+        return "";
 
-        if (Entr.Word.size() != InWord.size())
-            continue;
+    return It->second;
 
-        if (Entr.Word == InWord)
-            return Entr.Phn;
-
-    }
-
-    return "";
 
 }
+// To remove from the string before dicting
+const std::u32string StripPonct = U",.;!?";
 
-size_t Phonemizer::GetBucketIndex(size_t InSize)
+
+std::string Phonemizer::CleanWord(const std::string &InW)
 {
-    for (const VBucket& Bk : DictBuckets)
-    {
-        if (Bk.first == InSize)
-            return Bk.second;
+    // U32string = guaranteed 1 char = 1 value
+    std::u32string Word = VoxUtil::StrToU32(InW);
 
+
+    std::u32string RetWord;
+    RetWord.reserve(Word.size());
+
+    for (auto Ch : Word){
+        if (StripPonct.find(Ch) == std::u32string::npos)
+            RetWord.push_back(Ch);
     }
 
-
-    return 0;
-
+    return VoxUtil::U32ToStr(RetWord);
 }
 
 
@@ -189,15 +163,17 @@ bool Phonemizer::Initialize(const std::string InPath, bool Minimal)
 
 
 
+
 std::string Phonemizer::ProcessWord(const std::string &InWord,float Temperature)
 {
     if (IsMinimal)
         return InWord;
 
+
     // First we try dictionary lookup
     // This is because the g2p model can be unreliable, we only want to use it for novel sentences
 
-    std::string PhnDict = DictLookup(InWord);
+    std::string PhnDict = DictLookup(CleanWord(InWord));
     if (!PhnDict.empty())
         return PhnDict;
 

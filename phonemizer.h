@@ -27,7 +27,8 @@ private:
     std::vector<IdStr> CharId;
     std::vector<IdStr> PhnId;
 
-    std::vector<VBucket> DictBuckets;
+    std::unordered_map<std::string,std::string> MapDict;
+
 
     std::string NumTxtLang;
 
@@ -36,18 +37,14 @@ private:
 
 
 
-
     std::vector<IdStr> GetDelimitedFile(const std::string& InFname);
-
-
-    // Sorry, can't use set, unordered_map or any other types. (I tried)
-    std::vector<StrStr> Dictionary;
 
     void LoadDictionary(const std::string& InDictFn);
 
     std::string DictLookup(const std::string& InWord);
 
-    size_t GetBucketIndex(size_t InSize);
+    std::string CleanWord(const std::string& InW);
+
 
 
     std::string PhnLanguage;
