@@ -502,7 +502,7 @@ void MainWindow::on_btnInfer_clicked()
         Dets.Energy = RangeToFloat(ui->sliEnergy->value());
         Dets.pItem = widItm;
         Dets.Prompt = idvInput;
-        Dets.SpeakerID = 0;
+        Dets.SpeakerID = -1;
         Dets.EmotionID = -1;
         Dets.Denoise = ui->chkDenoise->isChecked();
         Dets.Amplification = (float)ui->sliVolBoost->value() / 1000.f;

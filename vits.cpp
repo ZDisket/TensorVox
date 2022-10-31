@@ -1,19 +1,21 @@
 #include "vits.h"
 
-
 std::vector<int64_t> VITS::ZeroPadVec(const std::vector<int32_t> &InIDs)
 {
     std::vector<int64_t> NewIDs;
     NewIDs.reserve(InIDs.size() * 2);
+
 
     for (auto CharID : InIDs)
     {
         NewIDs.push_back(0);
         NewIDs.push_back((int64_t)CharID);
 
+
     }
     // Add final 0
     NewIDs.push_back(0);
+
 
     return NewIDs;
 
@@ -55,7 +57,20 @@ TFTensor<float> VITS::DoInference(const std::vector<int32_t> &InputIDs, const st
     auto InLenScale = torch::tensor({ ArgsFloat[0]}, Opts);
 
 
+
+
+
     std::vector<torch::jit::IValue> inputs{ InIDS,InLens,InLenScale };
+
+    if (SpeakerID != -1){
+        auto InSpkid = torch::tensor({SpeakerID},Opts);
+        inputs.push_back(InSpkid);
+    }
+
+    if (EmotionID != -1){
+        auto InEmid = torch::tensor({EmotionID},Opts);
+        inputs.push_back(InEmid);
+    }
 
     // Infer
 
