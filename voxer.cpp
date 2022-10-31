@@ -127,7 +127,7 @@ void Voxer::run()
 
     if (!ForcedAudio.size())
     {
-        Res = pAttVoice->Vocalize(Prompt.toStdString(),Speed,SpeakerID,Energy,F0,EmotionID);
+        Res = pAttVoice->Vocalize(Prompt.toStdString(),Speed,SpeakerID,Energy,F0,EmotionID,EmotionOverride.toStdString());
         Audat = Res.Audio;
 
     }

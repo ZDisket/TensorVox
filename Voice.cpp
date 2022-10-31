@@ -114,9 +114,13 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 {
     ReadModelInfo(VoxPath + "/info.txt");
 
+
+
     VoxInfo = VoxUtil::ReadModelJSON(VoxPath + "/info.json");
 
     const int32_t Tex2MelArch = VoxInfo.Architecture.Text2Mel;
+
+    const bool IsVITS = Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::VITSTM;
 
     if (Tex2MelArch == EText2MelModel::Tacotron2)
         MelPredictor = std::make_unique<Tacotron2>();
@@ -128,15 +132,21 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
     std::string MelPredInit = VoxPath + "/melgen";
 
-    if (Tex2MelArch == EText2MelModel::VITS)
+    if (IsVITS)
         MelPredInit = VoxPath + "/vits.pt";
 
     MelPredictor->Initialize(MelPredInit,(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
 
 
 
-    if (Tex2MelArch != EText2MelModel::VITS) // No vocoder necessary for fully E2E TTS
+    if (Tex2MelArch == EText2MelModel::VITSTM)
+        Moji.Initialize(VoxPath + "/moji.pt", VoxPath + "/tm_dict.txt");
+
+    if (IsVITS) // No vocoder necessary for fully E2E TTS
         Vocoder.Initialize(VoxPath + "/vocoder");
+
+
+
 
 
     if (InPhn)
@@ -182,7 +192,7 @@ std::string Voice::PhonemizeStr(const std::string &Prompt)
 }
 
 
-VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID)
+VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID,const std::string& EmotionOvr)
 {
 
 
@@ -246,6 +256,16 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     }else
     {
         FloatArgs = {Speed};
+
+        if (EmotionOvr.size()){
+            std::vector<std::string> MojiInput = Processor.GetTokenizer().Tokenize(EmotionOvr,true,true);
+
+            std::vector<float> MojiStates = Moji.Infer(MojiInput);
+
+            FloatArgs.insert(FloatArgs.end(),MojiStates.begin(),MojiStates.end());
+
+        }
+
         TFTensor<float> Audio = MelPredictor.get()->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID,EmotionID);
         Attention = ((VITS*)MelPredictor.get())->Attention;
 

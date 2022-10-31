@@ -100,6 +100,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->cbEmotions->setVisible(false);
     ui->lblEmotions->setVisible(false);
 
+    ui->lblEmotionOvr->setVisible(false);
+    ui->edtEmotionOvr->setVisible(false);
 
 
 
@@ -517,6 +519,15 @@ void MainWindow::on_btnInfer_clicked()
         if (ui->cbEmotions->isVisible())
             Dets.EmotionID = ui->cbEmotions->currentIndex();
 
+        if (ui->edtEmotionOvr->isVisible()){
+
+            if (ui->edtEmotionOvr->text().isEmpty())
+                Dets.EmotionOvr = ui->edtInput->toPlainText();
+            else
+                Dets.EmotionOvr = ui->edtEmotionOvr->text();
+
+
+        }
 
 
         Dets.VoiceName = ui->cbModels->currentText();
@@ -885,6 +896,7 @@ void MainWindow::DoInference(InferDetails &Dets)
 
     VoxThread->SampleRate = Dets.SampleRate;
     VoxThread->EmotionID = Dets.EmotionID;
+    VoxThread->EmotionOverride = Dets.EmotionOvr;
 
     VoxThread->CurrentID = (uint32_t)CurrentInferIndex;
     VoxThread->Denoise = Dets.Denoise;
@@ -1193,7 +1205,7 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 
 
     ArchitectureInfo Inf = CurrentVoice.GetInfo().Architecture;
-    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS)
+    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS || Inf.Text2Mel == EText2MelModel::VITSTM)
     {
         ui->grpFs2Params->show();
 
@@ -1254,6 +1266,12 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 void MainWindow::HandleIsMultiEmotion(size_t inVid)
 {
     Voice& CurrentVoice = *VoMan[inVid];
+
+
+    const bool TorchMojiEnabled = CurrentVoice.GetInfo().Architecture.Text2Mel == EText2MelModel::VITSTM;
+
+    ui->lblEmotionOvr->setVisible(TorchMojiEnabled);
+    ui->edtEmotionOvr->setVisible(TorchMojiEnabled);
 
     if (!CurrentVoice.GetEmotions().size()){
         ui->lblEmotions->setVisible(false);

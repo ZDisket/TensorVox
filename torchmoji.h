@@ -9,11 +9,13 @@ class TorchMoji
 {
 private:
         // Word, ID
-        std::map<std::string,int32_t> Dictionary;
+     std::map<std::string,int32_t> Dictionary;
 
-        torch::jit::script::Module Model;
+     torch::jit::script::Module Model;
 
-        void LoadDict(const std::string Path);
+     void LoadDict(const std::string& Path);
+
+     std::vector<int32_t> WordsToIDs(const std::vector<std::string> &Words);
 public:
     TorchMoji();
 
@@ -24,7 +26,7 @@ public:
     // Return hidden states of emotion state.
     // -> Seq: Vector of words
     // <- Returns float vec of size VoxCommon::TorchMojiEmbSize containing hidden states, ready to feed into TTS model.
-    std::vector<float> Infer(const std::vector<std::string> Seq);
+    std::vector<float> Infer(const std::vector<std::string>& Seq);
 };
 
 #endif // TORCHMOJI_H

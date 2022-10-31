@@ -202,8 +202,6 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,bool IsTacotron
             // This time we explicitly add a token to the vector
             if (punctuation.find(tok[s]) != std::u32string::npos) {
 
-                if (IsTorchMoji)
-                    continue;
 
 				// First, if the assembled string isn't empty, we add it in its current state
 				// Otherwise, the SIL could end up appearing before the word.
@@ -217,7 +215,9 @@ vector<string> TextTokenizer::Tokenize(const std::string & InTxt,bool IsTacotron
                 if (IsTacotron){
 
                     // Double at-symbol is handled later
-                    AppTok += U"@@";
+                    if (!IsTorchMoji)
+                        AppTok += U"@@";
+
                     AppTok += tok[s];
 
                 }

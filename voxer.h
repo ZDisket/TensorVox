@@ -30,6 +30,7 @@ public:
     uint32_t SampleRate;
     int32_t EmotionID;
     bool Denoise;
+    QString EmotionOverride;
 
     // DANGER: If this is set, the item will not emit anything
     QString ExportFileName;

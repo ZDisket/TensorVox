@@ -109,7 +109,25 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="cbEmotions"/>
+             <widget class="QComboBox" name="cbEmotions">
+              <property name="editable">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="lblEmotionOvr">
+              <property name="text">
+               <string>Emotion override:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="edtEmotionOvr"/>
             </item>
            </layout>
           </item>
