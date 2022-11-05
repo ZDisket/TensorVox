@@ -43,6 +43,7 @@ SOURCES += \
     spectrogram.cpp \
     tacotron2.cpp \
     tfg2p.cpp \
+    torchmoji.cpp \
     track.cpp \
     vits.cpp \
     voicemanager.cpp \
@@ -84,6 +85,7 @@ HEADERS += \
     spectrogram.h \
     tacotron2.h \
     tfg2p.h \
+    torchmoji.h \
     track.h \
     vits.h \
     voicemanager.h \

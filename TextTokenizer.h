@@ -28,7 +28,7 @@ public:
 
     void SetNumberText(Numbertext& INum,const std::string& Lang);
 
-    std::vector<std::string> Tokenize(const std::string& InTxt, bool IsTacotron = false);
+    std::vector<std::string> Tokenize(const std::string& InTxt, bool IsTacotron = false, bool IsTorchMoji = false);
     void SetAllowedChars(const std::string &value);
 };
 

@@ -30,6 +30,8 @@ const uint32_t CommonSampleRate = 48000;
 
 namespace VoxCommon{
 const std::string CommonLangConst = "_std";
+const int32_t TorchMojiLen = 120;
+const int32_t TorchMojiEmbSize = 2304;
 
 
 }
@@ -59,7 +61,8 @@ namespace EText2MelModel {
 enum Enum{
     FastSpeech2 = 0,
     Tacotron2,
-    VITS
+    VITS,
+    VITSTM
 };
 
 }

@@ -6,7 +6,7 @@
 #include "EnglishPhoneticProcessor.h"
 #include "vits.h"
 #include "Numbertext.hxx"
-
+#include "torchmoji.h"
 #include "phoneticdict.h"
 
 
@@ -23,6 +23,7 @@ private:
 	MultiBandMelGAN Vocoder;
 	EnglishPhoneticProcessor Processor;
     VoiceInfo VoxInfo;
+    TorchMoji Moji;
 
 
 
@@ -78,7 +79,7 @@ public:
 
 
     std::string PhonemizeStr(const std::string& Prompt);
-    VoxResults Vocalize(const std::string& Prompt, float Speed = 1.f, int32_t SpeakerID = 0, float Energy = 1.f, float F0 = 1.f,int32_t EmotionID = -1);
+    VoxResults Vocalize(const std::string& Prompt, float Speed = 1.f, int32_t SpeakerID = 0, float Energy = 1.f, float F0 = 1.f, int32_t EmotionID = -1, const std::string &EmotionOvr = "");
 
     std::string Name;
     inline const VoiceInfo& GetInfo(){return VoxInfo;}

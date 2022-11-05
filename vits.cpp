@@ -45,7 +45,20 @@ bool VITS::Initialize(const std::string &SavedModelFolder, ETTSRepo::Enum InTTSR
 
 TFTensor<float> VITS::DoInference(const std::vector<int32_t> &InputIDs, const std::vector<float> &ArgsFloat, const std::vector<int32_t> ArgsInt, int32_t SpeakerID, int32_t EmotionID)
 {
-    std::vector<int64_t> PaddedIDs = ZeroPadVec(InputIDs);
+
+    // TorchMoji hidden states are added to ArgsFloat
+    const bool UsesTorchMoji = ArgsFloat.size() > 1;
+
+    std::vector<int64_t> PaddedIDs;
+
+
+    // Our current TM-enabled models don't use zero interspersion
+    if (UsesTorchMoji)
+        PaddedIDs.assign(InputIDs.begin(),InputIDs.end());
+    else
+        PaddedIDs = ZeroPadVec(InputIDs);
+
+
     std::vector<int64_t> inLen = { (int64_t)PaddedIDs.size() };
 
 
@@ -55,8 +68,6 @@ TFTensor<float> VITS::DoInference(const std::vector<int32_t> &InputIDs, const st
     auto InIDS = torch::tensor(PaddedIDs, Opts).unsqueeze(0);
     auto InLens = torch::tensor(inLen, Opts);
     auto InLenScale = torch::tensor({ ArgsFloat[0]}, Opts);
-
-
 
 
 
@@ -70,6 +81,16 @@ TFTensor<float> VITS::DoInference(const std::vector<int32_t> &InputIDs, const st
     if (EmotionID != -1){
         auto InEmid = torch::tensor({EmotionID},Opts);
         inputs.push_back(InEmid);
+    }
+
+    // Handle TorchMoji Emb
+    if (UsesTorchMoji){
+        // Make a copy stripping first elem
+        std::vector<float> TMHidden(ArgsFloat.begin() + 1, ArgsFloat.end());
+
+        auto InMoji = torch::tensor(TMHidden,Opts).unsqueeze(0);
+        inputs.push_back(InMoji);
+
     }
 
     // Infer

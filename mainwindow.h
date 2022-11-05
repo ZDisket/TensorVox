@@ -36,6 +36,7 @@ struct InferDetails{
   int32_t SpeakerID;
   int32_t EmotionID;
   QString VoiceName;
+  QString EmotionOvr;
   bool Denoise;
 
   uint32_t SampleRate;
