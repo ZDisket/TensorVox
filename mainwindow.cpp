@@ -1566,7 +1566,7 @@ void MainWindow::on_tabMetrics_currentChanged(int index)
     if (index == 2)
     {
         ui->tabMetrics->setSizePolicy(QSizePolicy::Policy::Expanding,QSizePolicy::Policy::Expanding);
-        ui->tabMetrics->setMinimumHeight(225);
+        ui->tabMetrics->setMinimumHeight(200);
 
     }
 
