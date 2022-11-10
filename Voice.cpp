@@ -142,7 +142,7 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
     if (Tex2MelArch == EText2MelModel::VITSTM)
         Moji.Initialize(VoxPath + "/moji.pt", VoxPath + "/tm_dict.txt");
 
-    if (IsVITS) // No vocoder necessary for fully E2E TTS
+    if (!IsVITS) // No vocoder necessary for fully E2E TTS
         Vocoder.Initialize(VoxPath + "/vocoder");
 
 

@@ -522,9 +522,9 @@ void MainWindow::on_btnInfer_clicked()
         if (ui->edtEmotionOvr->isVisible()){
 
             if (ui->edtEmotionOvr->text().isEmpty())
-                Dets.EmotionOvr = ui->edtInput->toPlainText();
+                Dets.EmotionOvr = ui->edtInput->toPlainText().toLower();
             else
-                Dets.EmotionOvr = ui->edtEmotionOvr->text();
+                Dets.EmotionOvr = ui->edtEmotionOvr->text().toLower();
 
 
         }
