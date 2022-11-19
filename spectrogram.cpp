@@ -13,8 +13,9 @@ void Spectrogram::TimerTick()
 
     PlayRect->topLeft->setCoords(TickSet,0);
 
+    layer("Lay2")->replot();
 
-    replot();
+
 
 }
 
@@ -24,7 +25,7 @@ void Spectrogram::EndSlide()
     timEndTick->stop();
     PlayRect->topLeft->setCoords(1,0);
 
-    replot();
+    layer("Lay2")->replot();
 
 }
 

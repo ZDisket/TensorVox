@@ -13,9 +13,16 @@ Track::Track(QWidget *parent)
     this->setBackground(FillBrush);
     QPen ThePen(QColor(127,255,0));
     wavePlot->setPen(ThePen);
+    wavePlot->setBrush(FillBrush);
 
     yAxis->setVisible(false);
     xAxis->setVisible(false);
+
+    // add independent layer for playrect and labels so we don't replot the entire thing every time
+
+    addLayer("Playing");
+    setCurrentLayer("Playing");
+    layer("Playing")->setMode(QCPLayer::LayerMode::lmBuffered);
 
 
     PlayRect = new QCPItemRect(this);
@@ -34,7 +41,7 @@ Track::Track(QWidget *parent)
 
 
 
-    wavePlot->setBrush(FillBrush);
+
     timGenericTick = new QTimer(this);
     timGenericTick->setInterval(10);
     timGenericTick->setSingleShot(false);
@@ -130,8 +137,7 @@ void Track::TimerTick()
     SetTimeLabel(CurrentPos,TotSecs);
 
 
-
-    replot();
+    layer("Playing")->replot();
 
 
 }
@@ -144,8 +150,7 @@ void Track::EndSlide()
     PlayRect->topLeft->setCoords(1,0);
     SetTimeLabel(TotSecs,TotSecs);
 
-    replot();
-
+    layer("Playing")->replot();
 
 }
 
