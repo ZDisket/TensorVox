@@ -45,6 +45,8 @@ bool VITS::Initialize(const std::string &SavedModelFolder, ETTSRepo::Enum InTTSR
 
 TFTensor<float> VITS::DoInference(const std::vector<int32_t> &InputIDs, const std::vector<float> &ArgsFloat, const std::vector<int32_t> ArgsInt, int32_t SpeakerID, int32_t EmotionID)
 {
+    // without this memory consumption is 4x
+    torch::NoGradGuard no_grad;
 
     // TorchMoji hidden states are added to ArgsFloat
     const bool UsesTorchMoji = ArgsFloat.size() > 1;

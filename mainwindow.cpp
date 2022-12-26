@@ -173,6 +173,7 @@ MainWindow::MainWindow(QWidget *parent)
     DenBatchSize = 0;
     DenDone = 0;
     LastExportDir = QCoreApplication::applicationDirPath() + "/Utt.wav";
+    ui->grpFs2Params->hide();
 
 
 
