@@ -1,0 +1,7 @@
+# Config file for G2P model that trains for longer with softer learning, recommended
+
+gru_dims: 128 # Size of GRU (and embedding layer)
+batch_size: 4096 # Batch size
+val_per: 0.02 # % of dataset to be used for validation. Floating point, 1.0 = 100%; 0.5 = 50%, etc...
+epochs: 35 # Amount of epochs
+learning_rate: 0.001 # Learning rate
