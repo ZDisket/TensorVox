@@ -125,6 +125,13 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
 
      std::string LangName = LangDel[0];
      std::string LangTypeStr = LangDel[1];
+     std::string eSpeakLangStr = "";
+     if (LangDel.szTokens() > 2)
+     {
+         eSpeakLangStr = LangDel[2];
+         LanguageFullName = LangDel[0] + "-" + LangDel[1];
+
+     }
 
      int32_t LangType = V1LangTypes.find(LangTypeStr)->second;
 
@@ -148,6 +155,7 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
                  JS["sarate"].get<uint32_t>(),
                 LangName,
                 LanguageFullName,
+                eSpeakLangStr,
                  EndToken,
                 LangType
                  };

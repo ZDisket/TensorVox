@@ -11,8 +11,10 @@ private:
     std::vector<DictEntry> ManDict;
 
     std::vector<Phonemizer*> Phonemizers;
+    std::vector<ESpeakPhonemizer*> ENGPhonemizers;
 
     Phonemizer* LoadPhonemizer(const QString& InPhnLang, int32_t InLangNum);
+    ESpeakPhonemizer* LoadESpeakPhonemizer(const QString& InVoiceName);
 
 
 

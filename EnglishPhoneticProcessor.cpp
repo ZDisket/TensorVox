@@ -3,12 +3,13 @@
 
 using namespace std;
 
-bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn)
+bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn, ESpeakPhonemizer *InENGPh)
 {
 
 
     Phoner = InPhn;
     Tokenizer.SetAllowedChars(Phoner->GetGraphemeChars());
+    ENG_Phonemizer = InENGPh;
 
 
 
@@ -102,7 +103,10 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
         }
 
 
-        std::string Res = Phoner->ProcessWord(Word,0.001f);
+
+        std::string Res = Word;
+        if (!ENG_Phonemizer)
+            Res = Phoner->ProcessWord(Word,0.001f);
 
         // Cache the word in the override dict so next time we don't have to research it
         CurrentDict.push_back({Word,Res,""});
@@ -117,11 +121,14 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 	}
 	
 
-	// Delete last space if there is
+    // eSpeak phonemizer takes in whole thing
+    if (ENG_Phonemizer)
+        Assemble = ENG_Phonemizer->Phonemize(Assemble);
 
-
+    // Delete last space if there is
 	if (Assemble[Assemble.size() - 1] == ' ')
 		Assemble.pop_back();
+
 
 
 
@@ -131,11 +138,12 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 EnglishPhoneticProcessor::EnglishPhoneticProcessor()
 {
     Phoner = nullptr;
+    ENG_Phonemizer = nullptr;
 }
 
-EnglishPhoneticProcessor::EnglishPhoneticProcessor(Phonemizer *InPhn)
+EnglishPhoneticProcessor::EnglishPhoneticProcessor(Phonemizer *InPhn, ESpeakPhonemizer *InENGPh)
 {
-    Initialize(InPhn);
+    Initialize(InPhn,InENGPh);
 
 }
 

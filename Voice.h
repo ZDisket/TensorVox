@@ -74,7 +74,7 @@ public:
 
     Voice(const std::string& VoxPath, const std::string& inName,Phonemizer* InPhn);
 
-    void AddPhonemizer(Phonemizer* InPhn);
+    void AddPhonemizer(Phonemizer* InPhn, ESpeakPhonemizer *InENGPhn);
     void LoadNumberText(const std::string& NumTxtPath);
 
 

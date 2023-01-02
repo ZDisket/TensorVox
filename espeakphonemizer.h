@@ -25,8 +25,10 @@ PunctSplitVec IterativePunctuationSplit(const std::u32string& Input, const std::
 class ESpeakPhonemizer
 {
 private:
-    static std::bitset<sizeof(int) * 8> PhonemePars;
+    std::bitset<sizeof(int) * 8> PhonemePars;
+    std::string ToPhon(const std::string& InTxt);
 
+    std::string EVoiceName;
 public:
 
     // DataPath: Path to ESpeak NG data dir
@@ -39,6 +41,7 @@ public:
     std::string Phonemize(const std::string& Input);
 
     ESpeakPhonemizer();
+    const std::string& GetVoiceName() const {return EVoiceName;};
 };
 
 #endif // ESPEAKPHONEMIZER_H

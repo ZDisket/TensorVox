@@ -168,9 +168,9 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
 }
 
-void Voice::AddPhonemizer(Phonemizer *InPhn)
+void Voice::AddPhonemizer(Phonemizer *InPhn,ESpeakPhonemizer* InENGPhn)
 {
-    Processor.Initialize(InPhn);
+    Processor.Initialize(InPhn,InENGPhn);
     Processor.GetTokenizer().SetNumberText(NumTxt,VoxCommon::CommonLangConst);
 
 

@@ -16,6 +16,7 @@ std::string ESpeakPhonemizer::ToPhon(const std::string &InTxt)
     return std::string(Phon);
 }
 
+
 void ESpeakPhonemizer::Initialize(const std::string &DataPath, const std::string &VoiceName)
 {
     // these are irrelevant because we don't play any audio, we just use the phonemizer
@@ -25,6 +26,7 @@ void ESpeakPhonemizer::Initialize(const std::string &DataPath, const std::string
 
     espeak_Initialize(output, buflength, DataPath.c_str(), options);
     espeak_SetVoiceByName(VoiceName.c_str());
+    EVoiceName = VoiceName;
 
     PhonemePars[1] = 1; // set IPA
 

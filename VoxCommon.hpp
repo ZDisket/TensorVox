@@ -100,6 +100,9 @@ on ETTSLanguage enum.
 -- The string is LanguageName-Method; for example English-StressedIPA, English-ARPA, German-Char
 - Both pre-V1 standard and current are supported
 - V1 Standard does not require changes in code to add new languages
+-- For eSpeak phonemizers, an additional entry is added with the language name: English-StressedIPA-English (America)
+
+
 
 */
 
@@ -137,6 +140,7 @@ struct VoiceInfo{
 
   std::string s_Language; // Language name = English-ARPA -> "English"
   std::string s_Language_Fullname; // Full language name = "English-ARPA"
+  std::string s_eSpeakLang; // eSpeak voice name: "English (America)"
 
   std::string EndPadding;
   int32_t LangType;
