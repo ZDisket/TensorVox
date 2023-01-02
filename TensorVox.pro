@@ -25,6 +25,7 @@ SOURCES += \
     VoxCommon.cpp \
     attention.cpp \
     batchdenoisedlg.cpp \
+    espeakphonemizer.cpp \
     ext/ByteArr.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/DarkStyle.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.cpp \
@@ -58,6 +59,7 @@ HEADERS += \
     VoxCommon.hpp \
     attention.h \
     batchdenoisedlg.h \
+    espeakphonemizer.h \
     ext/AudioFile.hpp \
     ext/ByteArr.h \
     ext/CppFlow/context.h \
@@ -109,7 +111,7 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 INCLUDEPATH += $$PWD/deps/include
 INCLUDEPATH += $$PWD/deps/include/libtorch
 INCLUDEPATH += $$PWD/ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow
-win32: LIBS += -L$$PWD/deps/lib/ tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib LibNumberText64.lib c10.lib torch.lib torch_cpu.lib
+win32: LIBS += -L$$PWD/deps/lib/ tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib LibNumberText64.lib c10.lib torch.lib torch_cpu.lib libespeak-ng.lib
 win32: LIBS += Advapi32.lib User32.lib Psapi.lib
 
 
