@@ -8,7 +8,7 @@
 #include "Numbertext.hxx"
 #include "torchmoji.h"
 #include "phoneticdict.h"
-
+#include "tacotron2torch.h"
 
 struct VoxResults{
   std::vector<float> Audio;

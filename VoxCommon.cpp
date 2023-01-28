@@ -4,9 +4,9 @@ using namespace nlohmann;
 #include <codecvt>
 #include <locale>         // std::wstring_convert
 
-const std::vector<std::string> Text2MelNames = {"FastSpeech2","Tacotron2","VITS","VITS + TorchMoji"};
-const std::vector<std::string> VocoderNames = {"Multi-Band MelGAN","MelGAN-STFT",""};
-const std::vector<std::string> RepoNames = {"TensorflowTTS","Coqui-TTS","jaywalnut310"};
+const std::vector<std::string> Text2MelNames = {"FastSpeech2","Tacotron2 (TF)","VITS","VITS + TorchMoji","Tacotron2 (Torch)"};
+const std::vector<std::string> VocoderNames = {"Multi-Band MelGAN","MelGAN-STFT","","iSTFTNet"};
+const std::vector<std::string> RepoNames = {"TensorflowTTS","Coqui-TTS","jaywalnut310","keonlee9420"};
 
 const std::vector<std::string> LanguageNames = {"English","Spanish", "German", "EnglishIPA"};
 const std::vector<std::string> LangaugeNamesNumToWords = {"en", "es","de","en"};

@@ -53,7 +53,8 @@ namespace ETTSRepo {
 enum Enum{
     TensorflowTTS = 0,
     CoquiTTS,
-    jaywalnut310 // OG VITS repo
+    jaywalnut310, // OG VITS repo
+    keonlee9420
 };
 
 }
@@ -62,7 +63,8 @@ enum Enum{
     FastSpeech2 = 0,
     Tacotron2,
     VITS,
-    VITSTM
+    VITSTM,
+    Tacotron2Torch
 };
 
 }
@@ -71,7 +73,8 @@ namespace EVocoderModel{
 enum Enum{
     MultiBandMelGAN = 0,
     MelGANSTFT, // there is no architectural changes so we can use mb-melgan class for melgan-stft
-    NullVocoder // For fully E2E models
+    NullVocoder, // For fully E2E models
+    iSTFTNet
 };
 }
 

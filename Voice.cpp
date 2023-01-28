@@ -126,14 +126,19 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
         MelPredictor = std::make_unique<Tacotron2>();
     else if (Tex2MelArch == EText2MelModel::FastSpeech2)
         MelPredictor = std::make_unique<FastSpeech2>();
-    else
+    else if (Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::VITSTM)
         MelPredictor = std::make_unique<VITS>();
+    else
+        MelPredictor = std::make_unique<Tacotron2Torch>();
 
 
     std::string MelPredInit = VoxPath + "/melgen";
 
     if (IsVITS)
         MelPredInit = VoxPath + "/vits.pt";
+
+    if (Tex2MelArch == EText2MelModel::Tacotron2Torch)
+        MelPredInit = VoxPath + "/tacotron2.pt";
 
     MelPredictor->Initialize(MelPredInit,(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
 
@@ -214,8 +219,7 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     std::vector<int32_t> InputIDs;
 
 
-    // Note to self: always check for negative or positive language by checking that it is lower than 0
-    // if we try greater than 0, English is missed.
+
     if (VoxInfo.LangType == ETTSLanguageType::Char){
         InputIDs = CharsToID(PhoneticTxt);
         InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
@@ -245,6 +249,11 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
         Mel = ((Tacotron2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
         Attention = ((Tacotron2*)MelPredictor.get())->Attention;
 
+    }
+    else if (Text2MelN == EText2MelModel::Tacotron2Torch)
+    {
+        Mel = MelPredictor.get()->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
+        Attention = ((Tacotron2Torch*)MelPredictor.get())->Attention;
     }
     else if (Text2MelN == EText2MelModel::FastSpeech2)
     {
