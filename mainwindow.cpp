@@ -1759,6 +1759,8 @@ QString MainWindow::PhonemizeStr(QString &Text, Voice &VoxIn)
 
 
     QString PhonemedTxt = QString::fromStdString(VoxIn.PhonemizeStr(Text.toLower().toStdString()));
+    if (VoxIn.GetInfo().LangType == ETTSLanguageType::IPA)
+        return PhonemedTxt;
 
 
 
@@ -1846,7 +1848,7 @@ void MainWindow::AutoUpdateSplit()
     if (CurrentVoice.GetInfo().Architecture.Text2Mel == EText2MelModel::Tacotron2)
         ui->spbSeqLen->setValue(500);
     else
-        ui->spbSeqLen->setValue(180);
+        ui->spbSeqLen->setValue(300);
 
 
 
@@ -1862,6 +1864,9 @@ void MainWindow::on_spbSeqLen_editingFinished()
 Voice *MainWindow::GetCurrentVoice()
 {
     int32_t CurrentIndex = VoMan.FindVoice(ui->cbModels->currentText(),false);
+    if (CurrentIndex == -1)
+        return nullptr;
+
     return VoMan[(size_t)CurrentIndex];
 
 
@@ -1952,6 +1957,9 @@ void MainWindow::on_btnClearTxt_clicked()
 
 void MainWindow::on_btnRandom_clicked()
 {
+    if (!GetCurrentVoice())
+        return;
+
     if (GetCurrentVoice()->GetInfo().s_Language.find("English") == std::string::npos)
         return; // No random sent for other langs
 

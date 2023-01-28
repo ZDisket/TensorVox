@@ -3,6 +3,7 @@
 
 
 static const std::u32string Punctuation_t = U",.;¡!¿?:-";
+static const std::u32string Punctuation_ns = U"¿-";
 
 using namespace ESP;
 
@@ -24,9 +25,10 @@ void ESpeakPhonemizer::Initialize(const std::string &DataPath, const std::string
     int buflength = 500, options = 0;
 
 
-    espeak_Initialize(output, buflength, DataPath.c_str(), options);
-    espeak_SetVoiceByName(VoiceName.c_str());
+    auto Err1 = espeak_Initialize(output, buflength, DataPath.c_str(), options);
+    auto Err = espeak_SetVoiceByName(VoiceName.c_str());
     EVoiceName = VoiceName;
+
 
     PhonemePars[1] = 1; // set IPA
 
@@ -44,6 +46,8 @@ std::string ESpeakPhonemizer::Phonemize(const std::string &Input)
     bool Space = false;
     for (const auto& Spli : SplitVec)
     {
+
+
         std::string Pibber = VoxUtil::U32ToStr(Spli.second);
         if (!Spli.first)
         {
@@ -55,6 +59,14 @@ std::string ESpeakPhonemizer::Phonemize(const std::string &Input)
         }else
         {
             Space = true;
+            for (const auto& PCh : Punctuation_ns){
+                if (Spli.second.find(PCh) != std::u32string::npos)
+                    Space = false;
+
+            }
+
+
+
 
 
         }

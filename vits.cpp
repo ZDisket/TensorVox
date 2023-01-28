@@ -5,16 +5,18 @@ std::vector<int64_t> VITS::ZeroPadVec(const std::vector<int32_t> &InIDs)
     std::vector<int64_t> NewIDs;
     NewIDs.reserve(InIDs.size() * 2);
 
+    NewIDs.push_back(0);
 
     for (auto CharID : InIDs)
     {
-        NewIDs.push_back(0);
+
         NewIDs.push_back((int64_t)CharID);
+        NewIDs.push_back(0);
 
 
     }
     // Add final 0
-    NewIDs.push_back(0);
+   // NewIDs.push_back(0);
 
 
     return NewIDs;

@@ -95,7 +95,7 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 
 
         size_t OverrideIdx = 0;
-        if (VoxUtil::FindInVec2<std::string,DictEntry>(Word,InDict,OverrideIdx))
+        if (!ENG_Phonemizer && VoxUtil::FindInVec2<std::string,DictEntry>(Word,InDict,OverrideIdx))
         {
              Assemble.append(InDict[OverrideIdx].PhSpelling);
              Assemble.append(" ");
@@ -105,11 +105,14 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 
 
         std::string Res = Word;
-        if (!ENG_Phonemizer)
+        if (!ENG_Phonemizer){
             Res = Phoner->ProcessWord(Word,0.001f);
+            CurrentDict.push_back({Word,Res,""});
+        }
+
 
         // Cache the word in the override dict so next time we don't have to research it
-        CurrentDict.push_back({Word,Res,""});
+
 
         Assemble.append(Res);
         Assemble.append(" ");
@@ -122,8 +125,11 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 	
 
     // eSpeak phonemizer takes in whole thing
-    if (ENG_Phonemizer)
+    if (ENG_Phonemizer){
+
         Assemble = ENG_Phonemizer->Phonemize(Assemble);
+    }
+
 
     // Delete last space if there is
 	if (Assemble[Assemble.size() - 1] == ' ')

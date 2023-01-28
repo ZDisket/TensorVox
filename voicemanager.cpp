@@ -46,7 +46,7 @@ ESpeakPhonemizer *VoiceManager::LoadESpeakPhonemizer(const QString &InVoiceName)
 
     ENGPhonemizers.push_back(CreatePhn);
 
-    return ENGPhonemizers[ENGPhonemizers.size() - 1];
+    return CreatePhn;
 
 }
 
@@ -59,9 +59,11 @@ size_t VoiceManager::LoadVoice(const QString &Voname)
     Phonemizer* Phon = LoadPhonemizer(PLang,NuVoice->GetInfo().LangType);
     ESpeakPhonemizer* ENG_Phon = nullptr;
 
-    if (NuVoice->GetInfo().s_eSpeakLang.size())
+    if (NuVoice->GetInfo().s_eSpeakLang.size()){
         ENG_Phon = LoadESpeakPhonemizer(QString::fromStdString(NuVoice->GetInfo().s_eSpeakLang));
 
+
+    }
 
 
     NuVoice->AddPhonemizer(Phon,ENG_Phon);
