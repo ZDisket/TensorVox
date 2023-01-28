@@ -147,8 +147,23 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
     if (Tex2MelArch == EText2MelModel::VITSTM)
         Moji.Initialize(VoxPath + "/moji.pt", VoxPath + "/tm_dict.txt");
 
-    if (!IsVITS) // No vocoder necessary for fully E2E TTS
-        Vocoder.Initialize(VoxPath + "/vocoder");
+
+    const int32_t VocoderArch = VoxInfo.Architecture.Vocoder;
+
+
+    if (VocoderArch == EVocoderModel::iSTFTNet)
+        Vocoder = std::make_unique<iSTFTNetTorch>();
+    else if (VocoderArch == EVocoderModel::NullVocoder)
+        Vocoder = nullptr;
+    else
+        Vocoder = std::make_unique<MultiBandMelGAN>();
+
+    if (Vocoder)
+        Vocoder.get()->Initialize(VoxPath + "/vocoder");
+
+
+
+
 
 
 
@@ -291,7 +306,7 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     // Vocoder inference
 
 
-	TFTensor<float> AuData = Vocoder.DoInference(Mel);
+    TFTensor<float> AuData = Vocoder.get()->DoInference(Mel);
     std::vector<float> AudioData;
 
     if (AuData.Shape.size() > 1)

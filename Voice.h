@@ -9,7 +9,7 @@
 #include "torchmoji.h"
 #include "phoneticdict.h"
 #include "tacotron2torch.h"
-
+#include "istftnettorch.h"
 struct VoxResults{
   std::vector<float> Audio;
   TFTensor<float> Alignment;
@@ -20,7 +20,7 @@ class Voice
 {
 private:
     std::unique_ptr<MelGen> MelPredictor;
-	MultiBandMelGAN Vocoder;
+    std::unique_ptr<MultiBandMelGAN> Vocoder;
 	EnglishPhoneticProcessor Processor;
     VoiceInfo VoxInfo;
     TorchMoji Moji;
