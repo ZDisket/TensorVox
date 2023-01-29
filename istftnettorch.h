@@ -6,6 +6,9 @@ class iSTFTNetTorch : public MultiBandMelGAN
 {
 private:
    torch::jit::script::Module Model;
+   torch::jit::script::Module Post;
+
+   bool PostLoaded;
 
 public:
     bool Initialize(const std::string& VocoderPath);

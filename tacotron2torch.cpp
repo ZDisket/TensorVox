@@ -51,20 +51,22 @@ TFTensor<float> Tacotron2Torch::DoInference(const std::vector<int32_t> &InputIDs
 
 
     // Infer
-
     c10::IValue Output = Model(inputs);
+
 
     // Output = list (mel_outputs, mel_outputs_postnet, gate_outputs, alignments)
 
     auto OutputL = Output.toList();
 
-    auto MelTens = OutputL[1].get().toTensor().squeeze().transpose(0,1); // [1, frames, n_mels] -> [frames, n_mels] -> [n_mels, frames]
-    auto AttTens = OutputL[3].get().toTensor().squeeze(); // [1, dec_t, enc_t ] -> [dec_t, enc_t]
+    auto MelTens = OutputL[1].get().toTensor();
+    auto AttTens = OutputL[3].get().toTensor();//.transpose(1,2); // [1, dec_t, enc_t ] -> [1, enc_t, dec_t]
 
 
     Attention = VoxUtil::CopyTensor<float>(AttTens);
 
+
     return VoxUtil::CopyTensor<float>(MelTens);
+
 
 
 }

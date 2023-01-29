@@ -158,8 +158,14 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
     else
         Vocoder = std::make_unique<MultiBandMelGAN>();
 
-    if (Vocoder)
+    if (Vocoder.get())
+    {
+
+
         Vocoder.get()->Initialize(VoxPath + "/vocoder");
+
+
+    }
 
 
 
@@ -222,7 +228,7 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     bool VoxIsTac = Text2MelN != EText2MelModel::FastSpeech2;
 
     std::string PromptToFeed = Prompt;
-    if (VoxInfo.LangType != ETTSLanguageType::Char)
+    if (VoxInfo.LangType != ETTSLanguageType::Char && Text2MelN != EText2MelModel::Tacotron2Torch)
         PromptToFeed += VoxInfo.EndPadding;
 
     std::string PhoneticTxt = Processor.ProcessTextPhonetic(PromptToFeed,Phonemes,CurrentDict,
@@ -232,6 +238,9 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     TFTensor<float> Attention;
 
     std::vector<int32_t> InputIDs;
+
+    if (Text2MelN == EText2MelModel::Tacotron2Torch)
+        PhoneticTxt += VoxInfo.EndPadding;
 
 
 
@@ -344,6 +353,8 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
 
 
+    if (!AudioData.size())
+        QMessageBox::critical(nullptr,"f","ss");
 
     return {AudioData,Attention,Mel};
 }

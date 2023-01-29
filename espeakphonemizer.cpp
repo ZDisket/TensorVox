@@ -2,8 +2,8 @@
 #include <espeak/speak_lib.h>
 
 
-static const std::u32string Punctuation_t = U",.;¡!¿?:-";
-static const std::u32string Punctuation_ns = U"¿-";
+static const std::u32string Punctuation_t = U",.;¡!¿?:-~";
+static const std::u32string Punctuation_ns = U"¿-~";
 
 using namespace ESP;
 
