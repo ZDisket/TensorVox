@@ -30,8 +30,12 @@ TFTensor<float> Tacotron2Torch::DoInference(const std::vector<int32_t> &InputIDs
 
 
     std::vector<int64_t> IInputIDs;
-    IInputIDs.assign(InputIDs.begin(),InputIDs.end());
+    IInputIDs.reserve(InputIDs.size());
+    for (const int32_t& Id : InputIDs){
+        int64_t casted = (int64_t)Id;
+        IInputIDs.push_back(casted);
 
+    }
 
 
 
