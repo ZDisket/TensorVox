@@ -10,6 +10,9 @@
 #include "phoneticdict.h"
 #include "tacotron2torch.h"
 #include "istftnettorch.h"
+#include "devits.h"
+#include "bert.h"
+
 struct VoxResults{
   std::vector<float> Audio;
   TFTensor<float> Alignment;
@@ -24,6 +27,7 @@ private:
 	EnglishPhoneticProcessor Processor;
     VoiceInfo VoxInfo;
     TorchMoji Moji;
+    BERT BertFE;
 
 
 

@@ -65,7 +65,7 @@ void TorchMoji::Initialize(const std::string &Path, const std::string &DictPath)
     LoadDict(DictPath);
 }
 
-std::vector<float> TorchMoji::Infer(const std::vector<std::string> &Seq)
+TFTensor<float> TorchMoji::Infer(const std::vector<std::string> &Seq)
 {
     torch::NoGradGuard no_grad;
     std::vector<int32_t> Input = WordsToIDs(Seq);
