@@ -1,5 +1,4 @@
 #include "devits.h"
-
 DEVITS::DEVITS()
 {
 
@@ -26,7 +25,7 @@ TFTensor<float> DEVITS::DoInferenceDE(const std::vector<int32_t> &InputIDs, cons
 
     auto InIDS = torch::tensor(PaddedIDs, Opts).unsqueeze(0);
     auto InLens = torch::tensor(inLen, Opts);
-    auto MojiHidden = torch::tensor(MojiIn.Data);
+    auto MojiHidden = torch::tensor(MojiIn.Data).unsqueeze(0);
     auto BERTHidden = torch::tensor(BERTIn.Data).reshape(BERTIn.Shape);
 
     std::vector<int64_t> BERTSz = {BERTIn.Shape[1]};

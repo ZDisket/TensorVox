@@ -32,11 +32,20 @@ static std::wstring strip(const std::wstring& text) {
 }
 
 static std::vector<std::wstring> split(const std::wstring& text) {
+
+
+
     std::vector<std::wstring>  result;
     ZStringDelimiterWide Del(text);
-    Del.SetDelimiters(sDelimChar);
+
+    Del.AddDelimiter(L" ");
 
     result = Del.GetTokens();
+    if (!result.size())
+        result.push_back(text); //
+
+
+
     return result;
 }
 
@@ -90,6 +99,7 @@ static std::shared_ptr<Vocab> loadVocab(const std::string& vocabFile) {
         (*vocab)[token] = index;
         index++;
     }
+
     return vocab;
 }
 
@@ -216,8 +226,12 @@ std::vector<std::wstring> BasicTokenizer::tokenize(const std::string& text) cons
         splitTokens.insert(splitTokens.end(), tokens.begin(), tokens.end());
     }
     ZStringDelimiterWide DelRs;
+    std::wstring WSP = DelRs.Reassemble(L" ",splitTokens);
 
-    return whitespaceTokenize(DelRs.Reassemble(L" ",splitTokens));
+
+
+
+    return whitespaceTokenize(WSP);
 }
 
 WordpieceTokenizer::WordpieceTokenizer(const std::shared_ptr<Vocab> vocab, const std::wstring& unkToken, size_t maxInputCharsPerWord)
@@ -228,6 +242,7 @@ WordpieceTokenizer::WordpieceTokenizer(const std::shared_ptr<Vocab> vocab, const
 
 std::vector<std::wstring> WordpieceTokenizer::tokenize(const std::wstring& text) const {
     std::vector<std::wstring> outputTokens;
+
     for (auto& token : whitespaceTokenize(text)) {
         if (token.size() > mMaxInputCharsPerWord) {
             outputTokens.push_back(mUnkToken);
