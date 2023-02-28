@@ -27,6 +27,7 @@ SOURCES += \
     batchdenoisedlg.cpp \
     bert.cpp \
     berttokenizer.cpp \
+    devits.cpp \
     espeakphonemizer.cpp \
     ext/ByteArr.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/DarkStyle.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
     batchdenoisedlg.h \
     bert.h \
     berttokenizer.h \
+    devits.h \
     espeakphonemizer.h \
     ext/AudioFile.hpp \
     ext/ByteArr.h \

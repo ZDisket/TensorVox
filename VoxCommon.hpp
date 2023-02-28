@@ -167,7 +167,7 @@ namespace VoxUtil {
     // Copy PyTorch tensor
 
     template<typename D>
-    TFTensor<D> CopyTensor(at::Tensor& InTens){
+    TFTensor<D> CopyTensor(const at::Tensor& InTens){
         D* Data = InTens.data<D>();
         std::vector<int64_t> Shape = InTens.sizes().vec();
 

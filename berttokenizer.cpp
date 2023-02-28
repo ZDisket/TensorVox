@@ -33,7 +33,7 @@ static std::wstring strip(const std::wstring& text) {
 
 static std::vector<std::wstring> split(const std::wstring& text) {
     std::vector<std::wstring>  result;
-    ZStringDelimiter Del(text);
+    ZStringDelimiterWide Del(text);
     Del.SetDelimiters(sDelimChar);
 
     result = Del.GetTokens();
@@ -215,7 +215,7 @@ std::vector<std::wstring> BasicTokenizer::tokenize(const std::string& text) cons
         const auto& tokens = runSplitOnPunc(token);
         splitTokens.insert(splitTokens.end(), tokens.begin(), tokens.end());
     }
-    ZStringDelimiter DelRs;
+    ZStringDelimiterWide DelRs;
 
     return whitespaceTokenize(DelRs.Reassemble(L" ",splitTokens));
 }

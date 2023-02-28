@@ -12,12 +12,15 @@
 class VITS : public MelGen
 {
 private:
-    torch::jit::script::Module Model;
 
+
+
+public:
+    torch::jit::script::Module Model;
     // Most VITS model require zero-interspersed input IDs
     std::vector<int64_t> ZeroPadVec(const std::vector<int32_t>& InIDs);
 
-public:
+
     TFTensor<float> Attention;
 
     VITS();

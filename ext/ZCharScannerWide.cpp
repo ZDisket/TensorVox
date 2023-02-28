@@ -2,7 +2,7 @@
 using namespace std;
 #include <stdexcept>
 
-int ZStringDelimiter::key_search(const std::wstring& s, const std::wstring& key)
+int ZStringDelimiterWide::key_search(const std::wstring& s, const std::wstring& key)
 {
 	int count = 0;
 	size_t pos = 0;
@@ -12,7 +12,7 @@ int ZStringDelimiter::key_search(const std::wstring& s, const std::wstring& key)
 	}
 	return count;
 }
-void ZStringDelimiter::UpdateTokens()
+void ZStringDelimiterWide::UpdateTokens()
 {
     if (!m_vDelimiters.size() || m_sString == L"")
 		return;
@@ -37,7 +37,7 @@ void ZStringDelimiter::UpdateTokens()
 }
 
 
-void ZStringDelimiter::DelimStr(const std::wstring & s, const std::wstring & delimiter, const bool & removeEmptyEntries)
+void ZStringDelimiterWide::DelimStr(const std::wstring & s, const std::wstring & delimiter, const bool & removeEmptyEntries)
 {
 	BarRange(0, s.length());
 	for (size_t start = 0, end; start < s.length(); start = end + delimiter.length())
@@ -58,7 +58,7 @@ void ZStringDelimiter::DelimStr(const std::wstring & s, const std::wstring & del
 	// dadwwdawdaawdwadwd
 }
 
-void ZStringDelimiter::BarRange(const int & min, const int & max)
+void ZStringDelimiterWide::BarRange(const int & min, const int & max)
 {
 #ifdef _AFX_ALL_WARNINGS
 	if (PgBar)
@@ -68,7 +68,7 @@ void ZStringDelimiter::BarRange(const int & min, const int & max)
 #endif
 }
 
-void ZStringDelimiter::Bar(const int & pos)
+void ZStringDelimiterWide::Bar(const int & pos)
 {
 #ifdef _AFX_ALL_WARNINGS
 	if (PgBar)
@@ -78,15 +78,15 @@ void ZStringDelimiter::Bar(const int & pos)
 #endif
 }
 
-ZStringDelimiter::ZStringDelimiter()
+ZStringDelimiterWide::ZStringDelimiterWide()
 {
-    m_sString = "";
+    m_sString = L"";
 	tokenIndex = 0;
 	PgBar = false;
 }
 
 
-bool ZStringDelimiter::GetFirstToken(std::wstring & in_out)
+bool ZStringDelimiterWide::GetFirstToken(std::wstring & in_out)
 {
 	if (m_vTokens.size() >= 1) {
 		in_out = m_vTokens[0];
@@ -97,7 +97,7 @@ bool ZStringDelimiter::GetFirstToken(std::wstring & in_out)
 	}
 }
 
-bool ZStringDelimiter::GetNextToken(std::wstring & in_sOut)
+bool ZStringDelimiterWide::GetNextToken(std::wstring & in_sOut)
 {
 	if (tokenIndex > m_vTokens.size() - 1)
 		return false;
@@ -108,7 +108,7 @@ bool ZStringDelimiter::GetNextToken(std::wstring & in_sOut)
 	return true;
 }
 
-std::wstring ZStringDelimiter::operator[](const size_t & in_index)
+std::wstring ZStringDelimiterWide::operator[](const size_t & in_index)
 {
 	if (in_index > m_vTokens.size())
 		throw std::out_of_range("ZStringDelimiter tried to access token higher than size");
@@ -116,7 +116,7 @@ std::wstring ZStringDelimiter::operator[](const size_t & in_index)
 	return m_vTokens[in_index];
 
 }
-std::wstring ZStringDelimiter::Reassemble(const std::wstring& delim, const int& nelem)
+std::wstring ZStringDelimiterWide::Reassemble(const std::wstring& delim, const int& nelem)
 {
     std::wstring Result = L"";
 	TokenIterator RasIt = m_vTokens.begin();
@@ -154,7 +154,7 @@ std::wstring ZStringDelimiter::Reassemble(const std::wstring& delim, const int& 
 
 }
 
-std::wstring ZStringDelimiter::Reassemble(const std::wstring & delim, const std::vector<std::wstring>& Strs,int nelem)
+std::wstring ZStringDelimiterWide::Reassemble(const std::wstring & delim, const std::vector<std::wstring>& Strs,int nelem)
 {
     std::wstring Result = L"";
 	TokenIterator RasIt = Strs.begin();
@@ -191,20 +191,20 @@ std::wstring ZStringDelimiter::Reassemble(const std::wstring & delim, const std:
 	return Result;
 }
 
-void ZStringDelimiter::AddDelimiter(const std::wstring & in_Delim)
+void ZStringDelimiterWide::AddDelimiter(const std::wstring & in_Delim)
 {
 	m_vDelimiters.push_back(in_Delim);
 	UpdateTokens();
 
 }
 
-void ZStringDelimiter::SetDelimiters(const std::vector<std::wstring> &Delims)
+void ZStringDelimiterWide::SetDelimiters(const std::vector<std::wstring> &Delims)
 {
     m_vDelimiters.assign(Delims.begin(),Delims.end());
     UpdateTokens();
 
 }
 
-ZStringDelimiter::~ZStringDelimiter()
+ZStringDelimiterWide::~ZStringDelimiterWide()
 {
 }

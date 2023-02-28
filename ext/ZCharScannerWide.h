@@ -14,7 +14,7 @@ typedef std::vector<std::wstring>::const_iterator TokenIterator;
 // You can use operator[] to access them
 // Or you can use the itBegin() and itEnd() to get some iterators
 // =================
-class ZStringDelimiter
+class ZStringDelimiterWide
 {
 private:
     int key_search(const std::wstring & s, const std::wstring & key);
@@ -29,14 +29,14 @@ private:
 	void Bar(const int& pos);
 	size_t tokenIndex;
 public:
-	ZStringDelimiter();
+    ZStringDelimiterWide();
 	bool PgBar;
 
 #ifdef _AFX_ALL_WARNINGS
 	CProgressCtrl* m_pBar;
 #endif
 
-    ZStringDelimiter(const std::wstring& in_iStr) {
+    ZStringDelimiterWide(const std::wstring& in_iStr) {
 		m_sString = in_iStr;
 		PgBar = false;
 
@@ -69,6 +69,6 @@ public:
     void AddDelimiter(const std::wstring& in_Delim);
     void SetDelimiters(const std::vector<std::wstring>& Delims);
 
-	~ZStringDelimiter();
+    ~ZStringDelimiterWide();
 };
 
