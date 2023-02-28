@@ -1,12 +1,12 @@
-#include "ZCharScanner.h"
+#include "ZCharScannerWide.h"
 using namespace std;
 #include <stdexcept>
 
-int ZStringDelimiter::key_search(const GString& s, const GString& key)
+int ZStringDelimiter::key_search(const std::wstring& s, const std::wstring& key)
 {
 	int count = 0;
 	size_t pos = 0;
-	while ((pos = s.find(key, pos)) != GString::npos) {
+    while ((pos = s.find(key, pos)) != std::wstring::npos) {
 		++count;
 		++pos;
 	}
@@ -14,16 +14,16 @@ int ZStringDelimiter::key_search(const GString& s, const GString& key)
 }
 void ZStringDelimiter::UpdateTokens()
 {
-    if (!m_vDelimiters.size() || m_sString == "")
+    if (!m_vDelimiters.size() || m_sString == L"")
 		return;
 
 	m_vTokens.clear();
 
 
-	vector<GString>::iterator dIt = m_vDelimiters.begin();
+    vector<std::wstring>::iterator dIt = m_vDelimiters.begin();
 	while (dIt != m_vDelimiters.end())
 	{
-		GString delimiter = *dIt;
+        std::wstring delimiter = *dIt;
 	
 
 		DelimStr(m_sString, delimiter, true);
@@ -37,15 +37,15 @@ void ZStringDelimiter::UpdateTokens()
 }
 
 
-void ZStringDelimiter::DelimStr(const GString & s, const GString & delimiter, const bool & removeEmptyEntries)
+void ZStringDelimiter::DelimStr(const std::wstring & s, const std::wstring & delimiter, const bool & removeEmptyEntries)
 {
 	BarRange(0, s.length());
 	for (size_t start = 0, end; start < s.length(); start = end + delimiter.length())
 	{
 		size_t position = s.find(delimiter, start);
-		end = position != GString::npos ? position : s.length();
+        end = position != std::wstring::npos ? position : s.length();
 
-		GString token = s.substr(start, end - start);
+        std::wstring token = s.substr(start, end - start);
 		if (!removeEmptyEntries || !token.empty())
 		{
 			if (token != s)
@@ -86,7 +86,7 @@ ZStringDelimiter::ZStringDelimiter()
 }
 
 
-bool ZStringDelimiter::GetFirstToken(GString & in_out)
+bool ZStringDelimiter::GetFirstToken(std::wstring & in_out)
 {
 	if (m_vTokens.size() >= 1) {
 		in_out = m_vTokens[0];
@@ -97,7 +97,7 @@ bool ZStringDelimiter::GetFirstToken(GString & in_out)
 	}
 }
 
-bool ZStringDelimiter::GetNextToken(GString & in_sOut)
+bool ZStringDelimiter::GetNextToken(std::wstring & in_sOut)
 {
 	if (tokenIndex > m_vTokens.size() - 1)
 		return false;
@@ -108,7 +108,7 @@ bool ZStringDelimiter::GetNextToken(GString & in_sOut)
 	return true;
 }
 
-GString ZStringDelimiter::operator[](const size_t & in_index)
+std::wstring ZStringDelimiter::operator[](const size_t & in_index)
 {
 	if (in_index > m_vTokens.size())
 		throw std::out_of_range("ZStringDelimiter tried to access token higher than size");
@@ -116,9 +116,9 @@ GString ZStringDelimiter::operator[](const size_t & in_index)
 	return m_vTokens[in_index];
 
 }
-GString ZStringDelimiter::Reassemble(const GString& delim, const int& nelem)
+std::wstring ZStringDelimiter::Reassemble(const std::wstring& delim, const int& nelem)
 {
-    GString Result = "";
+    std::wstring Result = L"";
 	TokenIterator RasIt = m_vTokens.begin();
 	int r = 0;
 	if (nelem == -1) {
@@ -154,9 +154,9 @@ GString ZStringDelimiter::Reassemble(const GString& delim, const int& nelem)
 
 }
 
-GString ZStringDelimiter::Reassemble(const GString & delim, const std::vector<GString>& Strs,int nelem)
+std::wstring ZStringDelimiter::Reassemble(const std::wstring & delim, const std::vector<std::wstring>& Strs,int nelem)
 {
-    GString Result = "";
+    std::wstring Result = L"";
 	TokenIterator RasIt = Strs.begin();
 	int r = 0;
 	if (nelem == -1) {
@@ -191,14 +191,14 @@ GString ZStringDelimiter::Reassemble(const GString & delim, const std::vector<GS
 	return Result;
 }
 
-void ZStringDelimiter::AddDelimiter(const GString & in_Delim)
+void ZStringDelimiter::AddDelimiter(const std::wstring & in_Delim)
 {
 	m_vDelimiters.push_back(in_Delim);
 	UpdateTokens();
 
 }
 
-void ZStringDelimiter::SetDelimiters(const std::vector<GString> &Delims)
+void ZStringDelimiter::SetDelimiters(const std::vector<std::wstring> &Delims)
 {
     m_vDelimiters.assign(Delims.begin(),Delims.end());
     UpdateTokens();
