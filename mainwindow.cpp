@@ -1753,7 +1753,7 @@ void MainWindow::on_actionPhonemize_filelist_triggered()
 
 QString MainWindow::PhonemizeStr(QString &Text, Voice &VoxIn)
 {
-    const QString punctuation = ",.;¡!¿?':-";
+    const QString punctuation = ",.;¡!¿?':- ";
 
 
 

@@ -4,9 +4,9 @@ using namespace nlohmann;
 #include <codecvt>
 #include <locale>         // std::wstring_convert
 
-const std::vector<std::string> Text2MelNames = {"FastSpeech2","Tacotron2","VITS","VITS + TorchMoji"};
-const std::vector<std::string> VocoderNames = {"Multi-Band MelGAN","MelGAN-STFT",""};
-const std::vector<std::string> RepoNames = {"TensorflowTTS","Coqui-TTS","jaywalnut310"};
+const std::vector<std::string> Text2MelNames = {"FastSpeech2","Tacotron2 (TF)","VITS","VITS + TorchMoji","Tacotron2 (Torch)"};
+const std::vector<std::string> VocoderNames = {"Multi-Band MelGAN","MelGAN-STFT","","iSTFTNet"};
+const std::vector<std::string> RepoNames = {"TensorflowTTS","Coqui-TTS","jaywalnut310","keonlee9420"};
 
 const std::vector<std::string> LanguageNames = {"English","Spanish", "German", "EnglishIPA"};
 const std::vector<std::string> LangaugeNamesNumToWords = {"en", "es","de","en"};
@@ -141,7 +141,7 @@ VoiceInfo VoxUtil::ReadModelJSON(const std::string &InfoFilename)
     std::string EndToken = JS["pad"].get<std::string>();
 
     // If it's phonetic then it's the token str, like "@EOS"
-    if (LangType != ETTSLanguageType::Char && EndToken.size())
+    if (LangType != ETTSLanguageType::Char && EndToken.size() && CuArch.Text2Mel != EText2MelModel::Tacotron2Torch)
         EndToken =  " " + EndToken; // In this case we add a space for separation since we directly append the value to the prompt
 
 

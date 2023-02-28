@@ -33,6 +33,7 @@ SOURCES += \
     ext/ZCharScanner.cpp \
     ext/ZFile.cpp \
     ext/qcustomplot.cpp \
+    istftnettorch.cpp \
     main.cpp \
     mainwindow.cpp \
     melgen.cpp \
@@ -43,6 +44,7 @@ SOURCES += \
     phonetichighlighter.cpp \
     spectrogram.cpp \
     tacotron2.cpp \
+    tacotron2torch.cpp \
     tfg2p.cpp \
     torchmoji.cpp \
     track.cpp \
@@ -77,6 +79,7 @@ HEADERS += \
     ext/ZFile.h \
     ext/json.hpp \
     ext/qcustomplot.h \
+    istftnettorch.h \
     mainwindow.h \
     melgen.h \
     modelinfodlg.h \
@@ -86,6 +89,7 @@ HEADERS += \
     phonetichighlighter.h \
     spectrogram.h \
     tacotron2.h \
+    tacotron2torch.h \
     tfg2p.h \
     torchmoji.h \
     track.h \

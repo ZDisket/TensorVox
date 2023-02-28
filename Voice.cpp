@@ -126,14 +126,19 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
         MelPredictor = std::make_unique<Tacotron2>();
     else if (Tex2MelArch == EText2MelModel::FastSpeech2)
         MelPredictor = std::make_unique<FastSpeech2>();
-    else
+    else if (Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::VITSTM)
         MelPredictor = std::make_unique<VITS>();
+    else
+        MelPredictor = std::make_unique<Tacotron2Torch>();
 
 
     std::string MelPredInit = VoxPath + "/melgen";
 
     if (IsVITS)
         MelPredInit = VoxPath + "/vits.pt";
+
+    if (Tex2MelArch == EText2MelModel::Tacotron2Torch)
+        MelPredInit = VoxPath + "/tacotron2.pt";
 
     MelPredictor->Initialize(MelPredInit,(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
 
@@ -142,8 +147,29 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
     if (Tex2MelArch == EText2MelModel::VITSTM)
         Moji.Initialize(VoxPath + "/moji.pt", VoxPath + "/tm_dict.txt");
 
-    if (!IsVITS) // No vocoder necessary for fully E2E TTS
-        Vocoder.Initialize(VoxPath + "/vocoder");
+
+    const int32_t VocoderArch = VoxInfo.Architecture.Vocoder;
+
+
+    if (VocoderArch == EVocoderModel::iSTFTNet)
+        Vocoder = std::make_unique<iSTFTNetTorch>();
+    else if (VocoderArch == EVocoderModel::NullVocoder)
+        Vocoder = nullptr;
+    else
+        Vocoder = std::make_unique<MultiBandMelGAN>();
+
+    if (Vocoder.get())
+    {
+
+
+        Vocoder.get()->Initialize(VoxPath + "/vocoder");
+
+
+    }
+
+
+
+
 
 
 
@@ -202,7 +228,7 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     bool VoxIsTac = Text2MelN != EText2MelModel::FastSpeech2;
 
     std::string PromptToFeed = Prompt;
-    if (VoxInfo.LangType != ETTSLanguageType::Char)
+    if (VoxInfo.LangType != ETTSLanguageType::Char && Text2MelN != EText2MelModel::Tacotron2Torch)
         PromptToFeed += VoxInfo.EndPadding;
 
     std::string PhoneticTxt = Processor.ProcessTextPhonetic(PromptToFeed,Phonemes,CurrentDict,
@@ -213,9 +239,11 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
     std::vector<int32_t> InputIDs;
 
+    if (Text2MelN == EText2MelModel::Tacotron2Torch)
+        PhoneticTxt += VoxInfo.EndPadding;
 
-    // Note to self: always check for negative or positive language by checking that it is lower than 0
-    // if we try greater than 0, English is missed.
+
+
     if (VoxInfo.LangType == ETTSLanguageType::Char){
         InputIDs = CharsToID(PhoneticTxt);
         InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
@@ -245,6 +273,11 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
         Mel = ((Tacotron2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
         Attention = ((Tacotron2*)MelPredictor.get())->Attention;
 
+    }
+    else if (Text2MelN == EText2MelModel::Tacotron2Torch)
+    {
+        Mel = MelPredictor.get()->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
+        Attention = ((Tacotron2Torch*)MelPredictor.get())->Attention;
     }
     else if (Text2MelN == EText2MelModel::FastSpeech2)
     {
@@ -282,7 +315,7 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     // Vocoder inference
 
 
-	TFTensor<float> AuData = Vocoder.DoInference(Mel);
+    TFTensor<float> AuData = Vocoder.get()->DoInference(Mel);
     std::vector<float> AudioData;
 
     if (AuData.Shape.size() > 1)
@@ -320,6 +353,8 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
 
 
+    if (!AudioData.size())
+        QMessageBox::critical(nullptr,"f","ss");
 
     return {AudioData,Attention,Mel};
 }
