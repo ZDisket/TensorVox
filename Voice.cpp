@@ -120,13 +120,13 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
     const int32_t Tex2MelArch = VoxInfo.Architecture.Text2Mel;
 
-    const bool IsVITS = Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::VITSTM;
+    const bool IsVITS = Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::DEVITS;
 
     if (Tex2MelArch == EText2MelModel::Tacotron2)
         MelPredictor = std::make_unique<Tacotron2>();
     else if (Tex2MelArch == EText2MelModel::FastSpeech2)
         MelPredictor = std::make_unique<FastSpeech2>();
-    else if (Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::VITSTM)
+    else if (Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::DEVITS)
         MelPredictor = std::make_unique<VITS>();
     else
         MelPredictor = std::make_unique<Tacotron2Torch>();
@@ -144,7 +144,7 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
 
 
-    if (Tex2MelArch == EText2MelModel::VITSTM)
+    if (Tex2MelArch == EText2MelModel::DEVITS)
         Moji.Initialize(VoxPath + "/moji.pt", VoxPath + "/tm_dict.txt");
 
 

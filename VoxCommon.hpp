@@ -63,7 +63,7 @@ enum Enum{
     FastSpeech2 = 0,
     Tacotron2,
     VITS,
-    VITSTM,
+    DEVITS,
     Tacotron2Torch
 };
 
