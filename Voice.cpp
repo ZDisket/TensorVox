@@ -120,14 +120,16 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
     const int32_t Tex2MelArch = VoxInfo.Architecture.Text2Mel;
 
-    const bool IsVITS = Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::VITSTM;
+    const bool IsVITS = Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::DEVITS;
 
     if (Tex2MelArch == EText2MelModel::Tacotron2)
         MelPredictor = std::make_unique<Tacotron2>();
     else if (Tex2MelArch == EText2MelModel::FastSpeech2)
         MelPredictor = std::make_unique<FastSpeech2>();
-    else if (Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::VITSTM)
+    else if (Tex2MelArch == EText2MelModel::VITS)
         MelPredictor = std::make_unique<VITS>();
+    else if (Tex2MelArch == EText2MelModel::DEVITS)
+         MelPredictor = std::make_unique<DEVITS>();
     else
         MelPredictor = std::make_unique<Tacotron2Torch>();
 
@@ -144,8 +146,12 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
 
 
-    if (Tex2MelArch == EText2MelModel::VITSTM)
+    if (Tex2MelArch == EText2MelModel::DEVITS){
         Moji.Initialize(VoxPath + "/moji.pt", VoxPath + "/tm_dict.txt");
+        BertFE.Initialize(VoxPath + "/bert.pt", VoxPath + "/bert_vocab.txt");
+
+    }
+
 
 
     const int32_t VocoderArch = VoxInfo.Architecture.Vocoder;
@@ -286,18 +292,10 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
         Mel = ((FastSpeech2*)MelPredictor.get())->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
 
-    }else
+    }else if (Text2MelN == EText2MelModel::VITS)
     {
         FloatArgs = {Speed};
 
-        if (EmotionOvr.size()){
-            std::vector<std::string> MojiInput = Processor.GetTokenizer().Tokenize(EmotionOvr,true,true);
-
-            std::vector<float> MojiStates = Moji.Infer(MojiInput);
-
-            FloatArgs.insert(FloatArgs.end(),MojiStates.begin(),MojiStates.end());
-
-        }
 
         TFTensor<float> Audio = MelPredictor.get()->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID,EmotionID);
         Attention = ((VITS*)MelPredictor.get())->Attention;
@@ -310,6 +308,29 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
         return {AudioData,Attention,Mel};
 
+    }else // DE-VITS
+    {
+        FloatArgs = {Speed};
+        std::vector<std::string> MojiInput = Processor.GetTokenizer().Tokenize(EmotionOvr,true,true);
+        TFTensor<float> MojiStates = Moji.Infer(MojiInput);
+
+        auto BERTOutputs = BertFE.Infer(Prompt);
+
+
+
+
+        TFTensor<float> Audio = ((DEVITS*)MelPredictor.get())->DoInferenceDE(InputIDs, MojiStates,
+                                                                             BERTOutputs.first,FloatArgs,
+                                                                             IntArgs,SpeakerID,EmotionID);
+        Attention = ((VITS*)MelPredictor.get())->Attention;
+
+        std::vector<float> AudioData = Audio.Data;
+
+        Mel.Shape.push_back(-1); // Tell the plotter that we have no mel to plot
+
+        // As VITS is fully E2E, we return here
+
+        return {AudioData,Attention,Mel};
     }
 
     // Vocoder inference

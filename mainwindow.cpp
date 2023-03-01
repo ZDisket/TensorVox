@@ -1206,7 +1206,7 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 
 
     ArchitectureInfo Inf = CurrentVoice.GetInfo().Architecture;
-    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS || Inf.Text2Mel == EText2MelModel::VITSTM)
+    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS || Inf.Text2Mel == EText2MelModel::DEVITS)
     {
         ui->grpFs2Params->show();
 
@@ -1269,7 +1269,7 @@ void MainWindow::HandleIsMultiEmotion(size_t inVid)
     Voice& CurrentVoice = *VoMan[inVid];
 
 
-    const bool TorchMojiEnabled = CurrentVoice.GetInfo().Architecture.Text2Mel == EText2MelModel::VITSTM;
+    const bool TorchMojiEnabled = CurrentVoice.GetInfo().Architecture.Text2Mel == EText2MelModel::DEVITS;
 
     ui->lblEmotionOvr->setVisible(TorchMojiEnabled);
     ui->edtEmotionOvr->setVisible(TorchMojiEnabled);

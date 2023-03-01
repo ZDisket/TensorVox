@@ -63,7 +63,7 @@ enum Enum{
     FastSpeech2 = 0,
     Tacotron2,
     VITS,
-    VITSTM,
+    DEVITS,
     Tacotron2Torch
 };
 
@@ -167,7 +167,7 @@ namespace VoxUtil {
     // Copy PyTorch tensor
 
     template<typename D>
-    TFTensor<D> CopyTensor(at::Tensor& InTens){
+    TFTensor<D> CopyTensor(const at::Tensor& InTens){
         D* Data = InTens.data<D>();
         std::vector<int64_t> Shape = InTens.sizes().vec();
 

@@ -5,11 +5,10 @@
 #include <vector>
 #include <string>
 
-#define ZSDEL_USE_STD_STRING
-#ifndef ZSDEL_USE_STD_STRING
-#include "golem_string.h"
-#else
+#ifndef ZSDEL_USE_WSTRING
 #define GString std::string
+#else
+#define GString std::wstring
 #endif
 
 typedef std::vector<GString>::const_iterator TokenIterator;
@@ -73,6 +72,7 @@ public:
 			UpdateTokens();
 	}
 	void AddDelimiter(const GString& in_Delim);
+    void SetDelimiters(const std::vector<GString>& Delims);
 
 	~ZStringDelimiter();
 };
