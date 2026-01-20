@@ -1,7 +1,12 @@
 #include "EnglishPhoneticProcessor.h"
 #include "VoxCommon.hpp"
+#include <Windows.h>
+#include <string>
+
 
 using namespace std;
+
+const std::string SPECIAL_SPACE = "@\\_";
 
 bool EnglishPhoneticProcessor::Initialize(Phonemizer* InPhn, ESpeakPhonemizer *InENGPh)
 {
@@ -57,6 +62,11 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 	for (size_t w = 0; w < Words.size();w++) 
 	{
 		const string& Word = Words[w];
+        bool NextIsPunct = false;
+
+        if (w < Words.size() - 1)
+            NextIsPunct = Words[w + 1].find("@@") != std::string::npos;
+
 
 
         if (Word.size() > 22)
@@ -70,6 +80,11 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
             Assemble.append(" ");
             Assemble.append(AddPonct);
             Assemble.append(" ");
+            if (InLanguageType == ETTSLanguageType::ARPA && w != Words.size() - 1){
+                Assemble.append(SPECIAL_SPACE);
+                Assemble.append(" ");
+            }
+
 
             continue;
 
@@ -116,6 +131,14 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
 
         Assemble.append(Res);
         Assemble.append(" ");
+        if (InLanguageType == ETTSLanguageType::ARPA && !NextIsPunct && w != Words.size() - 1)
+        {
+            Assemble.append(SPECIAL_SPACE);
+            Assemble.append(" ");
+        }
+
+
+
 
 
 
@@ -134,7 +157,6 @@ std::string EnglishPhoneticProcessor::ProcessTextPhonetic(const std::string& InT
     // Delete last space if there is
 	if (Assemble[Assemble.size() - 1] == ' ')
 		Assemble.pop_back();
-
 
 
 

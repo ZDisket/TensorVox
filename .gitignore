@@ -4,6 +4,9 @@ deps/*
 rdeployed/*
 brelease/*
 bdebug/*
+rdeployed2/*
+rdepmin/*
+
 *.wav
 *~
 *.autosave
@@ -78,3 +81,5 @@ release/*
 
 deps.zip
 README.md.backup
+/.qtc_clangd
+/build

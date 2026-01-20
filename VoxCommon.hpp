@@ -54,7 +54,8 @@ enum Enum{
     TensorflowTTS = 0,
     CoquiTTS,
     jaywalnut310, // OG VITS repo
-    keonlee9420
+    keonlee9420,
+    ZDisket
 };
 
 }
@@ -64,7 +65,8 @@ enum Enum{
     Tacotron2,
     VITS,
     DEVITS,
-    Tacotron2Torch
+    Tacotron2Torch,
+    VITSEvo
 };
 
 }

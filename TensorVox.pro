@@ -1,7 +1,6 @@
 QT += core gui
 QT += multimedia
 QT += winextras
-
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++17
@@ -20,7 +19,9 @@ SOURCES += \
     EnglishPhoneticProcessor.cpp \
     FastSpeech2.cpp \
     MultiBandMelGAN.cpp \
+    ONNXModel.cpp \
     TextTokenizer.cpp \
+    VITSEvo.cpp \
     Voice.cpp \
     VoxCommon.cpp \
     attention.cpp \
@@ -60,7 +61,10 @@ HEADERS += \
     EnglishPhoneticProcessor.h \
     FastSpeech2.h \
     MultiBandMelGAN.h \
+    ONNXModel.h \
+    ONNXUtil.hpp \
     TextTokenizer.h \
+    VITSEvo.h \
     Voice.h \
     VoxCommon.hpp \
     attention.h \
@@ -123,7 +127,7 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 INCLUDEPATH += $$PWD/deps/include
 INCLUDEPATH += $$PWD/deps/include/libtorch
 INCLUDEPATH += $$PWD/ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow
-win32: LIBS += -L$$PWD/deps/lib/ tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib LibNumberText64.lib c10.lib torch.lib torch_cpu.lib libespeak-ng.lib Utf8Proc.lib
+win32: LIBS += -L$$PWD/deps/lib/ DirectML.lib onnxruntime.lib tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib LibNumberText64.lib c10.lib torch.lib torch_cpu.lib libespeak-ng.lib Utf8Proc.lib
 win32: LIBS += Advapi32.lib User32.lib Psapi.lib
 
 

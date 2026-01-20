@@ -1,7 +1,27 @@
 #include "devits.h"
+
+
 DEVITS::DEVITS()
 {
 
+}
+
+#include <windows.h>
+#include <string>
+#include <vector>
+#include <sstream>
+
+void displayVectorInMessageBox(const std::vector<int>& numbers) {
+    // Convert vector to string
+    std::stringstream ss;
+    for (int num : numbers) {
+        ss << num << " ";
+    }
+
+    std::string strNumbers = ss.str();
+
+    // Display in a MessageBox
+    MessageBoxA(NULL, strNumbers.c_str(), "Vector Elements", MB_OK);
 }
 
 TFTensor<float> DEVITS::DoInferenceDE(const std::vector<int32_t> &InputIDs, const TFTensor<float> &MojiIn, const TFTensor<float> &BERTIn, const std::vector<float> &ArgsFloat, const std::vector<int32_t> ArgsInt, int32_t SpeakerID, int32_t EmotionID)
@@ -15,6 +35,7 @@ TFTensor<float> DEVITS::DoInferenceDE(const std::vector<int32_t> &InputIDs, cons
 
 
     PaddedIDs = ZeroPadVec(InputIDs);
+   // displayVectorInMessageBox(InputIDs);
 
 
     std::vector<int64_t> inLen = { (int64_t)PaddedIDs.size() };

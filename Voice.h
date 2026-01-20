@@ -12,7 +12,7 @@
 #include "istftnettorch.h"
 #include "devits.h"
 #include "bert.h"
-
+#include "VITSEvo.h"
 struct VoxResults{
   std::vector<float> Audio;
   TFTensor<float> Alignment;

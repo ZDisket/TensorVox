@@ -120,7 +120,7 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
     const int32_t Tex2MelArch = VoxInfo.Architecture.Text2Mel;
 
-    const bool IsVITS = Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::DEVITS;
+    const bool IsVITS = Tex2MelArch == EText2MelModel::VITS || Tex2MelArch == EText2MelModel::DEVITS || Tex2MelArch == EText2MelModel::VITSEvo;
 
     if (Tex2MelArch == EText2MelModel::Tacotron2)
         MelPredictor = std::make_unique<Tacotron2>();
@@ -130,6 +130,8 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
         MelPredictor = std::make_unique<VITS>();
     else if (Tex2MelArch == EText2MelModel::DEVITS)
          MelPredictor = std::make_unique<DEVITS>();
+    else if (Tex2MelArch == EText2MelModel::VITSEvo)
+        MelPredictor = std::make_unique<VITSEvo>();
     else
         MelPredictor = std::make_unique<Tacotron2Torch>();
 
@@ -141,6 +143,9 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
     if (Tex2MelArch == EText2MelModel::Tacotron2Torch)
         MelPredInit = VoxPath + "/tacotron2.pt";
+
+    if (Tex2MelArch == EText2MelModel::VITSEvo)
+        MelPredInit = VoxPath + "/vits.onnx";
 
     MelPredictor->Initialize(MelPredInit,(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
 
@@ -308,7 +313,20 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
         return {AudioData,Attention,Mel};
 
-    }else // DE-VITS
+    }else if (Text2MelN == EText2MelModel::VITSEvo)
+    {
+        TFTensor<float> Audio = MelPredictor.get()->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID,EmotionID);
+
+        std::vector<float> AudioData = Audio.Data;
+
+        Mel.Shape.push_back(-1); // Tell the plotter that we have no mel to plot
+
+        // End 2 end. Return here.
+
+        return {AudioData,Attention,Mel};
+
+    }
+    else // DE-VITS
     {
         FloatArgs = {Speed};
         std::vector<std::string> MojiInput = Processor.GetTokenizer().Tokenize(EmotionOvr,true,true);

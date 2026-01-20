@@ -1879,7 +1879,7 @@ void MainWindow::on_actBatchDen_triggered()
     FDlg.setWindowIcon(QIcon(":/res/infico.png"));
     FDlg.setWindowTitle("Batch Denoiser");
     FDlg.SetTitleBarBtns(false,false,true);
-    FDlg.resize(520,300);
+    FDlg.resize(750,450);
 
     BatchDenoiseDlg Dlg(FwParent);
 
