@@ -11,6 +11,9 @@
 
 #include <windows.h>
 #include <string>
+#include <dxgi1_6.h>
+#include <wrl/client.h>
+
 
 bool DoesFileExist(const std::wstring& path) {
     DWORD fileAttributes = GetFileAttributesW(path.c_str());
@@ -19,6 +22,27 @@ bool DoesFileExist(const std::wstring& path) {
     }
     return true; // The file exists.
 }
+
+std::wstring GetDefaultAdapterName()
+{
+    Microsoft::WRL::ComPtr<IDXGIFactory6> factory;
+    if (FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory)))) {
+        return L"GPU";
+    }
+
+    Microsoft::WRL::ComPtr<IDXGIAdapter1> adapter;
+    if (FAILED(factory->EnumAdapterByGpuPreference(0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)))) {
+        return L"GPU";
+    }
+
+    DXGI_ADAPTER_DESC1 desc = {};
+    if (FAILED(adapter->GetDesc1(&desc))) {
+        return L"GPU";
+    }
+
+    return std::wstring(desc.Description);
+}
+
 
 bool ONNXModel::SetUpDirectML(Ort::SessionOptions& SessionOptions)
 {
@@ -59,6 +83,8 @@ std::pair<std::vector<const char*>, std::vector<const char*>> ONNXModel::GetInpu
 ONNXModel::ONNXModel()
 {
     ModelLoaded = false;
+    IsGPU = false;
+    DeviceName = L"CPU";
 }
 
 bool ONNXModel::Load(const std::wstring& ModelPath, const std::string& EnvName)
@@ -73,10 +99,6 @@ bool ONNXModel::Load(const std::wstring& ModelPath, const std::string& EnvName)
     
     Ort::SessionOptions session_options;
     bool DML_Succ = SetUpDirectML(session_options);
-    
-
-    if (!DML_Succ)
-        return false;
 
     Sess = std::make_unique<Ort::Session>(*Environment, ModelPath.c_str(), session_options);
     Alloc = std::make_unique<Ort::AllocatorWithDefaultOptions>();
@@ -84,12 +106,15 @@ bool ONNXModel::Load(const std::wstring& ModelPath, const std::string& EnvName)
     if (!Sess || !Alloc)
         return false;
 
+    IsGPU = DML_Succ;
+    DeviceName = DML_Succ ? GetDefaultAdapterName() : L"CPU";
     ModelLoaded = true;
 
 
 
     return true;
 }
+
 
 std::vector<std::string> ONNXModel::GetOutputNames()
 {
@@ -102,8 +127,13 @@ std::vector<std::string> ONNXModel::GetOutputNames()
 
 std::vector<std::string> ONNXModel::GetInputNames()
 {
-    return std::vector<std::string>();
+    std::vector<std::string> InputNames;
+    for (std::size_t i = 0; i < Sess->GetInputCount(); i++) {
+        InputNames.emplace_back(Sess->GetInputNameAllocated(i, *Alloc).get());
+    }
+    return InputNames;
 }
+
 
 std::vector<ONNXTensorElementDataType> ONNXModel::GetInputTypes()
 {

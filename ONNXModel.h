@@ -46,8 +46,12 @@ class ONNXModel
 {
 private:
 	bool ModelLoaded;
+	bool IsGPU;
+	std::wstring DeviceName;
 
 	std::unique_ptr<Ort::Env> Environment;
+
+
 	std::unique_ptr<Ort::Session> Sess;
 	std::unique_ptr<Ort::AllocatorWithDefaultOptions> Alloc;
 	
@@ -67,6 +71,9 @@ public:
 	inline ONNXModel(const std::wstring& InitModelPath) { Load(InitModelPath); };
 
 	inline bool IsLoaded() const { return ModelLoaded; }
+	inline bool IsGPUDevice() const { return IsGPU; }
+	inline const std::wstring& GetDeviceName() const { return DeviceName; }
+
 
 	/*
 	Load model in DirectML mode.
