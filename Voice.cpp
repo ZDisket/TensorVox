@@ -1,6 +1,7 @@
 #include "Voice.h"
 #include "ext/ZCharScanner.h"
 
+
 std::vector<int32_t> Voice::CharsToID(const std::string & RawInTxt)
 {
 
@@ -112,7 +113,11 @@ void Voice::ReadModelInfo(const std::string &ModelInfoPath)
 
 Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer *InPhn)
 {
+    MelPredictorIsGPU = false;
+    MelPredictorDeviceName = L"CPU";
+
     ReadModelInfo(VoxPath + "/info.txt");
+
 
 
 
@@ -148,6 +153,15 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
         MelPredInit = VoxPath + "/vits.onnx";
 
     MelPredictor->Initialize(MelPredInit,(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
+
+    if (auto* OnnxMelPredictor = dynamic_cast<ONNXModel*>(MelPredictor.get())) {
+        MelPredictorIsGPU = OnnxMelPredictor->IsGPUDevice();
+        MelPredictorDeviceName = OnnxMelPredictor->GetDeviceName();
+    } else {
+        MelPredictorIsGPU = false;
+        MelPredictorDeviceName = L"CPU";
+    }
+
 
 
 

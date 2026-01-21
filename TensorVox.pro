@@ -128,7 +128,7 @@ INCLUDEPATH += $$PWD/deps/include
 INCLUDEPATH += $$PWD/deps/include/libtorch
 INCLUDEPATH += $$PWD/ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow
 win32: LIBS += -L$$PWD/deps/lib/ DirectML.lib onnxruntime.lib tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib LibNumberText64.lib c10.lib torch.lib torch_cpu.lib libespeak-ng.lib Utf8Proc.lib
-win32: LIBS += Advapi32.lib User32.lib Psapi.lib
+win32: LIBS += Advapi32.lib User32.lib Psapi.lib dxgi.lib
 
 
 RESOURCES += \

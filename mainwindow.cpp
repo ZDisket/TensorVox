@@ -21,6 +21,8 @@
 #include <psapi.h>
 #include <QTextStream>
 #include <random>
+#include <windows.h>
+
 
 
 // maybe hardcoding the sample sentences is a bad idea?
@@ -1669,10 +1671,41 @@ void MainWindow::OnMemoryUpdate()
     if (MemUsg > 1e+9)
         MemStr = QString::number(MemUsg / 1e+9,'f',1) + " GB";
 
+    if (auto* CurrentVoice = GetCurrentVoice()) {
+        static QString cachedCpuName;
+        QString deviceName = QString::fromStdWString(CurrentVoice->GetMelPredictorDeviceName());
+        QString deviceLabel = deviceName;
+        if (CurrentVoice->IsMelPredictorGPU()) {
+            deviceLabel = "GPU (" + deviceName + ")";
+        } else {
+            if (cachedCpuName.isEmpty()) {
+                wchar_t buffer[256] = {};
+                DWORD bufferSize = sizeof(buffer);
+                if (RegGetValueW(HKEY_LOCAL_MACHINE,
+                                 L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+                                 L"ProcessorNameString",
+                                 RRF_RT_REG_SZ,
+                                 nullptr,
+                                 buffer,
+                                 &bufferSize) == ERROR_SUCCESS) {
+                    cachedCpuName = QString::fromWCharArray(buffer).trimmed();
+                } else {
+                    cachedCpuName = "CPU";
+                }
+            }
+
+            deviceLabel = cachedCpuName == "CPU" ? "CPU" : ("CPU (" + cachedCpuName + ")");
+        }
+
+        StatusLbl->setText("Device: " + deviceLabel + " | RAM usage: " + MemStr);
+        return;
+    }
 
     StatusLbl->setText("Memory usage: " + MemStr);
 
 }
+
+
 
 size_t MainWindow::GetMemoryUsage()
 {
