@@ -29,5 +29,5 @@ public:
     */
     TFTensor<float> DoInference(const std::vector<int32_t>& InputIDs,const std::vector<float>& ArgsFloat,const std::vector<int32_t> ArgsInt, int32_t SpeakerID = 0, int32_t EmotionID = -1);
 
-    std::vector<float> Predict(std::vector<std::int64_t>& text_ids);
+    std::vector<float> Predict(std::vector<std::int64_t>& text_ids, int64_t SpeakerID);
 };

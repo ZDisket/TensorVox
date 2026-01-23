@@ -58,7 +58,7 @@ TFTensor<float> VITSEvo::DoInference(const std::vector<int32_t> &InputIDs, const
 
     // Call the ONNX inference fun
 
-    std::vector<float> AudioFrames = Predict(RealIDs);
+    std::vector<float> AudioFrames = Predict(RealIDs, (int64_t)SpeakerID);
     const int64_t output_count = (int64_t)AudioFrames.size();
 
 
@@ -74,7 +74,7 @@ TFTensor<float> VITSEvo::DoInference(const std::vector<int32_t> &InputIDs, const
 
 }
 
-std::vector<float> VITSEvo::Predict(std::vector<std::int64_t>& text_ids)
+std::vector<float> VITSEvo::Predict(std::vector<std::int64_t>& text_ids, int64_t SpeakerID)
 {
     if (text_ids.empty()) {
         return {};
@@ -95,7 +95,25 @@ std::vector<float> VITSEvo::Predict(std::vector<std::int64_t>& text_ids)
     input_tensors.emplace_back(Ort::Value::CreateTensor<std::int64_t>(mem_info,
                                                                       text_lengths_data.data(), text_lengths_data.size(), text_lengths_shape.data(), text_lengths_shape.size()));
 
-    auto output_tensors = Forward(input_tensors, { "text", "text_lengths" });
+    std::vector<std::string> InputNames = { "text", "text_lengths" };
+
+    if (SpeakerID != -1)
+    {
+        // This is a multi speaker model.
+
+        std::vector<int64_t> speaker_id_data = {SpeakerID};
+        std::vector<int64_t> speaker_id_shape = {batch};
+
+        input_tensors.emplace_back(
+            Ort::Value::CreateTensor<std::int64_t>(mem_info,
+                                                   speaker_id_data.data(), speaker_id_data.size(), speaker_id_shape.data(), speaker_id_shape.size())
+            );
+
+        InputNames.push_back("sid");
+
+    }
+
+    auto output_tensors = Forward(input_tensors, InputNames);
     if (output_tensors.empty() || !output_tensors[0].IsTensor()) {
         return {};
     }
