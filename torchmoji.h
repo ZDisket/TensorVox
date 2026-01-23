@@ -25,8 +25,8 @@ public:
 
     // Return hidden states of emotion state.
     // -> Seq: Vector of words
-    // <- Returns float vec of size VoxCommon::TorchMojiEmbSize containing hidden states, ready to feed into TTS model.
-    std::vector<float> Infer(const std::vector<std::string>& Seq);
+    // <- Returns float tensor of size VoxCommon::TorchMojiEmbSize containing hidden states, ready to feed into TTS model.
+   TFTensor<float> Infer(const std::vector<std::string>& Seq);
 };
 
 #endif // TORCHMOJI_H

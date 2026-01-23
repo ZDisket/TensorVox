@@ -54,7 +54,8 @@ enum Enum{
     TensorflowTTS = 0,
     CoquiTTS,
     jaywalnut310, // OG VITS repo
-    keonlee9420
+    keonlee9420,
+    ZDisket
 };
 
 }
@@ -63,8 +64,9 @@ enum Enum{
     FastSpeech2 = 0,
     Tacotron2,
     VITS,
-    VITSTM,
-    Tacotron2Torch
+    DEVITS,
+    Tacotron2Torch,
+    VITSEvo
 };
 
 }
@@ -167,7 +169,7 @@ namespace VoxUtil {
     // Copy PyTorch tensor
 
     template<typename D>
-    TFTensor<D> CopyTensor(at::Tensor& InTens){
+    TFTensor<D> CopyTensor(const at::Tensor& InTens){
         D* Data = InTens.data<D>();
         std::vector<int64_t> Shape = InTens.sizes().vec();
 

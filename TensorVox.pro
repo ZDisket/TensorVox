@@ -1,7 +1,6 @@
 QT += core gui
 QT += multimedia
 QT += winextras
-
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++17
@@ -20,17 +19,23 @@ SOURCES += \
     EnglishPhoneticProcessor.cpp \
     FastSpeech2.cpp \
     MultiBandMelGAN.cpp \
+    ONNXModel.cpp \
     TextTokenizer.cpp \
+    VITSEvo.cpp \
     Voice.cpp \
     VoxCommon.cpp \
     attention.cpp \
     batchdenoisedlg.cpp \
+    bert.cpp \
+    berttokenizer.cpp \
+    devits.cpp \
     espeakphonemizer.cpp \
     ext/ByteArr.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/DarkStyle.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.cpp \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/windowdragger.cpp \
     ext/ZCharScanner.cpp \
+    ext/ZCharScannerWide.cpp \
     ext/ZFile.cpp \
     ext/qcustomplot.cpp \
     istftnettorch.cpp \
@@ -56,11 +61,17 @@ HEADERS += \
     EnglishPhoneticProcessor.h \
     FastSpeech2.h \
     MultiBandMelGAN.h \
+    ONNXModel.h \
+    ONNXUtil.hpp \
     TextTokenizer.h \
+    VITSEvo.h \
     Voice.h \
     VoxCommon.hpp \
     attention.h \
     batchdenoisedlg.h \
+    bert.h \
+    berttokenizer.h \
+    devits.h \
     espeakphonemizer.h \
     ext/AudioFile.hpp \
     ext/ByteArr.h \
@@ -76,6 +87,7 @@ HEADERS += \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/framelesswindow.h \
     ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow/windowdragger.h \
     ext/ZCharScanner.h \
+    ext/ZCharScannerWide.h \
     ext/ZFile.h \
     ext/json.hpp \
     ext/qcustomplot.h \
@@ -115,8 +127,8 @@ DEFINES += _CRT_SECURE_NO_WARNINGS
 INCLUDEPATH += $$PWD/deps/include
 INCLUDEPATH += $$PWD/deps/include/libtorch
 INCLUDEPATH += $$PWD/ext/Qt-Frameless-Window-DarkStyle-master/framelesswindow
-win32: LIBS += -L$$PWD/deps/lib/ tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib LibNumberText64.lib c10.lib torch.lib torch_cpu.lib libespeak-ng.lib
-win32: LIBS += Advapi32.lib User32.lib Psapi.lib
+win32: LIBS += -L$$PWD/deps/lib/ DirectML.lib onnxruntime.lib tensorflow.lib r8bsrc64.lib rnnoise64.lib LogitechLEDLib.lib LibNumberText64.lib c10.lib torch.lib torch_cpu.lib libespeak-ng.lib Utf8Proc.lib
+win32: LIBS += Advapi32.lib User32.lib Psapi.lib dxgi.lib
 
 
 RESOURCES += \

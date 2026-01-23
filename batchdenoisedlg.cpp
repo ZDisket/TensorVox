@@ -67,6 +67,7 @@ void BatchDenoiseDlg::IterateDo()
         return;
 
 
+    ManWi->DenBatchSize = ui->spbBatchSz->value();
     ManWi->DenDone = 0;
     if (CurrentIndex + ui->spbBatchSz->value() > Files.size())
         ManWi->DenBatchSize = Files.size() - CurrentIndex;
@@ -80,10 +81,17 @@ void BatchDenoiseDlg::IterateDo()
 
         AudioFile<float> AudFile;
         InferDetails CurrentDets;
+        bool SkipCurrent = false;
         try {
             AudFile.load(CurrentFn.toStdString());
 
-            CurrentDets = MakeInferDetails(AudFile.samples[0],CurrentFn,AudFile.getSampleRate(),ui->spbOutSR->value());
+            if ( (ui->chkExcludeAlreadySR->isChecked() && AudFile.getSampleRate() == (uint32_t)ui->spbOutSR->value()) || AudFile.getLengthInSeconds() < 1.0)
+                SkipCurrent = true;
+            else
+                CurrentDets = MakeInferDetails(AudFile.samples[0],CurrentFn,AudFile.getSampleRate(),ui->spbOutSR->value());
+
+
+
 
         }  catch (...) {
 
@@ -97,7 +105,12 @@ void BatchDenoiseDlg::IterateDo()
            continue;
         }
 
-        ManWi->PushToInfers(CurrentDets);
+        if (!SkipCurrent)
+            ManWi->PushToInfers(CurrentDets);
+        else
+            ManWi->DenBatchSize -= 1; // Indicate to the auto clear that we will send less files
+
+
 
 
         CurrentIndex += 1; // NOT i !!!!!!!

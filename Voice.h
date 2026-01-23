@@ -10,6 +10,9 @@
 #include "phoneticdict.h"
 #include "tacotron2torch.h"
 #include "istftnettorch.h"
+#include "devits.h"
+#include "bert.h"
+#include "VITSEvo.h"
 struct VoxResults{
   std::vector<float> Audio;
   TFTensor<float> Alignment;
@@ -23,7 +26,11 @@ private:
     std::unique_ptr<MultiBandMelGAN> Vocoder;
 	EnglishPhoneticProcessor Processor;
     VoiceInfo VoxInfo;
+    bool MelPredictorIsGPU;
+    std::wstring MelPredictorDeviceName;
+
     TorchMoji Moji;
+    BERT BertFE;
 
 
 
@@ -83,9 +90,12 @@ public:
 
     std::string Name;
     inline const VoiceInfo& GetInfo(){return VoxInfo;}
+    inline bool IsMelPredictorGPU() const { return MelPredictorIsGPU; }
+    inline const std::wstring& GetMelPredictorDeviceName() const { return MelPredictorDeviceName; }
 
     inline const std::vector<std::string>& GetSpeakers(){return Speakers;}
     inline const std::vector<std::string>& GetEmotions(){return Emotions;}
+
 
     void SetDictEntries(const std::vector<DictEntry>& InEntries);
     inline const std::string& GetModelInfo(){return ModelInfo;}

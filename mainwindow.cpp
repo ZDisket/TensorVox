@@ -21,6 +21,8 @@
 #include <psapi.h>
 #include <QTextStream>
 #include <random>
+#include <windows.h>
+
 
 
 // maybe hardcoding the sample sentences is a bad idea?
@@ -1206,7 +1208,7 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 
 
     ArchitectureInfo Inf = CurrentVoice.GetInfo().Architecture;
-    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS || Inf.Text2Mel == EText2MelModel::VITSTM)
+    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS || Inf.Text2Mel == EText2MelModel::DEVITS)
     {
         ui->grpFs2Params->show();
 
@@ -1269,7 +1271,7 @@ void MainWindow::HandleIsMultiEmotion(size_t inVid)
     Voice& CurrentVoice = *VoMan[inVid];
 
 
-    const bool TorchMojiEnabled = CurrentVoice.GetInfo().Architecture.Text2Mel == EText2MelModel::VITSTM;
+    const bool TorchMojiEnabled = CurrentVoice.GetInfo().Architecture.Text2Mel == EText2MelModel::DEVITS;
 
     ui->lblEmotionOvr->setVisible(TorchMojiEnabled);
     ui->edtEmotionOvr->setVisible(TorchMojiEnabled);
@@ -1669,10 +1671,41 @@ void MainWindow::OnMemoryUpdate()
     if (MemUsg > 1e+9)
         MemStr = QString::number(MemUsg / 1e+9,'f',1) + " GB";
 
+    if (auto* CurrentVoice = GetCurrentVoice()) {
+        static QString cachedCpuName;
+        QString deviceName = QString::fromStdWString(CurrentVoice->GetMelPredictorDeviceName());
+        QString deviceLabel = deviceName;
+        if (CurrentVoice->IsMelPredictorGPU()) {
+            deviceLabel = "GPU (" + deviceName + ")";
+        } else {
+            if (cachedCpuName.isEmpty()) {
+                wchar_t buffer[256] = {};
+                DWORD bufferSize = sizeof(buffer);
+                if (RegGetValueW(HKEY_LOCAL_MACHINE,
+                                 L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+                                 L"ProcessorNameString",
+                                 RRF_RT_REG_SZ,
+                                 nullptr,
+                                 buffer,
+                                 &bufferSize) == ERROR_SUCCESS) {
+                    cachedCpuName = QString::fromWCharArray(buffer).trimmed();
+                } else {
+                    cachedCpuName = "CPU";
+                }
+            }
+
+            deviceLabel = cachedCpuName == "CPU" ? "CPU" : ("CPU (" + cachedCpuName + ")");
+        }
+
+        StatusLbl->setText("Device: " + deviceLabel + " | RAM usage: " + MemStr);
+        return;
+    }
 
     StatusLbl->setText("Memory usage: " + MemStr);
 
 }
+
+
 
 size_t MainWindow::GetMemoryUsage()
 {
@@ -1879,7 +1912,7 @@ void MainWindow::on_actBatchDen_triggered()
     FDlg.setWindowIcon(QIcon(":/res/infico.png"));
     FDlg.setWindowTitle("Batch Denoiser");
     FDlg.SetTitleBarBtns(false,false,true);
-    FDlg.resize(520,300);
+    FDlg.resize(750,450);
 
     BatchDenoiseDlg Dlg(FwParent);
 

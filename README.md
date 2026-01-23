@@ -1,15 +1,16 @@
 # TensorVox
 
-[![](https://dcbadge.vercel.app/api/server/yqFDAWH)](https://discord.gg/yqFDAWH)
 
 TensorVox is an application designed to enable user-friendly and lightweight neural speech synthesis in the desktop, aimed at increasing accessibility to such technology. 
 
-Powered mainly by [TensorFlowTTS](https://github.com/TensorSpeech/TensorFlowTTS) and also by [Coqui-TTS](https://github.com/coqui-ai/TTS) and [VITS](https://github.com/jaywalnut310/vits), it is written in pure C++/Qt, using the Tensorflow C API for interacting with Tensorflow models (first two), and LibTorch for PyTorch ones. This way, we can perform inference without having to install gigabytes worth of Python libraries, just a few DLLs.
+Being able to load models by [TensorFlowTTS](https://github.com/TensorSpeech/TensorFlowTTS),  [Coqui-TTS](https://github.com/coqui-ai/TTS), [VITS](https://github.com/jaywalnut310/vits), and VITS EVO, it is written in pure C++/Qt, using the ONNX Runtime, and supporting TensorFlow and LibTorch as legacy backends.
 
 ![Interface with Tac2 model loaded](https://i.imgur.com/wtPzzNh.png)
 
 
 ### Try it out
+**System requirements:** Windows 10 64-bit and a CPU that supports the AVX instruction set (pretty much anything made after 2010). As for GPU, to use it you need one that supports DirectX 12 (only with ONNX models)
+
 
 [Detailed guide in Google Docs](https://docs.google.com/document/d/1OS1kfb19bvpPPkF71Vbak_b735mi7epjUanIfPG671M/edit?usp=sharing)
 
@@ -20,14 +21,25 @@ If you're interested in using your own model, first you need to train then expor
 
 ## Supported architectures
 
-TensorVox supports models from three repos:
-
+TensorVox supports models from four repos. 
+ - **VITS Evolution:** This is my fully upgraded version of VITS, with ONNX support
+ - **jaywalnut310/VITS:** VITS, which is a fully E2E model. (Stressed IPA as phonemes) Export notebook: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1BSGE5DQYweXBWrwPOmb6CRPUU8H5mBvb?usp=sharing)
  - **TensorFlowTTS**: FastSpeech2, Tacotron2, both char and phoneme based and Multi-Band MelGAN. Here's a Colab notebook demonstrating how to export the LJSpeech pretrained, char-based Tacotron2 model: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1KLqZ1rkD4Enw7zpTgXGL6if7e5s0UeWa?usp=sharing) 
  - **Coqui-TTS:** Tacotron2 (phoneme-based IPA) and Multi-Band MelGAN, after converting from PyTorch to Tensorflow. Here's a notebook showing how to export the LJSpeech DDC model: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/15CdGEAu_-KezV1XxwzVfQiFSm0tveBkC?usp=sharing)
- - **jaywalnut310/VITS:** VITS, which is a fully E2E model. (Stressed IPA as phonemes) Export notebook: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1BSGE5DQYweXBWrwPOmb6CRPUU8H5mBvb?usp=sharing)
 
-Those two examples should provide you with enough guidance to understand what is needed. If you're looking to train a model specifically for this purpose then I recommend TensorFlowTTS, as it is the one with the best support, and VITS, as it's the closest thing to perfect
-As for languages, out-of-the-box support is provided for English (Coqui and TFTTS, VITS), German and Spanish (only TensorFlowTTS); that is, you won't have to do anything. You can add languages without modifying code, as long as the phoneme set are IPA (stressed or nonstressed), ARPA, or GlobalPhone, (open an issue and I'll explain it to you)
+More support of modern TTS models is being actively worked on!
+
+These examples should provide you with enough guidance to understand what is needed. If you're looking to train a model specifically for this purpose, then stay tuned... 
+*Or if you’d rather skip the training and export work, you can also get a TensorVox-ready model directly from me. (see contact details at the bottom of this)*
+
+As for languages, out-of-the-box support is provided for English, German and Spanish (only TensorFlowTTS); that is, you won't have to do anything. You can add languages without modifying code, as long as the phoneme set are IPA (stressed or nonstressed), ARPA, or GlobalPhone, (open an issue and I'll explain it to you)
+
+## Backends
+TensorVox currently supports multiple inference backends.
+
+LibTorch (TorchScript) and TensorFlow backends are maintained for compatibility with older models and projects created before ONNX export was refined enough.
+
+New development and active support are focused on ONNX Runtime, with DirectML used for GPU acceleration on Windows. This backend provides the best portability, long-term stability, and hardware coverage.
 
 
 ## Build instructions
@@ -49,7 +61,7 @@ TODO: Add instructions for compile from scratch.
 
 ## Externals (and thanks)
 
- - **LibTorch**: https://pytorch.org/cppdocs/installing.html
+ - **ONNX Runtime** :https://onnxruntime.ai/
 
  - **Tensorflow C API**: [https://www.tensorflow.org/install/lang_c](https://www.tensorflow.org/install/lang_c)
  - **CppFlow** (TF C API -> C++ wrapper): [https://github.com/serizba/cppflow](https://github.com/serizba/cppflow) 
@@ -64,9 +76,12 @@ TODO: Add instructions for compile from scratch.
 
 
 ## Contact
-You can open an issue here or join the [Discord server](https://discord.gg/yqFDAWH) and discuss/ask anything there
+You can open an issue here or join the [Discord server](https://discord.gg/B9fGwXgz) and discuss/ask anything there
 
-For media/licensing/any other formal stuff inquiries, send to this email: 9yba9c1y@anonaddy.me
+Custom model training, fine-tuning, and compatible exports are available on request (not free). Use email or DM me on Xitter
+
+Follow me on X (formerly Twitter): [ZD1908 (@ZDi____) / X](https://x.com/ZDi____)
+For any formal inquiries, send to this email: nika109021@gmail.com
 
 ## Note about licensing
 

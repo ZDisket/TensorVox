@@ -84,7 +84,7 @@ void FramelessWindow::changeEvent(QEvent *event)
 
 void FramelessWindow::setContent(QWidget *w)
 {
-  contentLayout.setMargin(0);
+  contentLayout.setContentsMargins(0,0,0,0);
   contentLayout.addWidget(w);
   ui->windowContent->setLayout(&contentLayout);
 }
@@ -103,6 +103,13 @@ void FramelessWindow::SetTitleBarBtns(bool Maximize, bool Minimize, bool Close)
     ui->minimizeButton->setVisible(Minimize);
 }
 
+void FramelessWindow::setMargins(int size)
+{
+    layout()->setMargin(size);
+ //   layout()->setContentsMargins(size, size, size, size);
+
+}
+
 void FramelessWindow::setWindowTitle(const QString &text)
 {
 
@@ -118,7 +125,7 @@ void FramelessWindow::styleWindow(bool bActive, bool bNoState)
 {
   if (bActive) {
     if (bNoState) {
-      layout()->setMargin(15);
+      setMargins(15);
       ui->windowTitlebar->setStyleSheet("#windowTitlebar{border: 0px none palette(shadow); border-top-left-radius:5px; border-top-right-radius:5px; background-color:palette(shadow); height:20px;}");
       ui->windowFrame->setStyleSheet("#windowFrame{border:1px solid palette(highlight); border-radius:5px 5px 5px 5px; background-color:palette(Window);}");
       QGraphicsEffect *oldShadow = ui->windowFrame->graphicsEffect();
@@ -130,7 +137,7 @@ void FramelessWindow::styleWindow(bool bActive, bool bNoState)
       windowShadow->setOffset(0.0);
       ui->windowFrame->setGraphicsEffect(windowShadow);
     } else {
-      layout()->setMargin(0);
+      setMargins(0);
       ui->windowTitlebar->setStyleSheet("#windowTitlebar{border: 0px none palette(shadow); border-top-left-radius:0px; border-top-right-radius:0px; background-color:palette(shadow); height:20px;}");
       ui->windowFrame->setStyleSheet("#windowFrame{border:1px solid palette(dark); border-radius:0px 0px 0px 0px; background-color:palette(Window);}");
       QGraphicsEffect *oldShadow = ui->windowFrame->graphicsEffect();
@@ -140,7 +147,7 @@ void FramelessWindow::styleWindow(bool bActive, bool bNoState)
     } // if (bNoState) else maximize
   } else {
     if (bNoState) {
-      layout()->setMargin(15);
+      setMargins(15);
       ui->windowTitlebar->setStyleSheet("#windowTitlebar{border: 0px none palette(shadow); border-top-left-radius:5px; border-top-right-radius:5px; background-color:palette(dark); height:20px;}");
       ui->windowFrame->setStyleSheet("#windowFrame{border:1px solid #000000; border-radius:5px 5px 5px 5px; background-color:palette(Window);}");
       QGraphicsEffect *oldShadow = ui->windowFrame->graphicsEffect();
@@ -152,7 +159,7 @@ void FramelessWindow::styleWindow(bool bActive, bool bNoState)
       windowShadow->setOffset(0.0);
       ui->windowFrame->setGraphicsEffect(windowShadow);
     } else {
-      layout()->setMargin(0);
+      setMargins(0);
       ui->windowTitlebar->setStyleSheet("#titlebarWidget{border: 0px none palette(shadow); border-top-left-radius:0px; border-top-right-radius:0px; background-color:palette(dark); height:20px;}");
       ui->windowFrame->setStyleSheet("#windowFrame{border:1px solid palette(shadow); border-radius:0px 0px 0px 0px; background-color:palette(Window);}");
       QGraphicsEffect *oldShadow = ui->windowFrame->graphicsEffect();
@@ -186,7 +193,7 @@ void FramelessWindow::on_minimizeButton_clicked()
 }
 
 void FramelessWindow::on_restoreButton_clicked() {
-  layout()->setMargin(15);
+  setMargins(15);
   ui->restoreButton->setVisible(false);
   ui->maximizeButton->setVisible(true);
   setWindowState(Qt::WindowNoState);
@@ -194,7 +201,7 @@ void FramelessWindow::on_restoreButton_clicked() {
 }
 void FramelessWindow::on_maximizeButton_clicked()
 {
-  layout()->setMargin(0);
+  setMargins(0);
   ui->restoreButton->setVisible(true);
   ui->maximizeButton->setVisible(false);
   setWindowState(Qt::WindowFullScreen);

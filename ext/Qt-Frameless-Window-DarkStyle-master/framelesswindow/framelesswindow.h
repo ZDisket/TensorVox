@@ -56,6 +56,7 @@ public:
   void ContentDlg(QDialog* indlg);
   void SetTitleBarBtns(bool Maximize,bool Minimize,bool Close);
 private:
+  void setMargins(int size);
   void styleWindow(bool bActive, bool bNoState);
 
   bool ContDlg;
