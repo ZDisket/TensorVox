@@ -13,6 +13,8 @@
 #include "devits.h"
 #include "bert.h"
 #include "VITSEvo.h"
+#include "Supertonic.h"
+#include "SupertonicVocoder.h"
 struct VoxResults{
   std::vector<float> Audio;
   TFTensor<float> Alignment;

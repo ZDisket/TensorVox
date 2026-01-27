@@ -137,6 +137,8 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
          MelPredictor = std::make_unique<DEVITS>();
     else if (Tex2MelArch == EText2MelModel::VITSEvo)
         MelPredictor = std::make_unique<VITSEvo>();
+    else if (Tex2MelArch == EText2MelModel::Supertonic)
+        MelPredictor = std::make_unique<Supertonic>();
     else
         MelPredictor = std::make_unique<Tacotron2Torch>();
 
@@ -148,9 +150,11 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
     if (Tex2MelArch == EText2MelModel::Tacotron2Torch)
         MelPredInit = VoxPath + "/tacotron2.pt";
-
-    if (Tex2MelArch == EText2MelModel::VITSEvo)
+    else if (Tex2MelArch == EText2MelModel::VITSEvo)
         MelPredInit = VoxPath + "/vits.onnx";
+    else if (Tex2MelArch == EText2MelModel::Supertonic)
+        MelPredInit = VoxPath + "/onnx";
+
 
     MelPredictor->Initialize(MelPredInit,(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
 
@@ -180,6 +184,8 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
         Vocoder = std::make_unique<iSTFTNetTorch>();
     else if (VocoderArch == EVocoderModel::NullVocoder)
         Vocoder = nullptr;
+    else if (VocoderArch == EVocoderModel::SupertonicVocoder)
+        Vocoder = std::make_unique<SupertonicVocoder>();
     else
         Vocoder = std::make_unique<MultiBandMelGAN>();
 
@@ -256,6 +262,9 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
     if (VoxInfo.LangType != ETTSLanguageType::Char && Text2MelN != EText2MelModel::Tacotron2Torch)
         PromptToFeed += VoxInfo.EndPadding;
 
+    if (Text2MelN == EText2MelModel::Supertonic)
+        PromptToFeed = "<en>" + PromptToFeed + "</en>";
+
     std::string PhoneticTxt = Processor.ProcessTextPhonetic(PromptToFeed,Phonemes,CurrentDict,
                                                             (ETTSLanguageType::Enum)VoxInfo.LangType,
                                                            VoxIsTac);
@@ -271,7 +280,11 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
     if (VoxInfo.LangType == ETTSLanguageType::Char){
         InputIDs = CharsToID(PhoneticTxt);
-        InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
+        if (VoxInfo.EndPadding.size())
+            InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
+
+
+
 
 
     }
@@ -339,6 +352,10 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
         return {AudioData,Attention,Mel};
 
+    }
+    else if (Text2MelN == EText2MelModel::Supertonic)
+    {
+        Mel = MelPredictor.get()->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
     }
     else // DE-VITS
     {
@@ -408,6 +425,18 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
     if (!AudioData.size())
         QMessageBox::critical(nullptr,"f","ss");
+
+    if (Text2MelN == EText2MelModel::Supertonic){
+        /*
+         *  Supertonic doesn't return a mel spectrogram, but a latent
+         *  We were using its return as Mel for convinience's sake so that it is fed right into the vocoder.
+         *  But now we have to reset the Mel tensor, otherwise the rest of the program
+         *  will see a non-empty tensor, think it's a spectrogram, and plot it (bad!)
+         *
+         */
+        Mel = TFTensor<float>();
+        Mel.Shape.push_back(-1);
+    }
 
     return {AudioData,Attention,Mel};
 }

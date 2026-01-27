@@ -74,6 +74,8 @@ public:
 	inline bool IsGPUDevice() const { return IsGPU; }
 	inline const std::wstring& GetDeviceName() const { return DeviceName; }
 
+    void _overrideDevices(bool is_gpu, std::wstring device_name);
+
 
 	/*
 	Load model in DirectML mode.

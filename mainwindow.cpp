@@ -30,7 +30,6 @@
 static const QString RandomTexts[] = {"Drink the water fishy",
                                       "She turned herself into a thorn. It was the funniest shit I've ever seen",
                                       "That was an order! Steiner's attack was an order!",
-                                      "There is no attitude that could not find its ultimate justification in the benefits it gives to the whole",
                                       "President Trump met with other leaders at the Group of twenty conference",
                                       "There’s a way to measure the acute emotional intelligence that has never gone out of style",
                                       "Peter Piper picked a peck of pickled peppers. How many pickled peppers did Peter Piper pick?",
@@ -47,8 +46,7 @@ static const QString RandomTexts[] = {"Drink the water fishy",
                                       "If I don't eat rice, the power won't come!",
                                       "Their power is really extraordinary. One thing is sure, they're from another world",
                                       "Now I see. Black human beings dislike the sound of rubbing glass probably the soundwave of the whistle",
-                                      "Cats and tomatoes don't mix",
-                                      "Six years were enough to fulfill the dreams of centuries. A year to bring our people into the enjoyment of that unity that was the futile aspiration of many generations"};
+                                      "Cats and tomatoes don't mix"};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
