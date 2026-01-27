@@ -123,7 +123,7 @@ TFTensor<float> Supertonic::DoInference(const std::vector<int32_t>& InputIDs, co
         throw std::runtime_error("Supertonic not initialized or style not loaded");
     }
 
-    int total_step = ArgsInt.empty() ? 5 : ArgsInt[0];
+    int total_step = ArgsInt.empty() ? 6 : ArgsInt[0];
     float speed = ArgsFloat.empty() ? 1.05f : ArgsFloat[0];
     if (total_step < 1) {
         total_step = 1;

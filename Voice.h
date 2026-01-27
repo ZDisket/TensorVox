@@ -15,6 +15,9 @@
 #include "VITSEvo.h"
 #include "Supertonic.h"
 #include "SupertonicVocoder.h"
+
+#include "SupertonicTextProcessor.h"
+
 struct VoxResults{
   std::vector<float> Audio;
   TFTensor<float> Alignment;
@@ -26,6 +29,7 @@ class Voice
 private:
     std::unique_ptr<MelGen> MelPredictor;
     std::unique_ptr<MultiBandMelGAN> Vocoder;
+    std::unique_ptr<SupertonicTextProcessor> Supertonic_Processor;
 	EnglishPhoneticProcessor Processor;
     VoiceInfo VoxInfo;
     bool MelPredictorIsGPU;
@@ -88,7 +92,12 @@ public:
 
 
     std::string PhonemizeStr(const std::string& Prompt);
-    VoxResults Vocalize(const std::string& Prompt, float Speed = 1.f, int32_t SpeakerID = 0, float Energy = 1.f, float F0 = 1.f, int32_t EmotionID = -1, const std::string &EmotionOvr = "");
+    std::vector<int32_t> GetText(const int32_t &Text2MelN, bool &VoxIsTac,
+                   std::string &PromptToFeed);
+    VoxResults Vocalize(const std::string &Prompt, float Speed = 1.f,
+                        int32_t SpeakerID = 0, float Energy = 1.f,
+                        float F0 = 1.f, int32_t EmotionID = -1,
+                        const std::string &EmotionOvr = "");
 
     std::string Name;
     inline const VoiceInfo& GetInfo(){return VoxInfo;}

@@ -21,6 +21,7 @@ SOURCES += \
     MultiBandMelGAN.cpp \
     ONNXModel.cpp \
     Supertonic.cpp \
+    SupertonicTextProcessor.cpp \
     SupertonicVocoder.cpp \
     TextTokenizer.cpp \
     VITSEvo.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
     ONNXModel.h \
     ONNXUtil.hpp \
     Supertonic.h \
+    SupertonicTextProcessor.h \
     SupertonicVocoder.h \
     TextTokenizer.h \
     VITSEvo.h \

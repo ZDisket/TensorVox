@@ -209,6 +209,10 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
     if (InPhn)
         Processor.Initialize(InPhn);
 
+    if (Tex2MelArch == EText2MelModel::Supertonic){
+        Supertonic_Processor = std::make_unique<SupertonicTextProcessor>(VoxPath + "/unicode_indexer.json");
+    }
+
 
     Name = inName;
     ReadPhonemes(VoxPath + "/phonemes.txt");
@@ -248,57 +252,72 @@ std::string Voice::PhonemizeStr(const std::string &Prompt)
 
 }
 
+std::vector<int32_t> Voice::GetText(const int32_t &Text2MelN, bool &VoxIsTac,
+                      std::string &PromptToFeed) {
 
-VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID,const std::string& EmotionOvr)
-{
+    std::vector<int32_t> InputIDs;
+    std::string PhoneticTxt = Processor.ProcessTextPhonetic(
+        PromptToFeed, Phonemes, CurrentDict,
+        (ETTSLanguageType::Enum)VoxInfo.LangType, VoxIsTac);
 
+    if (Text2MelN == EText2MelModel::Tacotron2Torch)
+        PhoneticTxt += VoxInfo.EndPadding;
 
+    if (VoxInfo.LangType == ETTSLanguageType::Char) {
+        InputIDs = CharsToID(PhoneticTxt);
+        if (VoxInfo.EndPadding.size())
+            InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
+
+    } else {
+        if (VoxInfo.LangType == ETTSLanguageType::IPA)
+            InputIDs = CharsToID(PhoneticTxt);
+        else
+            InputIDs = PhonemesToID(PhoneticTxt);
+    }
+
+    return InputIDs;
+}
+
+VoxResults Voice::Vocalize(const std::string &Prompt, float Speed,
+                           int32_t SpeakerID, float Energy, float F0,
+                           int32_t EmotionID, const std::string &EmotionOvr) {
 
     const int32_t Text2MelN = VoxInfo.Architecture.Text2Mel;
 
     bool VoxIsTac = Text2MelN != EText2MelModel::FastSpeech2;
 
     std::string PromptToFeed = Prompt;
-    if (VoxInfo.LangType != ETTSLanguageType::Char && Text2MelN != EText2MelModel::Tacotron2Torch)
+    if (VoxInfo.LangType != ETTSLanguageType::Char &&
+        Text2MelN != EText2MelModel::Tacotron2Torch)
         PromptToFeed += VoxInfo.EndPadding;
 
-    if (Text2MelN == EText2MelModel::Supertonic)
-        PromptToFeed = "<en>" + PromptToFeed + "</en>";
+  //  if (Text2MelN == EText2MelModel::Supertonic)
+    //    PromptToFeed = "<en>" + PromptToFeed + "</en>";
 
-    std::string PhoneticTxt = Processor.ProcessTextPhonetic(PromptToFeed,Phonemes,CurrentDict,
-                                                            (ETTSLanguageType::Enum)VoxInfo.LangType,
-                                                           VoxIsTac);
+    std::vector<int32_t> InputIDs;
     TFTensor<float> Mel;
     TFTensor<float> Attention;
 
-    std::vector<int32_t> InputIDs;
-
-    if (Text2MelN == EText2MelModel::Tacotron2Torch)
-        PhoneticTxt += VoxInfo.EndPadding;
-
-
-
-    if (VoxInfo.LangType == ETTSLanguageType::Char){
-        InputIDs = CharsToID(PhoneticTxt);
-        if (VoxInfo.EndPadding.size())
-            InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
-
-
-
-
-
-    }
-    else
+    if (Text2MelN == EText2MelModel::Supertonic)
     {
-        if (VoxInfo.LangType == ETTSLanguageType::IPA)
-            InputIDs = CharsToID(PhoneticTxt);
-        else
-            InputIDs = PhonemesToID(PhoneticTxt);
+        std::vector<std::u32string> Texts = {VoxUtil::StrToU32(Prompt)};
+        std::vector<std::string> Langs = {"en"};
 
+        auto Process_Result = Supertonic_Processor->Process(Texts, Langs);
 
+        std::vector<int64_t>& Ids_Pre = Process_Result.text_ids[0];
+        InputIDs.reserve(Ids_Pre.size());
+
+        for (auto id : Ids_Pre){
+            InputIDs.push_back((int32_t)id);
+        }
 
 
     }
+
+
+    if (!InputIDs.size())
+        InputIDs = GetText(Text2MelN, VoxIsTac, PromptToFeed);
 
     std::vector<float> FloatArgs;
     std::vector<int32_t> IntArgs;
