@@ -570,9 +570,10 @@ QStringList MainWindow::ListDirs(const QString &ParentDir)
     return all_dirs;
 }
 
-float MainWindow::RangeToFloat(int val)
+float MainWindow::RangeToFloat(int val, bool invert)
 {
-    int procval = 200 - val;
+
+    int procval = invert ? 200 - val : val;
     if (procval == 0)
         procval = 1;
 
@@ -1206,9 +1207,12 @@ void MainWindow::HandleIsMultiSpeaker(size_t inVid)
 
 
     ArchitectureInfo Inf = CurrentVoice.GetInfo().Architecture;
-    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS || Inf.Text2Mel == EText2MelModel::DEVITS)
+    if (Inf.Text2Mel == EText2MelModel::FastSpeech2 || Inf.Text2Mel == EText2MelModel::VITS || Inf.Text2Mel == EText2MelModel::DEVITS || Inf.Text2Mel == EText2MelModel::Supertonic)
     {
         ui->grpFs2Params->show();
+
+        if (Inf.Text2Mel == EText2MelModel::Supertonic)
+            ui->sliSpeed->setValue(105);
 
 
         bool IsFs2 = Inf.Text2Mel == EText2MelModel::FastSpeech2;

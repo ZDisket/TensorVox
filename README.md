@@ -3,7 +3,7 @@
 
 TensorVox is an application designed to enable user-friendly and lightweight neural speech synthesis in the desktop, aimed at increasing accessibility to such technology. 
 
-Being able to load models by [TensorFlowTTS](https://github.com/TensorSpeech/TensorFlowTTS),  [Coqui-TTS](https://github.com/coqui-ai/TTS), [VITS](https://github.com/jaywalnut310/vits), and VITS EVO, it is written in pure C++/Qt, using the ONNX Runtime, and supporting TensorFlow and LibTorch as legacy backends.
+Being able to load a variety of AI TTS models, it is written in pure C++/Qt, using the ONNX Runtime, and supporting TensorFlow and LibTorch as legacy backends.
 
 ![Interface with Tac2 model loaded](https://i.imgur.com/wtPzzNh.png)
 
@@ -21,8 +21,16 @@ If you're interested in using your own model, first you need to train then expor
 
 ## Supported architectures
 
-TensorVox supports models from four repos. 
- - **VITS Evolution:** This is my fully upgraded version of VITS, with ONNX support
+TensorVox supports several models by various authors
+
+### Current-gen models
+These are models under active development by their authors and support by me. These use the ONNX backend, with GPU support under DirectML
+ - **ZDisket/VITS Evolution:** This is my fully upgraded version of VITS
+ - **Supertone/[Supertonic](https://github.com/supertone-inc/supertonic) 2:** Supertone's small, fast model made for fast on-device inference
+
+More models are to be added soon.
+### Legacy models
+Compatibility for these models is kept but not maintained, as they're obsolete and have been superseded by newer ones. These run under the LibTorch and Tensorflow backends, supporting only CPU.
  - **jaywalnut310/VITS:** VITS, which is a fully E2E model. (Stressed IPA as phonemes) Export notebook: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1BSGE5DQYweXBWrwPOmb6CRPUU8H5mBvb?usp=sharing)
  - **TensorFlowTTS**: FastSpeech2, Tacotron2, both char and phoneme based and Multi-Band MelGAN. Here's a Colab notebook demonstrating how to export the LJSpeech pretrained, char-based Tacotron2 model: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/1KLqZ1rkD4Enw7zpTgXGL6if7e5s0UeWa?usp=sharing) 
  - **Coqui-TTS:** Tacotron2 (phoneme-based IPA) and Multi-Band MelGAN, after converting from PyTorch to Tensorflow. Here's a notebook showing how to export the LJSpeech DDC model: [<img src="https://colab.research.google.com/assets/colab-badge.svg">](https://colab.research.google.com/drive/15CdGEAu_-KezV1XxwzVfQiFSm0tveBkC?usp=sharing)

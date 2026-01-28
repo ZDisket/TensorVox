@@ -233,7 +233,7 @@ private:
     void HandleIsMultiEmotion(size_t inVid);
     bool CanPlayAudio;
     QStringList ListDirs(const QString& ParentDir);
-    float RangeToFloat(int val);
+    float RangeToFloat(int val, bool invert = true);
     void PlayBuffer(QBuffer* pBuff, bool ByUser, int32_t RowID);
     bool RecPerfLines;
 

@@ -374,7 +374,7 @@ VoxResults Voice::Vocalize(const std::string &Prompt, float Speed,
     }
     else if (Text2MelN == EText2MelModel::Supertonic)
     {
-        Mel = MelPredictor.get()->DoInference(InputIDs,FloatArgs,IntArgs,SpeakerID, EmotionID);
+        Mel = MelPredictor.get()->DoInference(InputIDs,{Speed},IntArgs,SpeakerID, EmotionID);
     }
     else // DE-VITS
     {
