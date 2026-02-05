@@ -87,6 +87,13 @@ ONNXModel::ONNXModel()
     DeviceName = L"CPU";
 }
 
+void ONNXModel::_overrideDevices(bool is_gpu, std::wstring device_name)
+{
+    IsGPU = is_gpu;
+    DeviceName = device_name;
+
+}
+
 bool ONNXModel::Load(const std::wstring& ModelPath, const std::string& EnvName)
 {
 

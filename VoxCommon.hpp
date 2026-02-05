@@ -55,7 +55,8 @@ enum Enum{
     CoquiTTS,
     jaywalnut310, // OG VITS repo
     keonlee9420,
-    ZDisket
+    ZDisket,
+    Supertone
 };
 
 }
@@ -66,7 +67,8 @@ enum Enum{
     VITS,
     DEVITS,
     Tacotron2Torch,
-    VITSEvo
+    VITSEvo,
+    Supertonic
 };
 
 }
@@ -76,7 +78,8 @@ enum Enum{
     MultiBandMelGAN = 0,
     MelGANSTFT, // there is no architectural changes so we can use mb-melgan class for melgan-stft
     NullVocoder, // For fully E2E models
-    iSTFTNet
+    iSTFTNet,
+    SupertonicVocoder
 };
 }
 

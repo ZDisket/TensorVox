@@ -137,6 +137,8 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
          MelPredictor = std::make_unique<DEVITS>();
     else if (Tex2MelArch == EText2MelModel::VITSEvo)
         MelPredictor = std::make_unique<VITSEvo>();
+    else if (Tex2MelArch == EText2MelModel::Supertonic)
+        MelPredictor = std::make_unique<Supertonic>();
     else
         MelPredictor = std::make_unique<Tacotron2Torch>();
 
@@ -148,9 +150,11 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
     if (Tex2MelArch == EText2MelModel::Tacotron2Torch)
         MelPredInit = VoxPath + "/tacotron2.pt";
-
-    if (Tex2MelArch == EText2MelModel::VITSEvo)
+    else if (Tex2MelArch == EText2MelModel::VITSEvo)
         MelPredInit = VoxPath + "/vits.onnx";
+    else if (Tex2MelArch == EText2MelModel::Supertonic)
+        MelPredInit = VoxPath + "/onnx";
+
 
     MelPredictor->Initialize(MelPredInit,(ETTSRepo::Enum)VoxInfo.Architecture.Repo);
 
@@ -180,6 +184,8 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
         Vocoder = std::make_unique<iSTFTNetTorch>();
     else if (VocoderArch == EVocoderModel::NullVocoder)
         Vocoder = nullptr;
+    else if (VocoderArch == EVocoderModel::SupertonicVocoder)
+        Vocoder = std::make_unique<SupertonicVocoder>();
     else
         Vocoder = std::make_unique<MultiBandMelGAN>();
 
@@ -202,6 +208,10 @@ Voice::Voice(const std::string & VoxPath, const std::string &inName, Phonemizer 
 
     if (InPhn)
         Processor.Initialize(InPhn);
+
+    if (Tex2MelArch == EText2MelModel::Supertonic){
+        Supertonic_Processor = std::make_unique<SupertonicTextProcessor>(VoxPath + "/unicode_indexer.json");
+    }
 
 
     Name = inName;
@@ -242,50 +252,72 @@ std::string Voice::PhonemizeStr(const std::string &Prompt)
 
 }
 
+std::vector<int32_t> Voice::GetText(const int32_t &Text2MelN, bool &VoxIsTac,
+                      std::string &PromptToFeed) {
 
-VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t SpeakerID, float Energy, float F0, int32_t EmotionID,const std::string& EmotionOvr)
-{
+    std::vector<int32_t> InputIDs;
+    std::string PhoneticTxt = Processor.ProcessTextPhonetic(
+        PromptToFeed, Phonemes, CurrentDict,
+        (ETTSLanguageType::Enum)VoxInfo.LangType, VoxIsTac);
 
+    if (Text2MelN == EText2MelModel::Tacotron2Torch)
+        PhoneticTxt += VoxInfo.EndPadding;
 
+    if (VoxInfo.LangType == ETTSLanguageType::Char) {
+        InputIDs = CharsToID(PhoneticTxt);
+        if (VoxInfo.EndPadding.size())
+            InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
+
+    } else {
+        if (VoxInfo.LangType == ETTSLanguageType::IPA)
+            InputIDs = CharsToID(PhoneticTxt);
+        else
+            InputIDs = PhonemesToID(PhoneticTxt);
+    }
+
+    return InputIDs;
+}
+
+VoxResults Voice::Vocalize(const std::string &Prompt, float Speed,
+                           int32_t SpeakerID, float Energy, float F0,
+                           int32_t EmotionID, const std::string &EmotionOvr) {
 
     const int32_t Text2MelN = VoxInfo.Architecture.Text2Mel;
 
     bool VoxIsTac = Text2MelN != EText2MelModel::FastSpeech2;
 
     std::string PromptToFeed = Prompt;
-    if (VoxInfo.LangType != ETTSLanguageType::Char && Text2MelN != EText2MelModel::Tacotron2Torch)
+    if (VoxInfo.LangType != ETTSLanguageType::Char &&
+        Text2MelN != EText2MelModel::Tacotron2Torch)
         PromptToFeed += VoxInfo.EndPadding;
 
-    std::string PhoneticTxt = Processor.ProcessTextPhonetic(PromptToFeed,Phonemes,CurrentDict,
-                                                            (ETTSLanguageType::Enum)VoxInfo.LangType,
-                                                           VoxIsTac);
+  //  if (Text2MelN == EText2MelModel::Supertonic)
+    //    PromptToFeed = "<en>" + PromptToFeed + "</en>";
+
+    std::vector<int32_t> InputIDs;
     TFTensor<float> Mel;
     TFTensor<float> Attention;
 
-    std::vector<int32_t> InputIDs;
-
-    if (Text2MelN == EText2MelModel::Tacotron2Torch)
-        PhoneticTxt += VoxInfo.EndPadding;
-
-
-
-    if (VoxInfo.LangType == ETTSLanguageType::Char){
-        InputIDs = CharsToID(PhoneticTxt);
-        InputIDs.push_back(std::stoi(VoxInfo.EndPadding));
-
-
-    }
-    else
+    if (Text2MelN == EText2MelModel::Supertonic)
     {
-        if (VoxInfo.LangType == ETTSLanguageType::IPA)
-            InputIDs = CharsToID(PhoneticTxt);
-        else
-            InputIDs = PhonemesToID(PhoneticTxt);
+        std::vector<std::u32string> Texts = {VoxUtil::StrToU32(Prompt)};
+        std::vector<std::string> Langs = {"en"};
 
+        auto Process_Result = Supertonic_Processor->Process(Texts, Langs);
 
+        std::vector<int64_t>& Ids_Pre = Process_Result.text_ids[0];
+        InputIDs.reserve(Ids_Pre.size());
+
+        for (auto id : Ids_Pre){
+            InputIDs.push_back((int32_t)id);
+        }
 
 
     }
+
+
+    if (!InputIDs.size())
+        InputIDs = GetText(Text2MelN, VoxIsTac, PromptToFeed);
 
     std::vector<float> FloatArgs;
     std::vector<int32_t> IntArgs;
@@ -339,6 +371,10 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
         return {AudioData,Attention,Mel};
 
+    }
+    else if (Text2MelN == EText2MelModel::Supertonic)
+    {
+        Mel = MelPredictor.get()->DoInference(InputIDs,{Speed},IntArgs,SpeakerID, EmotionID);
     }
     else // DE-VITS
     {
@@ -408,6 +444,18 @@ VoxResults Voice::Vocalize(const std::string & Prompt, float Speed, int32_t Spea
 
     if (!AudioData.size())
         QMessageBox::critical(nullptr,"f","ss");
+
+    if (Text2MelN == EText2MelModel::Supertonic){
+        /*
+         *  Supertonic doesn't return a mel spectrogram, but a latent
+         *  We were using its return as Mel for convinience's sake so that it is fed right into the vocoder.
+         *  But now we have to reset the Mel tensor, otherwise the rest of the program
+         *  will see a non-empty tensor, think it's a spectrogram, and plot it (bad!)
+         *
+         */
+        Mel = TFTensor<float>();
+        Mel.Shape.push_back(-1);
+    }
 
     return {AudioData,Attention,Mel};
 }

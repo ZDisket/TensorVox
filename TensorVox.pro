@@ -20,6 +20,9 @@ SOURCES += \
     FastSpeech2.cpp \
     MultiBandMelGAN.cpp \
     ONNXModel.cpp \
+    Supertonic.cpp \
+    SupertonicTextProcessor.cpp \
+    SupertonicVocoder.cpp \
     TextTokenizer.cpp \
     VITSEvo.cpp \
     Voice.cpp \
@@ -63,6 +66,9 @@ HEADERS += \
     MultiBandMelGAN.h \
     ONNXModel.h \
     ONNXUtil.hpp \
+    Supertonic.h \
+    SupertonicTextProcessor.h \
+    SupertonicVocoder.h \
     TextTokenizer.h \
     VITSEvo.h \
     Voice.h \
